@@ -19,6 +19,10 @@ public class Config
     private static extern void DownloadFile(string filename, string content);
 
     public bool TutorialFinished;
+    public bool SpikeTutorialShown;
+    public bool BossTutorialShown;
+    public bool ChestTutorialShown;
+
     public bool FinishedAllBosses;
     public int CurrentSpikeDificulty;
     public ChestSide ChestSide;

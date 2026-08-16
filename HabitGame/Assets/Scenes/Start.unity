@@ -333,10 +333,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Config:
     TutorialFinished: 0
+    SpikeTutorialShown: 0
+    BossTutorialShown: 0
+    ChestTutorialShown: 0
     FinishedAllBosses: 0
     CurrentSpikeDificulty: 0
     ChestSide: 0
-    Day: 0
+    Day: 1
     LevelsData: []
   _sessionChestSide: 1
   _sessionDay: 1

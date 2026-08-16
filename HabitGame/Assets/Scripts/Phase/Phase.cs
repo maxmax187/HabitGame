@@ -55,7 +55,26 @@ public class Phase : MonoBehaviour
 
     public void ShowTutorial(string tutorialText)
     {
-        GameManager.ShowTutorial(tutorialText);
+        if (GameManager == null)
+        {
+            return;
+        }
+
+        switch (_phase)
+        {
+            case Phases.Phase1:
+                GameManager.ShowSpikeTutorial(tutorialText);
+                break;
+            case Phases.Phase2:
+                GameManager.ShowChestTutorial(tutorialText);
+                break;
+            case Phases.Phase3:
+                GameManager.ShowBossTutorial(tutorialText);
+                break;
+            default:
+                GameManager.ShowTutorial(tutorialText);
+                break;
+        }
     }
 
     private void Reset()

@@ -228,4 +228,22 @@ public class ConfigManager : MonoBehaviour
     {
         return Config.LevelsData.Count - 1;
     }
+
+    public void MarkSpikeTutorialShown()
+    {
+        Config.SpikeTutorialShown = true;
+        Config.Save(Config);
+    }
+
+    public void MarkBossTutorialShown()
+    {
+        Config.BossTutorialShown = true;
+        Config.Save(Config);
+    }
+
+    public void MarkChestTutorialShown()
+    {
+        Config.ChestTutorialShown = true;
+        Config.Save(Config);
+    }
 }

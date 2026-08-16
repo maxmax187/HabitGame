@@ -7,35 +7,17 @@ using UnityEngine;
 
 public class Tutorial : MonoBehaviour
 {
-    [SerializeField] private MinigamePopup _minigamePopup;
     [SerializeField] private TMP_Text _text;
-    [SerializeField] private bool _doTutorial;
 
     private bool _tutorialShowing = false;
-    private ConfigManager _configManager;
 
     private void Awake()
     {
-        _configManager = ConfigManager.Instance;
-        if (_configManager != null)
-        {
-            _doTutorial = !_configManager.Config.TutorialFinished;
-        }
-
-        _minigamePopup.ShowTutorial(_doTutorial);
-        if (!_tutorialShowing)
-        {
-            gameObject.SetActive(false);
-        }
+        gameObject.SetActive(false);
     }
 
     public void ShowTutorial(string tutorialText)
     {
-        if (!_doTutorial)
-        {
-            return;
-        }
-
         _tutorialShowing = true;
         _text.text = tutorialText;
         gameObject.SetActive(true);

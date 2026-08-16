@@ -67,6 +67,50 @@ public class GameManager : MonoBehaviour
         set { _phase = value; }
     }
 
+    public void ShowSpikeTutorial(string text)
+    {
+        if (_configManager == null || _configManager.Config.Day != 1 || !IsFirstTutorialRound)
+        {
+            return;
+        }
+        if (_configManager.Config.SpikeTutorialShown)
+        {
+            return;
+        }
+        ShowTutorial(text);
+        _configManager.MarkSpikeTutorialShown();
+    }
+
+    public void ShowBossTutorial(string text)
+    {
+        if (_configManager == null || _configManager.Config.Day != 1 || !IsFirstTutorialRound)
+        {
+            return;
+        }
+        if (_configManager.Config.BossTutorialShown)
+        {
+            return;
+        }
+        ShowTutorial(text);
+        _configManager.MarkBossTutorialShown();
+    }
+
+    public void ShowChestTutorial(string text)
+    {
+        Debug.Log($"ShowChestTutorial called: CurrentRound={CurrentRound}, IsFirstTrainingRound={IsFirstTrainingRound}, ChestTutorialShown={_configManager?.Config.ChestTutorialShown}, text='{text}'");
+
+        if (_configManager == null || !IsFirstTrainingRound)
+        {
+            return;
+        }
+        if (_configManager.Config.ChestTutorialShown)
+        {
+            return;
+        }
+        ShowTutorial(text);
+        _configManager.MarkChestTutorialShown();
+    }
+
     private void Start()
     {
         if (ConfigManager.Instance != null)
@@ -89,6 +133,7 @@ public class GameManager : MonoBehaviour
             _configManager.SetTotalTime(time);
         }
 
+        Debug.Log($"About to show walk tutorial. Text='{_walkTutorialText}', length={_walkTutorialText?.Length ?? -1}");
         ShowTutorial(_walkTutorialText);
         SetAudio(_backgroundAudio);
     }

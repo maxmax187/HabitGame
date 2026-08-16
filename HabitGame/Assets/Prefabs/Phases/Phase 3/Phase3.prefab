@@ -6425,6 +6425,7 @@ MonoBehaviour:
   _phase: 2
   _walkData: {fileID: 0}
   _boss: {fileID: 8843980241480280217}
+  _chestTutorialText: 
   GameManager: {fileID: 0}
   MainEntrance: {fileID: 572588307320644342}
   Spawnpoint: {fileID: 0}
