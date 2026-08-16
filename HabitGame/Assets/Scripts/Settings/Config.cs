@@ -21,6 +21,8 @@ public class Config
     public bool TutorialFinished;
     public bool FinishedAllBosses;
     public int CurrentSpikeDificulty;
+    public ChestSide ChestSide;
+    public int Day;
     public List<LevelData> LevelsData;
 
     private static string SaveFilenName()

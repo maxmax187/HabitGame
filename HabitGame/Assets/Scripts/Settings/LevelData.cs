@@ -57,3 +57,10 @@ public struct PhaseTimeData
     public Phases Phase;
     public float ExitPhaseTime;
 }
+
+[Serializable]
+public enum ChestSide
+{
+    Left,
+    Right
+}

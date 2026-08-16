@@ -36,15 +36,18 @@ public class GameManager : MonoBehaviour
     private bool _isLastBoss;
     private AudioSource _currentAudio;
 
-    private const int TutorialRoundCount = 2;
-    private const int TrainingRoundCount = 2;
-    private const int TestRoundCount = 2;
+    private const int TutorialRoundCount = 1;
+    private const int TrainingRoundCount = 1;
+    private const int TestRoundCount = 1;
     private const int TotalRoundCount = TutorialRoundCount + TrainingRoundCount + TestRoundCount;
 
     public int CurrentRound => _configManager != null ? _configManager.Config.LevelsData.Count : 1;
     public LevelType CurrentLevelType => GetLevelType(CurrentRound);
     public bool IsTutorialLevel => CurrentLevelType == LevelType.Tutorial;
     public bool IsTestLevel => CurrentLevelType == LevelType.Test;
+
+    public bool IsFirstTutorialRound => CurrentRound == 1;
+    public bool IsFirstTrainingRound => CurrentRound == TutorialRoundCount + 1; // assuming number of train rounds != 0
 
     private LevelType GetLevelType(int round)
     {
@@ -291,8 +294,6 @@ public class GameManager : MonoBehaviour
             _configManager.SetPhase2ExitTime(time);
         }
     }
-
-
 
     public void MinigameStarted(float timeLeft)
     {

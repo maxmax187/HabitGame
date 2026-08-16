@@ -11,6 +11,10 @@ public class ConfigManager : MonoBehaviour
     public static ConfigManager Instance;
     public Config Config;
 
+    [Header("Session Settings (set manually before each session)")]
+    [SerializeField] private ChestSide _sessionChestSide;
+    [SerializeField] private int _sessionDay = 1;
+
     public int SpikeDificulty => Config.CurrentSpikeDificulty;
 
     private void Awake()
@@ -18,6 +22,9 @@ public class ConfigManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
         Config = Config.Load();
+        Config.ChestSide = _sessionChestSide;
+        Config.Day = _sessionDay;
+        Config.Save(Config);
     }
 
     public void UpdateSpikeDificulty(int newDificulty)

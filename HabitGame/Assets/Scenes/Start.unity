@@ -335,7 +335,11 @@ MonoBehaviour:
     TutorialFinished: 0
     FinishedAllBosses: 0
     CurrentSpikeDificulty: 0
+    ChestSide: 0
+    Day: 0
     LevelsData: []
+  _sessionChestSide: 1
+  _sessionDay: 1
 --- !u!4 &1835306766
 Transform:
   m_ObjectHideFlags: 0
