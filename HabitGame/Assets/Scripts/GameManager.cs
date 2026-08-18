@@ -48,6 +48,7 @@ public class GameManager : MonoBehaviour
 
     public bool IsFirstTutorialRound => CurrentRound == 1;
     public bool IsFirstTrainingRound => CurrentRound == TutorialRoundCount + 1; // assuming number of train rounds != 0
+    public bool IsFirstTestRound => CurrentRound == TutorialRoundCount + TrainingRoundCount + 1;
 
     private LevelType GetLevelType(int round)
     {
@@ -97,8 +98,6 @@ public class GameManager : MonoBehaviour
 
     public void ShowChestTutorial(string text)
     {
-        Debug.Log($"ShowChestTutorial called: CurrentRound={CurrentRound}, IsFirstTrainingRound={IsFirstTrainingRound}, ChestTutorialShown={_configManager?.Config.ChestTutorialShown}, text='{text}'");
-
         if (_configManager == null || !IsFirstTrainingRound)
         {
             return;
@@ -133,9 +132,23 @@ public class GameManager : MonoBehaviour
             _configManager.SetTotalTime(time);
         }
 
-        Debug.Log($"About to show walk tutorial. Text='{_walkTutorialText}', length={_walkTutorialText?.Length ?? -1}");
-        ShowTutorial(_walkTutorialText);
         SetAudio(_backgroundAudio);
+
+        bool longIntroShown = ShowTutorialIntro() || ShowTrainingIntro() || ShowTestIntro();
+        if (longIntroShown)
+        {
+            _uiManager.OnLongTutorialClosed += HandleLongTutorialClosed;
+        }
+        else
+        {
+            ShowTutorial(_walkTutorialText);
+        }
+    }
+
+    private void HandleLongTutorialClosed()
+    {
+        _uiManager.OnLongTutorialClosed -= HandleLongTutorialClosed;
+        ShowTutorial(_walkTutorialText);
     }
 
     private void SetAudio(AudioSource newAudio)
@@ -180,17 +193,14 @@ public class GameManager : MonoBehaviour
         }
 
         #region Get new spike dificulty
-        //Todo we are at the end of the spikes check if we have around enough time 
-        //If we have to much time we can up the dificulty
-        //If we have to litle time we should make it easier 
         bool updateDificulty = false;
         int currentDificulty = _configManager.Config.CurrentSpikeDificulty;
-        if (spikeFinishTimeLeft < _timeLeftAfterSpikes.x) //To little time left
+        if (spikeFinishTimeLeft < _timeLeftAfterSpikes.x)
         {
             updateDificulty = true;
             currentDificulty--;
         }
-        else if (spikeFinishTimeLeft > _timeLeftAfterSpikes.y) //To much time left
+        else if (spikeFinishTimeLeft > _timeLeftAfterSpikes.y)
         {
             updateDificulty = true;
             currentDificulty++;
@@ -211,7 +221,6 @@ public class GameManager : MonoBehaviour
 
     public void MiniGameData(bool hasOpend, bool hasFinished)
     {
-        Debug.Log($"MiniGameData called: hasFinished={hasFinished}, IsTestLevel={IsTestLevel}");
         if (!TrySetConfig(out ConfigManager config))
         {
             return;
@@ -365,5 +374,48 @@ public class GameManager : MonoBehaviour
             return;
         }
         config.SetPhase2EnterTime(timeLeft);
+    }
+
+    public bool ShowTutorialIntro()
+    {
+        if (_configManager == null || !IsFirstTutorialRound || _configManager.Config.TutorialIntroShown)
+        {
+            return false;
+        }
+        _uiManager.ShowLongTutorialIntro();
+        _configManager.MarkTutorialIntroShown();
+        return true;
+    }
+
+    public bool ShowTrainingIntro()
+    {
+        if (_configManager == null || !IsFirstTrainingRound || _configManager.Config.TrainingIntroShown)
+        {
+            return false;
+        }
+        _uiManager.ShowLongTrainingTutorial();
+        _configManager.MarkTrainingIntroShown();
+        return true;
+    }
+
+    public bool ShowTestIntro()
+    {
+        if (_configManager == null || !IsFirstTestRound || _configManager.Config.TestIntroShown)
+        {
+            return false;
+        }
+        _uiManager.ShowLongTestTutorial();
+        _configManager.MarkTestIntroShown();
+        return true;
+    }
+
+    public bool ShouldShowMinigameHowTo()
+    {
+        if (_configManager == null || !IsFirstTrainingRound || _configManager.Config.MinigameHowToShown)
+        {
+            return false;
+        }
+        _configManager.MarkMinigameHowToShown();
+        return true;
     }
 }

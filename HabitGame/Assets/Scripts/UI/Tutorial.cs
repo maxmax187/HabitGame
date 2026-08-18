@@ -18,7 +18,6 @@ public class Tutorial : MonoBehaviour
 
     public void ShowTutorial(string tutorialText)
     {
-        _tutorialShowing = true;
         _text.text = tutorialText;
         gameObject.SetActive(true);
         Time.timeScale = 0;
@@ -29,6 +28,5 @@ public class Tutorial : MonoBehaviour
     {
         gameObject.SetActive(false);
         Time.timeScale = 1;
-        _tutorialShowing = false;
     }
 }

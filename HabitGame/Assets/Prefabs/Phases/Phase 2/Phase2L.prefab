@@ -6214,7 +6214,7 @@ MonoBehaviour:
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: Press  E  to open the chest
+          m_StringArgument: Press  <sprite=5>  to open the chest
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!1 &2137761366689387624
@@ -6468,7 +6468,6 @@ MonoBehaviour:
   _phase: 1
   _walkData: {fileID: 7702137020807283884}
   _boss: {fileID: 0}
-  _chestTutorialText: Press E key to opent the chest
   GameManager: {fileID: 0}
   MainEntrance: {fileID: 7662715137426470614}
   Spawnpoint: {fileID: 0}

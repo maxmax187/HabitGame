@@ -246,4 +246,28 @@ public class ConfigManager : MonoBehaviour
         Config.ChestTutorialShown = true;
         Config.Save(Config);
     }
+
+    public void MarkTutorialIntroShown()
+    {
+        Config.TutorialIntroShown = true;
+        Config.Save(Config);
+    }
+
+    public void MarkTrainingIntroShown()
+    {
+        Config.TrainingIntroShown = true;
+        Config.Save(Config);
+    }
+
+    public void MarkTestIntroShown()
+    {
+        Config.TestIntroShown = true;
+        Config.Save(Config);
+    }
+
+    public void MarkMinigameHowToShown()
+    {
+        Config.MinigameHowToShown = true;
+        Config.Save(Config);
+    }
 }

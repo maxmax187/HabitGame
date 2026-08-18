@@ -29,6 +29,11 @@ public class Config
     public int Day;
     public List<LevelData> LevelsData;
 
+    public bool TutorialIntroShown;
+    public bool TrainingIntroShown;
+    public bool TestIntroShown;
+    public bool MinigameHowToShown;
+
     private static string SaveFilenName()
     {
         string saveFile = Path.Combine(Application.persistentDataPath, "save.json");

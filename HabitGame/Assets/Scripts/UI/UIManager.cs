@@ -6,6 +6,7 @@ public class UIManager : MonoBehaviour
 
     [SerializeField] private MinigamePopup _minigamePopup;
     [SerializeField] private Tutorial _tutorial;
+    [SerializeField] private LongTutorial _longTutorial;
 
     private void Awake()
     {
@@ -29,6 +30,11 @@ public class UIManager : MonoBehaviour
 
     public void TutorialClick()
     {
+        if (LongTutorial.IsShowing)
+        {
+            _longTutorial.NextPage();
+            return;
+        }
         _tutorial.ContinueGame();
     }
 
@@ -36,5 +42,26 @@ public class UIManager : MonoBehaviour
     {
         // _tutorial.gameObject.SetActive(true);
         _tutorial.ShowTutorial(tutorialText);
+    }
+
+     public void ShowLongTutorialIntro()
+    {
+        _longTutorial.ShowTutorialIntro();
+    }
+
+    public void ShowLongTrainingTutorial()
+    {
+        _longTutorial.ShowTrainingTutorial();
+    }
+
+    public void ShowLongTestTutorial()
+    {
+        _longTutorial.ShowTestTutorial();
+    }
+
+    public event System.Action OnLongTutorialClosed
+    {
+        add => _longTutorial.OnClosed += value;
+        remove => _longTutorial.OnClosed -= value;
     }
 }

@@ -164,6 +164,9 @@ public class MinigamePopup : MonoBehaviour
         _waitTime = _noTapTime;
         _minigameScreen.StartGame();
 
+        bool showHowTo = _gameManager != null && _gameManager.ShouldShowMinigameHowTo();
+        ShowTutorial(showHowTo);
+
         if (PlayerHealth.Instance != null)
         {
             _gameManager.MinigameStarted(PlayerHealth.Instance.GetCurrentHealth);
