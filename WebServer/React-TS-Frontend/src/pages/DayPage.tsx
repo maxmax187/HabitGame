@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom'
+import { useParams, useSearchParams } from 'react-router-dom'
 import Header from '../components/Header'
 import InvalidLink from './InvalidLink'
 import { isValidSlug } from '../data/conditions'
@@ -9,16 +9,23 @@ interface DayPageProps {
 
 function DayPage({ day }: DayPageProps) {
   const { slug } = useParams()
+  const [searchParams] = useSearchParams()
+  const email = searchParams.get('email')
 
   if (!isValidSlug(slug)) {
     return <InvalidLink />
   }
 
-  const buildSrc = `${import.meta.env.BASE_URL}builds/${slug}/day${day}/index.html`
+  const buildQuery = email
+    ? `?email=${encodeURIComponent(email)}&day=${day}`
+    : `?day=${day}`
+  const buildSrc = `${import.meta.env.BASE_URL}builds/${slug}/day${day}/index.html${buildQuery}`
+  const query = searchParams.toString()
+  const backTo = query ? `/${slug}?${query}` : `/${slug}`
 
   return (
     <div className="page day-page">
-      <Header backTo={`/${slug}`} />
+      <Header backTo={backTo} />
 
       <main className="day-main">
         <h1>Day {day}</h1>

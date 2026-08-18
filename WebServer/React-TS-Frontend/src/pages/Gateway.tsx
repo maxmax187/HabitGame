@@ -1,20 +1,30 @@
 import { useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Header from '../components/Header'
-import { resolveCode } from '../data/codebook'
+import { checkEmail } from '../api/checkEmail'
+
+type FormError = 'not-found' | 'server' | null
 
 function Gateway() {
   const navigate = useNavigate()
-  const [code, setCode] = useState('')
-  const [error, setError] = useState(false)
+  const [email, setEmail] = useState('')
+  const [error, setError] = useState<FormError>(null)
+  const [checking, setChecking] = useState(false)
 
-  function handleSubmit(event: FormEvent) {
+  async function handleSubmit(event: FormEvent) {
     event.preventDefault()
-    const slug = resolveCode(code)
-    if (slug) {
-      navigate(`/${slug}`)
-    } else {
-      setError(true)
+    setChecking(true)
+    try {
+      const resolved = await checkEmail(email)
+      if (resolved) {
+        navigate(`/${resolved.slug}?email=${encodeURIComponent(resolved.email)}`)
+        return
+      }
+      setError('not-found')
+    } catch {
+      setError('server')
+    } finally {
+      setChecking(false)
     }
   }
 
@@ -28,8 +38,8 @@ function Gateway() {
         <section className="intro-card">
           <p>
             Over the next three days, you will be asked to play a short
-            game once per day. Enter the access code you were given below
-            to reach your games.
+            game once per day. Enter the email address you registered
+            with below to reach your games.
           </p>
           
           <p>
@@ -42,27 +52,34 @@ function Gateway() {
         </section>
 
         <form className="code-form" onSubmit={handleSubmit}>
-          <label htmlFor="access-code">Access code</label>
+          <label htmlFor="participant-email">Email address</label>
           <div className="code-form-row">
             <input
-              id="access-code"
-              type="text"
-              autoComplete="off"
-              autoCapitalize="characters"
+              id="participant-email"
+              type="email"
+              autoComplete="email"
               spellCheck={false}
-              value={code}
+              value={email}
               onChange={(event) => {
-                setCode(event.target.value)
-                setError(false)
+                setEmail(event.target.value)
+                setError(null)
               }}
-              placeholder="e.g. AB12-3456"
+              placeholder="you@example.com"
             />
-            <button type="submit">Continue</button>
+            <button type="submit" disabled={checking}>
+              {checking ? 'Checking...' : 'Continue'}
+            </button>
           </div>
-          {error && (
+          {error === 'not-found' && (
             <p className="code-form-error">
-              That code wasn&apos;t recognized. Please check the code you
-              were given and try again.
+              That email address wasn&apos;t recognized. Please check that
+              you entered the address you registered with and try again.
+            </p>
+          )}
+          {error === 'server' && (
+            <p className="code-form-error">
+              Something went wrong checking that address. Please try again,
+              or contact the researcher if this keeps happening.
             </p>
           )}
         </form>

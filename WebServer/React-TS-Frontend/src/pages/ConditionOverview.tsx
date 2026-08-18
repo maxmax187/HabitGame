@@ -1,14 +1,18 @@
-import { Link, useParams } from 'react-router-dom'
+import { Link, useParams, useSearchParams } from 'react-router-dom'
 import Header from '../components/Header'
 import InvalidLink from './InvalidLink'
 import { isValidSlug } from '../data/conditions'
 
 function ConditionOverview() {
   const { slug } = useParams()
+  const [searchParams] = useSearchParams()
 
   if (!isValidSlug(slug)) {
     return <InvalidLink />
   }
+
+  const query = searchParams.toString()
+  const withQuery = (path: string) => (query ? `${path}?${query}` : path)
 
   return (
     <div className="page">
@@ -26,13 +30,13 @@ function ConditionOverview() {
         </section>
 
         <section className="day-buttons">
-          <Link to={`/${slug}/day1`} className="day-button">
+          <Link to={withQuery(`/${slug}/day1`)} className="day-button">
             <span className="day-button-label">Day 1</span>
           </Link>
-          <Link to={`/${slug}/day2`} className="day-button">
+          <Link to={withQuery(`/${slug}/day2`)} className="day-button">
             <span className="day-button-label">Day 2</span>
           </Link>
-          <Link to={`/${slug}/day3`} className="day-button">
+          <Link to={withQuery(`/${slug}/day3`)} className="day-button">
             <span className="day-button-label">Day 3</span>
           </Link>
         </section>
