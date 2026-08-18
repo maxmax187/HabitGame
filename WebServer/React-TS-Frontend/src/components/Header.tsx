@@ -1,21 +1,21 @@
 import { Link } from 'react-router-dom'
 
 interface HeaderProps {
-  showBack?: boolean
+  backTo?: string
 }
 
-function Header({ showBack = false }: HeaderProps) {
+function Header({ backTo }: HeaderProps) {
   return (
     <header className="site-header">
-      <Link to="/" className="brand">
+      <span className="brand">
         <img
           src={`${import.meta.env.BASE_URL}tue_logo_icon.png`}
           alt="TU Eindhoven logo icon"
           className="brand-logo"
         />
-      </Link>
-      {showBack && (
-        <Link to="/" className="back-link">
+      </span>
+      {backTo && (
+        <Link to={backTo} className="back-link">
           &larr; Back to overview
         </Link>
       )}

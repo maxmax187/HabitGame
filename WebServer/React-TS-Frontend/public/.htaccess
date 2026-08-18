@@ -1,3 +1,20 @@
+# Never list folder contents - this is what actually keeps the two
+# condition slugs (and their builds/ subfolders) from being discoverable
+# by just browsing. Without this, anyone hitting /builds/ could see both
+# condition folder names and pick either one.
+Options -Indexes
+
+# Block direct access to dotfiles (.htaccess, .htpasswd, etc.)
+<FilesMatch "^\.">
+  Require all denied
+</FilesMatch>
+
+# Uncomment and rename once a folder for storing result data exists, so it
+# is never reachable over HTTP even if someone guesses/finds its name:
+# <IfModule mod_alias.c>
+#   RedirectMatch 404 ^/f8622112/data/
+# </IfModule>
+
 <IfModule mod_rewrite.c>
   RewriteEngine On
   RewriteBase /f8622112/
