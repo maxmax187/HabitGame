@@ -3,6 +3,11 @@ require_once __DIR__ . '/env.php';
 loadEnv();
 
 function getDb(): mysqli {
+    // PHP 8.1+ makes mysqli throw on SQL errors (e.g. duplicate key) by
+    // default. This code expects the classic behavior - check
+    // $db->errno / $stmt->execute() return value - so turn that off.
+    mysqli_report(MYSQLI_REPORT_OFF);
+
     $db = @new mysqli(
         getenv('DB_HOST') ?: 'localhost',
         getenv('DB_USER'),

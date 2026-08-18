@@ -198,6 +198,25 @@ if ($authed) {
         .btn.danger { background: #ff4444; }
         .btn.danger:hover { background: #cc2222; }
 
+        a.btn {
+            display: inline-block;
+            text-decoration: none;
+        }
+
+        .btn-small {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.65rem;
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+        }
+
+        .panel-header h2 { margin-bottom: 0; }
+
         .error   { font-size: 0.8rem; color: #ff4444; padding: 0.75rem; background: #1a0000; border: 1px solid #440000; margin-bottom: 1rem; }
         .success { font-size: 0.8rem; color: #00ff88; padding: 0.75rem; background: #001a0d; border: 1px solid #004422; margin-bottom: 1rem; }
 
@@ -348,7 +367,10 @@ if ($authed) {
     </div>
 
     <div class="panel">
-        <h2>Participants</h2>
+        <div class="panel-header">
+            <h2>Participants</h2>
+            <a href="admin.php" class="btn btn-small">Show entries</a>
+        </div>
         <div class="counts">
             <span>Total: <strong><?= count($participants) ?></strong></span>
             <span>L: <strong><?= $counts['L'] ?></strong></span>
