@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['password'])) {
 
 if (isset($_GET['logout'])) {
     session_destroy();
-    header('Location: admin.php');
+    header('Location: participant_admin.php');
     exit;
 }
 
@@ -209,6 +209,13 @@ if ($authed) {
             font-size: 0.65rem;
         }
 
+        .btn.secondary {
+            background: #ffffff;
+            color: #2563eb;
+            border: 1px solid #bfdbfe;
+        }
+        .btn.secondary:hover { background: #eff6ff; }
+
         .panel-header {
             display: flex;
             align-items: center;
@@ -303,6 +310,8 @@ if ($authed) {
             max-width: 900px;
         }
 
+        .topbar-nav { display: flex; align-items: center; gap: 1rem; }
+
         a.logout {
             font-size: 0.65rem;
             color: #94a3b8;
@@ -339,7 +348,10 @@ if ($authed) {
 
 <div class="topbar">
     <h1 style="margin:0">Participant <span style="color:#2563eb">Admin</span></h1>
-    <a href="?logout" class="logout">Log out</a>
+    <div class="topbar-nav">
+        <a href="data_admin.php" class="btn secondary btn-small">Game Data</a>
+        <a href="?logout" class="logout">Log out</a>
+    </div>
 </div>
 
 <div class="layout">
@@ -372,7 +384,7 @@ if ($authed) {
     <div class="panel">
         <div class="panel-header">
             <h2>Participants</h2>
-            <a href="admin.php" class="btn btn-small">Show entries</a>
+            <a href="participant_admin.php" class="btn btn-small">Show entries</a>
         </div>
         <div class="counts">
             <span>Total: <strong><?= count($participants) ?></strong></span>
