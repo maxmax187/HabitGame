@@ -11,11 +11,26 @@
 //        FTP_HOST=ftp://xx.xxx.xxx.xxx
 //        FTP_PORT=xx
 //        FTP_USE_SSL=true
+//        FTP_CERT_SHA256=
 //        FTP_USER=your_username
 //        FTP_PASS=your_password
 //        FTP_BASE_PATH=/builds/
 //        FTP_SLUG_L=e71408556147d1f4a022
 //        FTP_SLUG_R=4e868a6f2c029521d9e4
+//
+//     FTP_CERT_SHA256 is optional. Only set it if the server's TLS
+//     certificate doesn't chain to a publicly trusted root (e.g. a
+//     shared-hosting cert missing its intermediate chain - this shows up
+//     as an "Authentication failed" / "not trusted" error even though the
+//     certificate itself is legitimate). Get the SHA-256 fingerprint from
+//     an FTP client like WinSCP or FileZilla the first time it warns about
+//     the certificate (look for a "Show certificate" / details button),
+//     paste it in exactly as shown (colons are fine, they're stripped
+//     automatically), and the connection will only be trusted if the
+//     server presents that *exact* certificate - anything else (including
+//     a substituted certificate from an attacker) is still rejected. If
+//     the certificate is ever renewed on the server, this value needs
+//     updating too. Leave it blank to use normal certificate validation.
 //
 //     FTP_HOST is the plain FTP host (an IP address is fine) from your
 //     login details - NOT the site's https:// URL, those are different
@@ -57,6 +72,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Net.Security;
+using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
+using System.Text;
 using UnityEditor;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
@@ -165,9 +184,37 @@ public class FTPDeployWebGL : IPostprocessBuildWithReport
 
     public void OnPostprocessBuild(BuildReport report)
     {
-        if (!EditorPrefs.GetBool(EnableKey, true)) return;
-        if (report.summary.platform != BuildTarget.WebGL) return;
-        if (report.summary.result != BuildResult.Succeeded) return;
+        // Unconditional - if this line alone doesn't show up in the
+        // Console after a build, OnPostprocessBuild isn't being invoked
+        // at all (a Unity build-pipeline issue), not a logic issue below.
+        Debug.Log(
+            $"[FTPDeploy] OnPostprocessBuild called. Platform={report.summary.platform}, " +
+            $"Result={report.summary.result}, EnabledPref={EditorPrefs.GetBool(EnableKey, true)}, " +
+            $"OutputPath={report.summary.outputPath}");
+
+        if (!EditorPrefs.GetBool(EnableKey, true))
+        {
+            Debug.Log("[FTPDeploy] Auto-deploy is disabled (Tools > WebGL FTP Deploy > Enable Auto-Deploy). Skipping upload.");
+            return;
+        }
+
+        if (report.summary.platform != BuildTarget.WebGL)
+        {
+            Debug.Log($"[FTPDeploy] Build platform was {report.summary.platform}, not WebGL. Skipping upload.");
+            return;
+        }
+
+        // report.summary.result is not reliably populated at this point in
+        // the build pipeline (it can read Unknown on a build that actually
+        // succeeded) - check for real output on disk instead of trusting it.
+        if (!Directory.Exists(report.summary.outputPath) ||
+            Directory.GetFileSystemEntries(report.summary.outputPath).Length == 0)
+        {
+            Debug.LogWarning(
+                $"[FTPDeploy] No build output found at '{report.summary.outputPath}' " +
+                $"(reported result: {report.summary.result}). Skipping upload.");
+            return;
+        }
 
         Dictionary<string, string> env;
         try
@@ -194,17 +241,56 @@ public class FTPDeployWebGL : IPostprocessBuildWithReport
         string remotePath = ComputeRemotePath(env, basePath, target);
         if (remotePath == null) return;
 
-        string hostBase = host.TrimEnd('/');
-        // Only append the port if FTP_HOST doesn't already spell out a
-        // non-default one (e.g. someone wrote "ftp://host:2121" directly).
-        if (new Uri(hostBase).IsDefaultPort && port != "21")
-            hostBase += ":" + port;
-
-        string remoteUrl = hostBase + remotePath;
         string buildPath = report.summary.outputPath;
+        string pinnedFingerprint = GetEnvOrDefault(env, "FTP_CERT_SHA256", null);
+
+        // ServerCertificateValidationCallback is process-wide, not scoped
+        // to this connection, so it's saved and restored to avoid making
+        // unrelated Editor HTTPS traffic (package manager, etc.) trust
+        // only this one pinned certificate too.
+        RemoteCertificateValidationCallback previousCallback = ServicePointManager.ServerCertificateValidationCallback;
 
         try
         {
+            // Tolerate FTP_HOST being just an IP/hostname with no "ftp://"
+            // in front, since that's exactly how most hosts hand out FTP
+            // login details (no scheme shown) and it's an easy thing to
+            // paste in literally.
+            string hostBase = host.TrimEnd('/');
+            if (!hostBase.Contains("://")) hostBase = "ftp://" + hostBase;
+
+            // Only append the port if FTP_HOST doesn't already spell out a
+            // non-default one (e.g. someone wrote "ftp://host:2121" directly).
+            if (new Uri(hostBase).IsDefaultPort && port != "21")
+                hostBase += ":" + port;
+
+            string remoteUrl = hostBase + remotePath;
+
+            if (useSsl)
+            {
+                EnsureTls12();
+
+                if (!string.IsNullOrEmpty(pinnedFingerprint))
+                {
+                    string expected = NormalizeFingerprint(pinnedFingerprint);
+                    ServicePointManager.ServerCertificateValidationCallback = (sender, certificate, chain, errors) =>
+                    {
+                        if (errors == SslPolicyErrors.None) return true;
+
+                        string actual = ComputeSha256Fingerprint(certificate);
+                        bool trusted = actual == expected;
+                        if (!trusted)
+                        {
+                            Debug.LogWarning(
+                                $"[FTPDeploy] Server certificate fingerprint {actual} did not match " +
+                                $"FTP_CERT_SHA256 ({expected}). Rejecting connection.");
+                        }
+                        return trusted;
+                    };
+                    Debug.Log($"[FTPDeploy] Pinning TLS certificate to fingerprint {expected}.");
+                }
+            }
+
             EditorUtility.DisplayProgressBar("FTP Deploy", $"Uploading WebGL build ({GetTargetLabel(target)})...", 0f);
             Debug.Log($"[FTPDeploy] Starting upload of '{buildPath}' to {remoteUrl} (SSL: {useSsl})");
             UploadDirectory(buildPath, remoteUrl, user, pass, useSsl);
@@ -212,10 +298,11 @@ public class FTPDeployWebGL : IPostprocessBuildWithReport
         }
         catch (Exception e)
         {
-            Debug.LogError($"[FTPDeploy] Upload failed: {e.Message}");
+            Debug.LogError($"[FTPDeploy] Upload failed:\n{DescribeException(e)}");
         }
         finally
         {
+            ServicePointManager.ServerCertificateValidationCallback = previousCallback;
             EditorUtility.ClearProgressBar();
         }
     }
@@ -288,6 +375,59 @@ public class FTPDeployWebGL : IPostprocessBuildWithReport
     private static bool ParseBool(string value, bool defaultValue)
     {
         return bool.TryParse(value, out bool result) ? result : defaultValue;
+    }
+
+    // Unity's Mono/.NET runtime doesn't always negotiate TLS 1.2 by default
+    // for FtpWebRequest, which many modern FTPS servers require and will
+    // otherwise reject the handshake for (surfacing as a vague
+    // "Authentication failed" error with no obviously TLS-related wording).
+    private static void EnsureTls12()
+    {
+        try
+        {
+            ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12;
+        }
+        catch
+        {
+            // Runtime doesn't define Tls12 - nothing we can do, fall through
+            // to whatever the default protocol negotiation does.
+        }
+    }
+
+    // Walks the full InnerException chain so the real cause isn't hidden
+    // behind a generic wrapper message like "Authentication failed, see
+    // inner exception."
+    private static string DescribeException(Exception e)
+    {
+        var lines = new List<string>();
+        Exception current = e;
+        while (current != null)
+        {
+            lines.Add($"{current.GetType().Name}: {current.Message}");
+            current = current.InnerException;
+        }
+        return string.Join("\n  -> caused by: ", lines);
+    }
+
+    // Lowercase hex digits only, so "e0:4f:13:..." (as shown by most FTP
+    // clients) and a bare hex string both compare equal.
+    private static string NormalizeFingerprint(string fingerprint)
+    {
+        var sb = new StringBuilder();
+        foreach (char c in fingerprint)
+        {
+            if (Uri.IsHexDigit(c)) sb.Append(char.ToLowerInvariant(c));
+        }
+        return sb.ToString();
+    }
+
+    private static string ComputeSha256Fingerprint(X509Certificate certificate)
+    {
+        using (var sha256 = SHA256.Create())
+        {
+            byte[] hash = sha256.ComputeHash(certificate.GetRawCertData());
+            return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
+        }
     }
 
     // ---------------- FTP upload ----------------
