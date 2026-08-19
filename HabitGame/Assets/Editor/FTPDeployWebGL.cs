@@ -65,8 +65,15 @@
 //     L - Day 1/2/3, R - Day 1/2/3, or Test. This selection is remembered
 //     between builds until changed.
 //
-//  4) Build WebGL as normal (File > Build Settings > Build). When the
-//     build finishes, it auto-uploads to the selected target's folder.
+//  4) Auto-deploy is OFF BY DEFAULT (per machine, via Tools > WebGL FTP
+//     Deploy > Enable Auto-Deploy) so a routine build never silently
+//     overwrites something already on the FTP server. Turn it on
+//     deliberately before a build you actually want uploaded, and
+//     consider turning it back off afterwards.
+//
+//  5) Build WebGL as normal (File > Build Settings > Build). When the
+//     build finishes, if auto-deploy is on, it uploads to the selected
+//     target's folder.
 
 using System;
 using System.Collections.Generic;
@@ -88,6 +95,9 @@ public class FTPDeployWebGL : IPostprocessBuildWithReport
     private const string TargetKey = "FTPDeployWebGL_Target";
     private const string EnableKey = "FTPDeployWebGL_Enabled";
     private const string DefaultTarget = "L1";
+    // Off by default so a build never silently overwrites something on the
+    // FTP server unless auto-deploy is deliberately turned on first.
+    private const bool DefaultEnabled = false;
 
     // ---------------- Menu: choose target ----------------
     // Target ids: "L1".."L3" / "R1".."R3" (bias + day), or "TEST".
@@ -162,7 +172,7 @@ public class FTPDeployWebGL : IPostprocessBuildWithReport
     [MenuItem("Tools/WebGL FTP Deploy/Enable Auto-Deploy", false, 20)]
     private static void ToggleEnabled()
     {
-        bool current = EditorPrefs.GetBool(EnableKey, true);
+        bool current = EditorPrefs.GetBool(EnableKey, DefaultEnabled);
         EditorPrefs.SetBool(EnableKey, !current);
         Debug.Log($"[FTPDeploy] Auto-deploy on build is now {(!current ? "ENABLED" : "DISABLED")}.");
     }
@@ -170,7 +180,7 @@ public class FTPDeployWebGL : IPostprocessBuildWithReport
     [MenuItem("Tools/WebGL FTP Deploy/Enable Auto-Deploy", true)]
     private static bool ValidateToggleEnabled()
     {
-        Menu.SetChecked("Tools/WebGL FTP Deploy/Enable Auto-Deploy", EditorPrefs.GetBool(EnableKey, true));
+        Menu.SetChecked("Tools/WebGL FTP Deploy/Enable Auto-Deploy", EditorPrefs.GetBool(EnableKey, DefaultEnabled));
         return true;
     }
 
@@ -189,10 +199,10 @@ public class FTPDeployWebGL : IPostprocessBuildWithReport
         // at all (a Unity build-pipeline issue), not a logic issue below.
         Debug.Log(
             $"[FTPDeploy] OnPostprocessBuild called. Platform={report.summary.platform}, " +
-            $"Result={report.summary.result}, EnabledPref={EditorPrefs.GetBool(EnableKey, true)}, " +
+            $"Result={report.summary.result}, EnabledPref={EditorPrefs.GetBool(EnableKey, DefaultEnabled)}, " +
             $"OutputPath={report.summary.outputPath}");
 
-        if (!EditorPrefs.GetBool(EnableKey, true))
+        if (!EditorPrefs.GetBool(EnableKey, DefaultEnabled))
         {
             Debug.Log("[FTPDeploy] Auto-deploy is disabled (Tools > WebGL FTP Deploy > Enable Auto-Deploy). Skipping upload.");
             return;
