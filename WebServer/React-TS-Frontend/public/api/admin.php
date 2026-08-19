@@ -338,7 +338,7 @@ if ($authed) {
 <?php else: ?>
 
 <div class="topbar">
-    <h1 style="margin:0">Participant <span style="color:#00ff88">Admin</span></h1>
+    <h1 style="margin:0">Participant <span style="color:#94a3b8">Admin</span></h1>
     <a href="?logout" class="logout">Log out</a>
 </div>
 
