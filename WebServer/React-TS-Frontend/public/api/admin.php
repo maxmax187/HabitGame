@@ -117,8 +117,8 @@ if ($authed) {
 
         body {
             font-family: 'Courier New', monospace;
-            background: #0f0f0f;
-            color: #e0e0e0;
+            background: #eef2f8;
+            color: #1e293b;
             min-height: 100vh;
             padding: 2rem;
         }
@@ -132,8 +132,9 @@ if ($authed) {
         }
 
         .card {
-            background: #1a1a1a;
-            border: 1px solid #2a2a2a;
+            background: #ffffff;
+            border: 1px solid #dbe4ee;
+            box-shadow: 0 1px 3px rgba(30, 41, 59, 0.08);
             padding: 2.5rem;
             width: 100%;
             max-width: 420px;
@@ -143,17 +144,17 @@ if ($authed) {
             font-size: 0.75rem;
             letter-spacing: 0.2em;
             text-transform: uppercase;
-            color: #666;
+            color: #64748b;
             margin-bottom: 2rem;
         }
 
-        h1 span { color: #00ff88; }
+        h1 span { color: #2563eb; }
 
         h2 {
             font-size: 0.7rem;
             letter-spacing: 0.15em;
             text-transform: uppercase;
-            color: #555;
+            color: #475569;
             margin-bottom: 0.75rem;
         }
 
@@ -162,15 +163,15 @@ if ($authed) {
             font-size: 0.7rem;
             letter-spacing: 0.15em;
             text-transform: uppercase;
-            color: #666;
+            color: #64748b;
             margin-bottom: 0.5rem;
         }
 
         input[type="password"], input[type="email"], select {
             width: 100%;
-            background: #0f0f0f;
-            border: 1px solid #333;
-            color: #e0e0e0;
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            color: #1e293b;
             padding: 0.75rem 1rem;
             font-family: inherit;
             font-size: 0.9rem;
@@ -178,11 +179,11 @@ if ($authed) {
             margin-bottom: 1rem;
         }
 
-        input:focus, select:focus { border-color: #00ff88; }
+        input:focus, select:focus { border-color: #2563eb; }
 
         .btn {
-            background: #00ff88;
-            color: #0f0f0f;
+            background: #2563eb;
+            color: #ffffff;
             border: none;
             padding: 0.65rem 1.25rem;
             font-family: inherit;
@@ -193,10 +194,10 @@ if ($authed) {
             font-weight: bold;
         }
 
-        .btn:hover { background: #00cc6a; }
+        .btn:hover { background: #1d4ed8; }
 
-        .btn.danger { background: #ff4444; }
-        .btn.danger:hover { background: #cc2222; }
+        .btn.danger { background: #dc2626; }
+        .btn.danger:hover { background: #b91c1c; }
 
         a.btn {
             display: inline-block;
@@ -217,14 +218,15 @@ if ($authed) {
 
         .panel-header h2 { margin-bottom: 0; }
 
-        .error   { font-size: 0.8rem; color: #ff4444; padding: 0.75rem; background: #1a0000; border: 1px solid #440000; margin-bottom: 1rem; }
-        .success { font-size: 0.8rem; color: #00ff88; padding: 0.75rem; background: #001a0d; border: 1px solid #004422; margin-bottom: 1rem; }
+        .error   { font-size: 0.8rem; color: #dc2626; padding: 0.75rem; background: #fef2f2; border: 1px solid #fecaca; margin-bottom: 1rem; }
+        .success { font-size: 0.8rem; color: #15803d; padding: 0.75rem; background: #f0fdf4; border: 1px solid #bbf7d0; margin-bottom: 1rem; }
 
         .layout { display: flex; flex-direction: column; gap: 1.5rem; max-width: 900px; }
 
         .panel {
-            background: #1a1a1a;
-            border: 1px solid #2a2a2a;
+            background: #ffffff;
+            border: 1px solid #dbe4ee;
+            box-shadow: 0 1px 3px rgba(30, 41, 59, 0.06);
             padding: 1.25rem;
         }
 
@@ -237,50 +239,51 @@ if ($authed) {
             display: flex;
             gap: 1.5rem;
             font-size: 0.8rem;
-            color: #888;
+            color: #64748b;
             margin-bottom: 1rem;
         }
 
-        .counts strong { color: #00ff88; }
+        .counts strong { color: #2563eb; }
 
         table { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
 
         th {
-            background: #111;
-            color: #00ff88;
+            background: #eff6ff;
+            color: #1d4ed8;
             text-align: left;
             padding: 0.5rem 0.75rem;
             font-size: 0.65rem;
             letter-spacing: 0.1em;
             text-transform: uppercase;
             white-space: nowrap;
-            border-bottom: 1px solid #2a2a2a;
+            border-bottom: 1px solid #dbe4ee;
         }
 
         td {
             padding: 0.45rem 0.75rem;
-            border-bottom: 1px solid #1f1f1f;
-            color: #ccc;
+            border-bottom: 1px solid #e7edf5;
+            color: #334155;
             white-space: nowrap;
         }
 
-        tr:hover td { background: #1f1f1f; }
+        tr:hover td { background: #f5f9ff; }
 
         .tag {
             display: inline-block;
             padding: 0.1rem 0.5rem;
             font-size: 0.65rem;
             letter-spacing: 0.05em;
-            border: 1px solid #333;
+            border: 1px solid #cbd5e1;
+            color: #64748b;
         }
 
-        .tag.forced { color: #ffaa00; border-color: #443300; }
+        .tag.forced { color: #b45309; border-color: #fde68a; background: #fffbeb; }
 
         .remove-form { display: inline; }
         .remove-form button {
             background: none;
-            border: 1px solid #333;
-            color: #ff6666;
+            border: 1px solid #fca5a5;
+            color: #dc2626;
             font-family: inherit;
             font-size: 0.65rem;
             padding: 0.2rem 0.6rem;
@@ -288,9 +291,9 @@ if ($authed) {
             letter-spacing: 0.1em;
             text-transform: uppercase;
         }
-        .remove-form button:hover { background: #ff4444; color: #0f0f0f; border-color: #ff4444; }
+        .remove-form button:hover { background: #dc2626; color: #ffffff; border-color: #dc2626; }
 
-        .empty { color: #444; font-size: 0.8rem; padding: 1rem 0; }
+        .empty { color: #94a3b8; font-size: 0.8rem; padding: 1rem 0; }
 
         .topbar {
             display: flex;
@@ -302,17 +305,17 @@ if ($authed) {
 
         a.logout {
             font-size: 0.65rem;
-            color: #444;
+            color: #94a3b8;
             text-decoration: none;
             letter-spacing: 0.1em;
             text-transform: uppercase;
         }
 
-        a.logout:hover { color: #888; }
+        a.logout:hover { color: #475569; }
 
         .danger-zone-note {
             font-size: 0.7rem;
-            color: #666;
+            color: #64748b;
             margin-top: 0.75rem;
         }
     </style>
