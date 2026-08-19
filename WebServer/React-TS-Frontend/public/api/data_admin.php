@@ -28,6 +28,8 @@ if (isset($_GET['logout'])) {
 
 $authed = isset($_SESSION['admin_auth']) && $_SESSION['admin_auth'] === true;
 
+$message = '';
+
 $validViews = ['by_day', 'by_condition', 'cross_tab', 'completion', 'recent'];
 $view = $_GET['view'] ?? 'by_day';
 if (!in_array($view, $validViews, true)) {
@@ -44,6 +46,14 @@ $recent = [];
 if ($authed) {
     try {
         $db = getDb();
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'delete_all_data') {
+            if ($db->query('TRUNCATE TABLE game_data')) {
+                $message = 'Deleted all game data entries.';
+            } else {
+                $error = 'Database error: ' . $db->error;
+            }
+        }
 
         $summary['total'] = (int) ($db->query('SELECT COUNT(*) AS c FROM game_data')->fetch_assoc()['c'] ?? 0);
         $summary['participants_with_data'] = (int) (
@@ -216,7 +226,17 @@ function viewLink(string $view, string $label, string $current): string
         }
         .btn.secondary:hover { background: #eff6ff; }
 
-        .error { font-size: 0.8rem; color: #dc2626; padding: 0.75rem; background: #fef2f2; border: 1px solid #fecaca; margin-bottom: 1rem; }
+        .btn.danger { background: #dc2626; }
+        .btn.danger:hover { background: #b91c1c; }
+
+        .error   { font-size: 0.8rem; color: #dc2626; padding: 0.75rem; background: #fef2f2; border: 1px solid #fecaca; margin-bottom: 1rem; }
+        .success { font-size: 0.8rem; color: #15803d; padding: 0.75rem; background: #f0fdf4; border: 1px solid #bbf7d0; margin-bottom: 1rem; }
+
+        .danger-zone-note {
+            font-size: 0.7rem;
+            color: #64748b;
+            margin-top: 0.75rem;
+        }
 
         .layout { display: flex; flex-direction: column; gap: 1.5rem; max-width: 900px; }
 
@@ -317,6 +337,7 @@ function viewLink(string $view, string $label, string $current): string
 <div class="topbar">
     <h1 style="margin:0">Game Data <span style="color:#2563eb">Admin</span></h1>
     <div class="topbar-nav">
+        <a href="export.php" class="btn btn-small">Download all data (.zip)</a>
         <a href="participant_admin.php" class="btn secondary btn-small">Participants</a>
         <a href="?logout" class="logout">Log out</a>
     </div>
@@ -325,6 +346,8 @@ function viewLink(string $view, string $label, string $current): string
 <div class="layout">
     <?php if ($error): ?>
         <div class="error"><?= htmlspecialchars($error) ?></div>
+    <?php elseif ($message): ?>
+        <div class="success"><?= htmlspecialchars($message) ?></div>
     <?php endif; ?>
 
     <div class="summary-cards">
@@ -463,6 +486,15 @@ function viewLink(string $view, string $label, string $current): string
                 <p style="font-size:0.7rem;color:#94a3b8;margin-top:0.75rem;">Showing the 50 most recent submissions.</p>
             <?php endif; ?>
         <?php endif; ?>
+    </div>
+
+    <div class="panel">
+        <h2>Danger zone</h2>
+        <form method="POST" onsubmit="return confirm('This will PERMANENTLY DELETE all game data entries for every participant and every day. This cannot be undone. Have you downloaded a backup (Download all data)? Are you absolutely sure?')">
+            <input type="hidden" name="action" value="delete_all_data">
+            <button type="submit" class="btn danger">Delete all data entries</button>
+        </form>
+        <p class="danger-zone-note">Permanently deletes every row in game_data - all days, all conditions, all participants. Participant registrations (email/condition assignments) are not affected. Consider using "Download all data" first.</p>
     </div>
 </div>
 
