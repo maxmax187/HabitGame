@@ -102,19 +102,20 @@ public class MinigamePopup : MonoBehaviour
         _turotial.gameObject.SetActive(false);
 
         _upgradeWeaponUI.gameObject.SetActive(true);
+
+        bool isTestLevel = _gameManager.IsTestLevel;
         _gameCompleteAudio?.Play();
 
         if (PlayerHealth.Instance != null)
         {
             Vector2 upgradeDamage = PlayerHealth.Instance.PlayerAttackUpgrade;
-            
-            if (_gameManager.IsTestLevel)
+            if (isTestLevel)
             {
                 _upgradeWeaponUI.SetNoUpgradeState(upgradeDamage.x);
             }
             else
             {
-                _upgradeWeaponUI.SetState(upgradeDamage);
+                _upgradeWeaponUI.SetState(upgradeDamage, isTestLevel);
             }
         }
 
