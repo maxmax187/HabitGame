@@ -9,7 +9,8 @@ public class Tutorial : MonoBehaviour
 {
     [SerializeField] private TMP_Text _text;
 
-    private bool _tutorialShowing = false;
+    private float _inputCooldown = 0.3f;
+    private float _lastShowTime;
 
     private void Awake()
     {
@@ -21,11 +22,16 @@ public class Tutorial : MonoBehaviour
         _text.text = tutorialText;
         gameObject.SetActive(true);
         Time.timeScale = 0;
+        _lastShowTime = Time.unscaledTime;
     }
 
-    //Input UI click
     public void ContinueGame()
     {
+        if (Time.unscaledTime - _lastShowTime < _inputCooldown)
+        {
+            return;
+        }
+
         gameObject.SetActive(false);
         Time.timeScale = 1;
     }

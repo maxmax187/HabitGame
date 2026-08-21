@@ -11,7 +11,7 @@ public class UIManager : MonoBehaviour
     private void Awake()
     {
         Instance = this;
-        _tutorial.gameObject.SetActive(true);
+        _tutorial.gameObject.SetActive(false);
     }
 
     public void ShowMinigame(bool show)
@@ -40,11 +40,10 @@ public class UIManager : MonoBehaviour
 
     public void ShowTutorial(string tutorialText)
     {
-        // _tutorial.gameObject.SetActive(true);
         _tutorial.ShowTutorial(tutorialText);
     }
 
-     public void ShowLongTutorialIntro()
+    public void ShowLongTutorialIntro()
     {
         _longTutorial.ShowTutorialIntro();
     }
