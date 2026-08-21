@@ -39,7 +39,7 @@ public class GameManager : MonoBehaviour
     private const int TutorialRoundCount = 1;
     private const int TrainingRoundCount = 1;
     private const int TestRoundCount = 1;
-    private const int TotalRoundCount = TutorialRoundCount + TrainingRoundCount + TestRoundCount;
+    public const int TotalRoundCount = TutorialRoundCount + TrainingRoundCount + TestRoundCount;
 
     public int CurrentRound => _configManager != null ? _configManager.Config.LevelsData.Count : 1;
     public LevelType CurrentLevelType => GetLevelType(CurrentRound);
@@ -49,6 +49,8 @@ public class GameManager : MonoBehaviour
     public bool IsFirstTutorialRound => CurrentRound == 1;
     public bool IsFirstTrainingRound => CurrentRound == TutorialRoundCount + 1; // assuming number of train rounds != 0
     public bool IsFirstTestRound => CurrentRound == TutorialRoundCount + TrainingRoundCount + 1;
+
+    public int BossKillCount => _configManager != null ? _configManager.GetBossKillCount() : 0;
 
     private LevelType GetLevelType(int round)
     {

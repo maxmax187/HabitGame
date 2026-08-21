@@ -270,4 +270,18 @@ public class ConfigManager : MonoBehaviour
         Config.MinigameHowToShown = true;
         Config.Save(Config);
     }
+
+    public int GetBossKillCount()
+    {
+        int count = 0;
+        foreach (LevelData level in Config.LevelsData)
+        {
+            if (level.KilledTheBoss)
+            {
+                count++;
+            }
+        }
+        
+        return count;
+    }
 }
