@@ -55,4 +55,9 @@ public class EndLevelPopup : MonoBehaviour
             text.text = $"{label}: {value}";
         }, to, _countUpDuration).SetEase(Ease.OutQuad);
     }
+
+    public void Hide()
+    {
+        gameObject.SetActive(false);
+    }
 }

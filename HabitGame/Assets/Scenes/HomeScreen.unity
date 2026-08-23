@@ -14406,7 +14406,7 @@ MonoBehaviour:
   _fadeInDuration: 0.4
   _popScaleDuration: 0.4
   _countUpDuration: 0.6
-  _displayHoldTime: 1
+  _displayHoldTime: 0.7
 --- !u!4 &2053082510
 Transform:
   m_ObjectHideFlags: 0

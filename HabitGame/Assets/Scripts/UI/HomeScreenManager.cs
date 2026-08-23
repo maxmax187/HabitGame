@@ -50,6 +50,7 @@ public class HomeScreenManager : MonoBehaviour
         {
             if (isFinalRound)
             {
+                _endLevelPopup.Hide();
                 DonePanel(true);
             }
             else
@@ -83,4 +84,6 @@ public class HomeScreenManager : MonoBehaviour
             SceneSwitchManager.Instance.SwitchScene(Scenes.GameScene);
         });
     }
+
+
 }
