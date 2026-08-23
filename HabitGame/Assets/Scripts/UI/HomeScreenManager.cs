@@ -1,16 +1,14 @@
+using DTT.Utils.Extensions;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
-
-/// <summary>
-/// The home screen manager handels the home screen UI inputs
-/// </summary>
 
 public class HomeScreenManager : MonoBehaviour
 {
     [SerializeField] private Button _playButton;
     [SerializeField] private Button _downloadButton;
     [SerializeField] private Image _donwPlaying;
+    [SerializeField] private EndLevelPopup _endLevelPopup;
 
     [SerializeField] private AudioSource _homeScreenAudio;
 
@@ -21,16 +19,44 @@ public class HomeScreenManager : MonoBehaviour
         _playButton.onClick.AddListener(GameScene);
         DonePanel(false);
 
+        _configManager = ConfigManager.Instance;
+        _downloadButton.onClick.AddListener(DownloadButton);
+
         if (_configManager == null)
         {
-            _configManager = ConfigManager.Instance;
-            _downloadButton.onClick.AddListener(DownloadButton);
-
-            if (_configManager != null)
-            {
-                DonePanel(_configManager.Config.FinishedAllBosses);
-            }
+            return;
         }
+
+        bool finished = _configManager.Config.FinishedAllBosses;
+        DonePanel(finished);
+
+        bool hasPlayedALevel = !_configManager.Config.LevelsData.IsNullOrEmpty();
+        if (hasPlayedALevel)
+        {
+            ShowLastLevelResult(finished);
+        }
+    }
+
+    private void ShowLastLevelResult(bool isFinalRound)
+    {
+        int lastIndex = _configManager.Config.LevelsData.Count - 1;
+        LevelData lastLevel = _configManager.Config.LevelsData[lastIndex];
+        int levelNumber = _configManager.Config.LevelsData.Count;
+        int bossKillCount = _configManager.GetBossKillCount();
+
+        _playButton.gameObject.SetActive(false);
+
+        _endLevelPopup.Show(lastLevel.KilledTheBoss, levelNumber, bossKillCount, () =>
+        {
+            if (isFinalRound)
+            {
+                DonePanel(true);
+            }
+            else
+            {
+                GameScene();
+            }
+        });
     }
 
     private void DonePanel(bool enabled)

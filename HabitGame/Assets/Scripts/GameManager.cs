@@ -12,7 +12,6 @@ public class GameManager : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private FadeToBlack _fadeToBlack;
-    [SerializeField] private EndLevelPopup _endLevelPopup;
     [SerializeField] private CountDown _countDown;
     [SerializeField] private UIManager _uiManager;
 
@@ -37,9 +36,9 @@ public class GameManager : MonoBehaviour
     private bool _isLastBoss;
     private AudioSource _currentAudio;
 
-    private const int TutorialRoundCount = 1;
-    private const int TrainingRoundCount = 1;
-    private const int TestRoundCount = 1;
+    private const int TutorialRoundCount = 3;
+    private const int TrainingRoundCount = 5;
+    private const int TestRoundCount = 3;
     public const int TotalRoundCount = TutorialRoundCount + TrainingRoundCount + TestRoundCount;
 
     public int CurrentRound => _configManager != null ? _configManager.Config.LevelsData.Count : 1;
@@ -259,14 +258,7 @@ public class GameManager : MonoBehaviour
         }
 
         config.BossFightEnd(killedBoss, _isLastBoss, timeLeft);
-
-        int levelNumber = CurrentRound;
-        int bossKillCount = BossKillCount;
-
-        _endLevelPopup.Show(killedBoss, levelNumber, bossKillCount, () =>
-        {
-            _fadeToBlack.Fade();
-        });
+        _fadeToBlack.Fade();
     }
 
     private bool TrySetConfig(out ConfigManager config)

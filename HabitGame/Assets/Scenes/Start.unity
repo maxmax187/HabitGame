@@ -341,7 +341,12 @@ MonoBehaviour:
     ChestSide: 0
     Day: 1
     LevelsData: []
-  _sessionChestSide: 1
+    TutorialIntroShown: 0
+    TrainingIntroShown: 0
+    TestIntroShown: 0
+    MinigameHowToShown: 0
+    HasOpenedBefore: 0
+  _sessionChestSide: 0
   _sessionDay: 1
 --- !u!4 &1835306766
 Transform:

@@ -284,4 +284,10 @@ public class ConfigManager : MonoBehaviour
         
         return count;
     }
+
+    public void MarkOpenedBefore()
+    {
+        Config.HasOpenedBefore = true;
+        Config.Save(Config);
+    }
 }

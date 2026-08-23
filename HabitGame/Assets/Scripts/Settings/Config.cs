@@ -33,6 +33,7 @@ public class Config
     public bool TrainingIntroShown;
     public bool TestIntroShown;
     public bool MinigameHowToShown;
+    public bool HasOpenedBefore; // Home Screen Helper
 
     private static string SaveFilenName()
     {

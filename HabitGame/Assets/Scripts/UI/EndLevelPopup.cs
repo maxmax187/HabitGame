@@ -22,7 +22,7 @@ public class EndLevelPopup : MonoBehaviour
         _canvasGroup.alpha = 0f;
         _panel.localScale = Vector3.one * 0.8f;
 
-        _titleText.text = killedBoss ? "BOSS KILLED" : "TIME IS OUT";
+        _titleText.text = killedBoss ? "BOSS KILLED!" : "TIME IS OUT";
 
         int previousLevel = killedBoss ? levelNumber - 1 : levelNumber;
         int previousKills = killedBoss ? bossKillCount - 1 : bossKillCount;

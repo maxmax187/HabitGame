@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 7918728625312343984}
   m_Layer: 0
   m_Name: Tilemap_Walls
-  m_TagString: Untagged
+  m_TagString: Walls
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -9622,15 +9622,23 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1401935514879983567, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
+      propertyPath: _waitForStart
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1401935514879983567, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: _attackPaternHealth.Array.size
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 1401935514879983567, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: _attackPaternHealth.Array.data[0].Health
-      value: 150
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 1401935514879983567, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: _attackPaternHealth.Array.data[1].Health
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 1401935514879983567, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
+      propertyPath: _attackPaternHealth.Array.data[2].Health
       value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 1401935514879983567, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
@@ -9639,6 +9647,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1401935514879983567, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: _attackPaternHealth.Array.data[1].AttackPatern.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1401935514879983567, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
+      propertyPath: _attackPaternHealth.Array.data[2].AttackPatern.Array.size
       value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 1401935514879983567, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
@@ -9670,12 +9682,28 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 4309475329075965568}
     - target: {fileID: 1401935514879983567, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
+      propertyPath: _attackPaternHealth.Array.data[2].AttackPatern.Array.data[0].Attack
+      value: 
+      objectReference: {fileID: 8788501703209257444}
+    - target: {fileID: 1401935514879983567, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
+      propertyPath: _attackPaternHealth.Array.data[2].AttackPatern.Array.data[1].Attack
+      value: 
+      objectReference: {fileID: 4309475329075965568}
+    - target: {fileID: 1401935514879983567, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
+      propertyPath: _attackPaternHealth.Array.data[2].AttackPatern.Array.data[2].Attack
+      value: 
+      objectReference: {fileID: 4309475329075965568}
+    - target: {fileID: 1401935514879983567, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
+      propertyPath: _attackPaternHealth.Array.data[2].AttackPatern.Array.data[3].Attack
+      value: 
+      objectReference: {fileID: 4309475329075965568}
+    - target: {fileID: 1401935514879983567, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: _attackPaternHealth.Array.data[0].AttackPatern.Array.data[0].TimeBeforeNextAttack
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1401935514879983567, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: _attackPaternHealth.Array.data[0].AttackPatern.Array.data[1].TimeBeforeNextAttack
-      value: 3
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1401935514879983567, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: _attackPaternHealth.Array.data[0].AttackPatern.Array.data[2].TimeBeforeNextAttack
@@ -9683,7 +9711,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1401935514879983567, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: _attackPaternHealth.Array.data[1].AttackPatern.Array.data[0].TimeBeforeNextAttack
-      value: 3
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1401935514879983567, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: _attackPaternHealth.Array.data[1].AttackPatern.Array.data[1].TimeBeforeNextAttack
@@ -9695,6 +9723,22 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1401935514879983567, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: _attackPaternHealth.Array.data[1].AttackPatern.Array.data[3].TimeBeforeNextAttack
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1401935514879983567, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
+      propertyPath: _attackPaternHealth.Array.data[2].AttackPatern.Array.data[0].TimeBeforeNextAttack
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1401935514879983567, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
+      propertyPath: _attackPaternHealth.Array.data[2].AttackPatern.Array.data[1].TimeBeforeNextAttack
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1401935514879983567, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
+      propertyPath: _attackPaternHealth.Array.data[2].AttackPatern.Array.data[2].TimeBeforeNextAttack
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1401935514879983567, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
+      propertyPath: _attackPaternHealth.Array.data[2].AttackPatern.Array.data[3].TimeBeforeNextAttack
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4323095950062116083, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
@@ -9716,6 +9760,10 @@ PrefabInstance:
     - target: {fileID: 4840009478468677974, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: m_Color.r
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4964789261547559803, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
+      propertyPath: _speed
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 5322893820811334904, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: m_LocalPosition.x
@@ -9767,7 +9815,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7788196321626605594, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: HealthAmount
-      value: 150
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 8811735804161747027, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: m_IsActive
