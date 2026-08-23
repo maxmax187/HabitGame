@@ -12,6 +12,7 @@ public class GameManager : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private FadeToBlack _fadeToBlack;
+    [SerializeField] private EndLevelPopup _endLevelPopup;
     [SerializeField] private CountDown _countDown;
     [SerializeField] private UIManager _uiManager;
 
@@ -253,11 +254,19 @@ public class GameManager : MonoBehaviour
 
         if (!TrySetConfig(out ConfigManager config))
         {
+            _fadeToBlack.Fade();
             return;
         }
 
         config.BossFightEnd(killedBoss, _isLastBoss, timeLeft);
-        _fadeToBlack.Fade();
+
+        int levelNumber = CurrentRound;
+        int bossKillCount = BossKillCount;
+
+        _endLevelPopup.Show(killedBoss, levelNumber, bossKillCount, () =>
+        {
+            _fadeToBlack.Fade();
+        });
     }
 
     private bool TrySetConfig(out ConfigManager config)

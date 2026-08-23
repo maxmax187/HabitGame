@@ -104,7 +104,10 @@ public class MinigamePopup : MonoBehaviour
         _upgradeWeaponUI.gameObject.SetActive(true);
 
         bool isTestLevel = _gameManager.IsTestLevel;
-        _gameCompleteAudio?.Play();
+        if (!isTestLevel)
+        {
+            _gameCompleteAudio?.Play();
+        }
 
         if (PlayerHealth.Instance != null)
         {

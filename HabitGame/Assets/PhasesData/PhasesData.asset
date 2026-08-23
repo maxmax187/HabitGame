@@ -23,7 +23,7 @@ MonoBehaviour:
     PhaseTime: 30
   PhasesTwoTutorial:
   - Phase: {fileID: 2254876843409693039, guid: 8bed2dbe05ba2c27d9a67d6cd6b3337b, type: 3}
-    PhaseTime: 30
+    PhaseTime: 20
   PhasesTwoRegular:
   - Phase: {fileID: 2254876843409693039, guid: 7dff45eb124fda0e29421d123bdfe172, type: 3}
     PhaseTime: 20
