@@ -897,7 +897,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -3}
+  m_AnchoredPosition: {x: 0, y: -3.000061}
   m_SizeDelta: {x: -100, y: -106}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &397944650
@@ -2529,8 +2529,9 @@ MonoBehaviour:
     time. If the time runs out, the round is over.
   - <b>HAVE FUN!</b>
   _trainingPages:
-  - <b>NEW OBJECT</b>\n\n In the room with a door is now a chest. You can open the
-    chest pressing <sprite=5> to trigger a minigame.
+  - <b>NEW OBJECT</b>\n       <size=300%><sprite name="Dungeon_Tileset_85"></size>\n\n
+    In the room with a door is now a chest. You can open the chest pressing <sprite=5>
+    to trigger a minigame.
   - <b>MINIGAME</b>\n\n After completing the minigame you get a weapon upgrade that
     increases the damage you give to the boss, but the minigame costs some time.
   - <b>HAVE FUN!</b>
