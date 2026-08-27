@@ -221,15 +221,15 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 60199542}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 2.4112554}
-  m_LocalScale: {x: 0.4203832, y: 0.4203832, z: 0.4203832}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.92487, y: 0.92487, z: 0.92487}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 2053082510}
+  m_Father: {fileID: 154881862}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -42.969604, y: -58.07254}
+  m_AnchoredPosition: {x: -0.944294, y: 1.0742302}
   m_SizeDelta: {x: 1313.097, y: 692.175}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &60199544
@@ -245,7 +245,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 1}
+  m_Color: {r: 0.09803922, g: 0.007843138, b: 0.047058824, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -650,7 +650,8 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 2.4112554}
   m_LocalScale: {x: 0.45453218, y: 0.45453218, z: 0.45453218}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 60199543}
   m_Father: {fileID: 2053082510}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -14486,7 +14487,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &2053082509
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14500,7 +14501,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _canvasGroup: {fileID: 2053082511}
-  _panel: {fileID: 0}
+  _panel: {fileID: 154881862}
   _titleText: {fileID: 177041928}
   _levelText: {fileID: 734571540}
   _bossKillText: {fileID: 213232184}
@@ -14522,7 +14523,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 154881862}
-  - {fileID: 60199543}
   - {fileID: 177041926}
   - {fileID: 213232186}
   - {fileID: 734571538}

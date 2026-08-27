@@ -49,6 +49,7 @@ public class SceneSwitchManager : MonoBehaviour
             _ => 0,
         };
 
+        Time.timeScale = 1;
         _ = DOTween.KillAll();
         SceneManager.LoadScene(sceneIndex);
     }
