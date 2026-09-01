@@ -11,6 +11,7 @@ public class HomeScreenManager : MonoBehaviour
 {
     private const string SubmitSuccessMessage = "Data submitted succesfully, you may now close the game";
     private const string SubmitErrorMessage = "ERROR SUBMITTING DATA: please try again or download the data and inform the researcher(s)";
+    private const string SubmittingMessage = "Submitting data...";
 
     [SerializeField] private Button _playButton;
     [SerializeField] private Button _downloadButton;
@@ -26,6 +27,7 @@ public class HomeScreenManager : MonoBehaviour
     {
         _playButton.onClick.AddListener(GameScene);
         DonePanel(false);
+        SetSubmitButtonVisible(false);
 
         if (_configManager == null)
         {
@@ -44,6 +46,13 @@ public class HomeScreenManager : MonoBehaviour
     {
         _donwPlaying.gameObject.SetActive(enabled);
         _playButton.gameObject.SetActive(!enabled);
+
+        // As soon as the done panel shows, try to submit automatically -
+        // the player shouldn't have to press anything if it just works.
+        if (enabled)
+        {
+            AttemptSubmit();
+        }
     }
 
     private void DownloadButton()
@@ -56,11 +65,27 @@ public class HomeScreenManager : MonoBehaviour
         Config.Download(_configManager.Config);
     }
 
+    // Used both for the automatic attempt when the done panel appears and
+    // for the manual retry button shown after a failed attempt.
     private void SubmitButton()
+    {
+        AttemptSubmit();
+    }
+
+    private void AttemptSubmit()
     {
         if (_configManager == null)
         {
             return;
+        }
+
+        // Hide the button while a submission is in flight so it can't be
+        // clicked again mid-request, and so it stays hidden through to a
+        // successful result without ever flashing visible.
+        SetSubmitButtonVisible(false);
+        if (_submitFeedbackText != null)
+        {
+            _submitFeedbackText.text = SubmittingMessage;
         }
 
         Config.Submit(_configManager.Config, OnSubmitComplete);
@@ -71,14 +96,22 @@ public class HomeScreenManager : MonoBehaviour
     // browser console by Config.Submit itself for troubleshooting.
     private void OnSubmitComplete(bool success, string message)
     {
-        if (_submitFeedbackText == null)
+        if (_submitFeedbackText != null)
         {
-            return;
+            _submitFeedbackText.text = success ? SubmitSuccessMessage : SubmitErrorMessage;
         }
 
-        _submitFeedbackText.text = success ? SubmitSuccessMessage : SubmitErrorMessage;
+        // Only offer a retry button when submission actually failed.
+        SetSubmitButtonVisible(!success);
     }
 
+    private void SetSubmitButtonVisible(bool visible)
+    {
+        if (_submitButton != null)
+        {
+            _submitButton.gameObject.SetActive(visible);
+        }
+    }
 
     private void GameScene()
     {
