@@ -8,7 +8,15 @@ export const CONDITION_SLUGS = {
 
 export type Condition = keyof typeof CONDITION_SLUGS
 
-const VALID_SLUGS = new Set(Object.values(CONDITION_SLUGS) as string[])
+// Scratch testing slug - routes through the same Overview/DayPage flow as a
+// real condition (so ?email=&day= get attached the same way), but points at
+// the single flat public/builds/test/ folder instead of a day-numbered one.
+// Not reachable via the Gateway's email check - only by navigating directly
+// to /test, on purpose, so it stays clearly separate from the real
+// participant flow.
+export const TEST_SLUG = 'test'
+
+const VALID_SLUGS = new Set([...Object.values(CONDITION_SLUGS), TEST_SLUG] as string[])
 
 export function isValidSlug(slug: string | undefined): slug is string {
   return !!slug && VALID_SLUGS.has(slug)

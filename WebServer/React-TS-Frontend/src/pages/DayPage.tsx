@@ -1,7 +1,7 @@
 import { useParams, useSearchParams } from 'react-router-dom'
 import Header from '../components/Header'
 import InvalidLink from './InvalidLink'
-import { isValidSlug } from '../data/conditions'
+import { isValidSlug, TEST_SLUG } from '../data/conditions'
 
 interface DayPageProps {
   day: 1 | 2 | 3
@@ -19,7 +19,12 @@ function DayPage({ day }: DayPageProps) {
   const buildQuery = email
     ? `?email=${encodeURIComponent(email)}&day=${day}`
     : `?day=${day}`
-  const buildSrc = `${import.meta.env.BASE_URL}builds/${slug}/day${day}/index.html${buildQuery}`
+  // The test slug is a single flat build (no per-day subfolder) - Day
+  // 1/2/3 all load the same build, just with a different ?day= value, so
+  // Submit's URL-reading logic can be exercised for any day on one build.
+  const buildPath =
+    slug === TEST_SLUG ? 'builds/test/index.html' : `builds/${slug}/day${day}/index.html`
+  const buildSrc = `${import.meta.env.BASE_URL}${buildPath}${buildQuery}`
   const query = searchParams.toString()
   const backTo = query ? `/${slug}?${query}` : `/${slug}`
 
