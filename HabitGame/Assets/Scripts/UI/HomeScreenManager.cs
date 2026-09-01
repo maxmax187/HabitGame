@@ -18,6 +18,8 @@ public class HomeScreenManager : MonoBehaviour
     [SerializeField] private Button _submitButton;
     [SerializeField] private Image _donwPlaying;
     [SerializeField] private TMP_Text _submitFeedbackText;
+    [SerializeField] private Color _submitNormalColor = Color.white;
+    [SerializeField] private Color _submitErrorColor = new Color(1f, 0.35f, 0f); // orange-red
 
     [SerializeField] private AudioSource _homeScreenAudio;
 
@@ -86,6 +88,7 @@ public class HomeScreenManager : MonoBehaviour
         if (_submitFeedbackText != null)
         {
             _submitFeedbackText.text = SubmittingMessage;
+            _submitFeedbackText.color = _submitNormalColor;
         }
 
         Config.Submit(_configManager.Config, OnSubmitComplete);
@@ -99,6 +102,7 @@ public class HomeScreenManager : MonoBehaviour
         if (_submitFeedbackText != null)
         {
             _submitFeedbackText.text = success ? SubmitSuccessMessage : SubmitErrorMessage;
+            _submitFeedbackText.color = success ? _submitNormalColor : _submitErrorColor;
         }
 
         // Only offer a retry button when submission actually failed.
