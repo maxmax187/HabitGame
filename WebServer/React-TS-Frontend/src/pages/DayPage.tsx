@@ -1,7 +1,7 @@
 import { useParams, useSearchParams } from 'react-router-dom'
 import Header from '../components/Header'
 import InvalidLink from './InvalidLink'
-import { isValidSlug, TEST_SLUG } from '../data/conditions'
+import { isValidSlug, getDayCount, TEST_SLUG } from '../data/conditions'
 
 interface DayPageProps {
   day: 1 | 2 | 3
@@ -12,9 +12,11 @@ function DayPage({ day }: DayPageProps) {
   const [searchParams] = useSearchParams()
   const email = searchParams.get('email')
 
-  if (!isValidSlug(slug)) {
+  if (!isValidSlug(slug) || day > getDayCount(slug)) {
     return <InvalidLink />
   }
+
+  const dayCount = getDayCount(slug)
 
   const buildQuery = email
     ? `?email=${encodeURIComponent(email)}&day=${day}`
@@ -28,17 +30,22 @@ function DayPage({ day }: DayPageProps) {
   const query = searchParams.toString()
   const backTo = query ? `/${slug}?${query}` : `/${slug}`
 
+  // Single-day (moderate) conditions don't reveal day-numbering to the
+  // participant, matching the overview button reading "to the game"
+  // instead of "Day 1".
+  const heading = dayCount === 1 ? 'Game' : `Day ${day}`
+
   return (
     <div className="page day-page">
       <Header backTo={backTo} />
 
       <main className="day-main">
-        <h1>Day {day}</h1>
+        <h1>{heading}</h1>
         <div className="game-frame-wrapper">
           <iframe
             className="game-frame"
             src={buildSrc}
-            title={`Day ${day} game`}
+            title={`${heading} - game`}
             allow="fullscreen; autoplay"
           />
         </div>

@@ -2,6 +2,11 @@
 require_once __DIR__ . '/env.php';
 loadEnv();
 
+// ML/MR = moderate dosage (1 day), EL/ER = extensive dosage (3 days),
+// each crossed with L/R bias. Participants are balanced equally across
+// all four.
+const CONDITIONS = ['ML', 'MR', 'EL', 'ER'];
+
 function getDb(): mysqli {
     // PHP 8.1+ makes mysqli throw on SQL errors (e.g. duplicate key) by
     // default. This code expects the classic behavior - check
@@ -25,7 +30,7 @@ function getDb(): mysqli {
 }
 
 function countByCondition(mysqli $db): array {
-    $counts = ['L' => 0, 'R' => 0];
+    $counts = array_fill_keys(CONDITIONS, 0);
     $result = $db->query('SELECT condition_group, COUNT(*) AS c FROM participants GROUP BY condition_group');
     while ($row = $result->fetch_assoc()) {
         $counts[$row['condition_group']] = (int) $row['c'];
@@ -34,7 +39,12 @@ function countByCondition(mysqli $db): array {
 }
 
 function pickBalancedCondition(array $counts): string {
-    if ($counts['L'] < $counts['R']) return 'L';
-    if ($counts['R'] < $counts['L']) return 'R';
-    return random_int(0, 1) === 0 ? 'L' : 'R';
+    $minCount = min($counts);
+    $candidates = array_keys($counts, $minCount, true);
+    return $candidates[array_rand($candidates)];
+}
+
+// ML/MR (moderate) only ever have a single day; EL/ER (extensive) have 3.
+function conditionDayCount(string $condition): int {
+    return in_array($condition, ['ML', 'MR'], true) ? 1 : 3;
 }

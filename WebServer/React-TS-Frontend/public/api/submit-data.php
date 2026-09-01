@@ -47,6 +47,13 @@ if (!$participant) {
     exit;
 }
 
+if ($day > conditionDayCount($participant['condition_group'])) {
+    $db->close();
+    http_response_code(400);
+    echo json_encode(['success' => false, 'message' => 'This participant\'s condition does not have that day']);
+    exit;
+}
+
 // Round-trip through json_decode/json_encode so we never store whatever
 // arbitrary bytes were POSTed - only well-formed JSON.
 $dataJson = json_encode($data);
