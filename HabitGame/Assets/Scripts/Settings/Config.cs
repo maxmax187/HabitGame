@@ -23,15 +23,19 @@ public class Config
     public bool BossTutorialShown;
     public bool ChestTutorialShown;
 
+    public bool TutorialIntroShown;
+    public bool TrainingIntroShown;
+    public bool TestIntroShown;
+
     public bool FinishedAllBosses;
     public int CurrentSpikeDificulty;
     public ChestSide ChestSide;
     public int Day;
     public List<LevelData> LevelsData;
 
-    public bool TutorialIntroShown;
-    public bool TrainingIntroShown;
-    public bool TestIntroShown;
+    // public bool TutorialIntroShown;
+    // public bool TrainingIntroShown;
+    // public bool TestIntroShown;
     public bool MinigameHowToShown;
     public bool HasOpenedBefore; // Home Screen Helper
 
@@ -46,6 +50,7 @@ public class Config
         string saveFile = SaveFilenName();
         string json = JsonUtility.ToJson(config, true);
         File.WriteAllText(saveFile, json);
+
 
 #if UNITY_WEBGL && !UNITY_EDITOR
         SyncFiles();

@@ -28,6 +28,11 @@ public class GameManager : MonoBehaviour
     [SerializeField] private AudioSource _backgroundAudio;
     [SerializeField] private AudioSource _backgroundBattleAudio;
 
+    [Header("Long Tutorial Pages")]
+    [SerializeField] private string[] _tutorialIntroPages;
+    [SerializeField] private string[] _trainingIntroPages;
+    [SerializeField] private string[] _testIntroPages;
+
     private ConfigManager _configManager;
     private int _currentPhase;
     private List<PhaseData> _levelPhases;
