@@ -19,9 +19,25 @@ public class Config
     private static extern void DownloadFile(string filename, string content);
 
     public bool TutorialFinished;
+    public bool SpikeTutorialShown;
+    public bool BossTutorialShown;
+    public bool ChestTutorialShown;
+
+    public bool TutorialIntroShown;
+    public bool TrainingIntroShown;
+    public bool TestIntroShown;
+
     public bool FinishedAllBosses;
     public int CurrentSpikeDificulty;
+    public ChestSide ChestSide;
+    public int Day;
     public List<LevelData> LevelsData;
+
+    // public bool TutorialIntroShown;
+    // public bool TrainingIntroShown;
+    // public bool TestIntroShown;
+    public bool MinigameHowToShown;
+    public bool HasOpenedBefore; // Home Screen Helper
 
     private static string SaveFilenName()
     {
@@ -34,6 +50,7 @@ public class Config
         string saveFile = SaveFilenName();
         string json = JsonUtility.ToJson(config, true);
         File.WriteAllText(saveFile, json);
+
 
 #if UNITY_WEBGL && !UNITY_EDITOR
         SyncFiles();

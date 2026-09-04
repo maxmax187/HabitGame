@@ -9550,16 +9550,20 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1401935514879983567, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
+      propertyPath: _waitForStart
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1401935514879983567, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: _attackPaternHealth.Array.size
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 1401935514879983567, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: _attackPaternHealth.Array.data[0].Health
-      value: 150
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 1401935514879983567, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: _attackPaternHealth.Array.data[1].Health
-      value: 100
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 1401935514879983567, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: _attackPaternHealth.Array.data[0].AttackPatern.Array.size
@@ -9659,7 +9663,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7788196321626605594, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: HealthAmount
-      value: 150
+      value: 30
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

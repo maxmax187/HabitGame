@@ -12,10 +12,32 @@ public class SceneSwitchManager : MonoBehaviour
     [SerializeField] private int _homeSceneIndex;
     [SerializeField] private int _gameSceneIndex;
 
+    private static bool _hasBooted;
+
     private void Start()
     {
         Instance = this;
-        SwitchScene(Scenes.HomeScene);
+
+        if (_hasBooted)
+        {
+            return;
+        }
+        _hasBooted = true;
+
+        bool skipHome = ConfigManager.Instance != null && ConfigManager.Instance.Config.HasOpenedBefore;
+
+        if (skipHome)
+        {
+            SwitchScene(Scenes.GameScene);
+        }
+        else
+        {
+            if (ConfigManager.Instance != null)
+            {
+                ConfigManager.Instance.MarkOpenedBefore();
+            }
+            SwitchScene(Scenes.HomeScene);
+        }
     }
 
     public void SwitchScene(Scenes scene)
@@ -27,6 +49,7 @@ public class SceneSwitchManager : MonoBehaviour
             _ => 0,
         };
 
+        Time.timeScale = 1;
         _ = DOTween.KillAll();
         SceneManager.LoadScene(sceneIndex);
     }

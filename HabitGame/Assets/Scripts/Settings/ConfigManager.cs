@@ -11,6 +11,10 @@ public class ConfigManager : MonoBehaviour
     public static ConfigManager Instance;
     public Config Config;
 
+    [Header("Session Settings (set manually before each session)")]
+    [SerializeField] private ChestSide _sessionChestSide;
+    [SerializeField] private int _sessionDay = 1;
+
     public int SpikeDificulty => Config.CurrentSpikeDificulty;
 
     private void Awake()
@@ -18,6 +22,9 @@ public class ConfigManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
         Config = Config.Load();
+        Config.ChestSide = _sessionChestSide;
+        Config.Day = _sessionDay;
+        Config.Save(Config);
     }
 
     public void UpdateSpikeDificulty(int newDificulty)
@@ -220,5 +227,67 @@ public class ConfigManager : MonoBehaviour
     private int GetCurrentLevelIndex()
     {
         return Config.LevelsData.Count - 1;
+    }
+
+    public void MarkSpikeTutorialShown()
+    {
+        Config.SpikeTutorialShown = true;
+        Config.Save(Config);
+    }
+
+    public void MarkBossTutorialShown()
+    {
+        Config.BossTutorialShown = true;
+        Config.Save(Config);
+    }
+
+    public void MarkChestTutorialShown()
+    {
+        Config.ChestTutorialShown = true;
+        Config.Save(Config);
+    }
+
+    public void MarkTutorialIntroShown()
+    {
+        Config.TutorialIntroShown = true;
+        Config.Save(Config);
+    }
+
+    public void MarkTrainingIntroShown()
+    {
+        Config.TrainingIntroShown = true;
+        Config.Save(Config);
+    }
+
+    public void MarkTestIntroShown()
+    {
+        Config.TestIntroShown = true;
+        Config.Save(Config);
+    }
+
+    public void MarkMinigameHowToShown()
+    {
+        Config.MinigameHowToShown = true;
+        Config.Save(Config);
+    }
+
+    public int GetBossKillCount()
+    {
+        int count = 0;
+        foreach (LevelData level in Config.LevelsData)
+        {
+            if (level.KilledTheBoss)
+            {
+                count++;
+            }
+        }
+        
+        return count;
+    }
+
+    public void MarkOpenedBefore()
+    {
+        Config.HasOpenedBefore = true;
+        Config.Save(Config);
     }
 }

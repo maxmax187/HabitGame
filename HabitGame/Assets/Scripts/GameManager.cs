@@ -28,6 +28,11 @@ public class GameManager : MonoBehaviour
     [SerializeField] private AudioSource _backgroundAudio;
     [SerializeField] private AudioSource _backgroundBattleAudio;
 
+    [Header("Long Tutorial Pages")]
+    [SerializeField] private string[] _tutorialIntroPages;
+    [SerializeField] private string[] _trainingIntroPages;
+    [SerializeField] private string[] _testIntroPages;
+
     private ConfigManager _configManager;
     private int _currentPhase;
     private List<PhaseData> _levelPhases;
@@ -36,15 +41,21 @@ public class GameManager : MonoBehaviour
     private bool _isLastBoss;
     private AudioSource _currentAudio;
 
-    private const int TutorialRoundCount = 2;
-    private const int TrainingRoundCount = 2;
-    private const int TestRoundCount = 2;
-    private const int TotalRoundCount = TutorialRoundCount + TrainingRoundCount + TestRoundCount;
+    private const int TutorialRoundCount = 1;
+    private const int TrainingRoundCount = 1;
+    private const int TestRoundCount = 1;
+    public const int TotalRoundCount = TutorialRoundCount + TrainingRoundCount + TestRoundCount;
 
     public int CurrentRound => _configManager != null ? _configManager.Config.LevelsData.Count : 1;
     public LevelType CurrentLevelType => GetLevelType(CurrentRound);
     public bool IsTutorialLevel => CurrentLevelType == LevelType.Tutorial;
     public bool IsTestLevel => CurrentLevelType == LevelType.Test;
+
+    public bool IsFirstTutorialRound => CurrentRound == 1;
+    public bool IsFirstTrainingRound => CurrentRound == TutorialRoundCount + 1; // assuming number of train rounds != 0
+    public bool IsFirstTestRound => CurrentRound == TutorialRoundCount + TrainingRoundCount + 1;
+
+    public int BossKillCount => _configManager != null ? _configManager.GetBossKillCount() : 0;
 
     private LevelType GetLevelType(int round)
     {
@@ -62,6 +73,48 @@ public class GameManager : MonoBehaviour
     public Phase CurrentPhase
     {
         set { _phase = value; }
+    }
+
+    public void ShowSpikeTutorial(string text)
+    {
+        if (_configManager == null || _configManager.Config.Day != 1 || !IsFirstTutorialRound)
+        {
+            return;
+        }
+        if (_configManager.Config.SpikeTutorialShown)
+        {
+            return;
+        }
+        ShowTutorial(text);
+        _configManager.MarkSpikeTutorialShown();
+    }
+
+    public void ShowBossTutorial(string text)
+    {
+        if (_configManager == null || _configManager.Config.Day != 1 || !IsFirstTutorialRound)
+        {
+            return;
+        }
+        if (_configManager.Config.BossTutorialShown)
+        {
+            return;
+        }
+        ShowTutorial(text);
+        _configManager.MarkBossTutorialShown();
+    }
+
+    public void ShowChestTutorial(string text)
+    {
+        if (_configManager == null || !IsFirstTrainingRound)
+        {
+            return;
+        }
+        if (_configManager.Config.ChestTutorialShown)
+        {
+            return;
+        }
+        ShowTutorial(text);
+        _configManager.MarkChestTutorialShown();
     }
 
     private void Start()
@@ -86,8 +139,23 @@ public class GameManager : MonoBehaviour
             _configManager.SetTotalTime(time);
         }
 
-        ShowTutorial(_walkTutorialText);
         SetAudio(_backgroundAudio);
+
+        bool longIntroShown = ShowTutorialIntro() || ShowTrainingIntro() || ShowTestIntro();
+        if (longIntroShown)
+        {
+            _uiManager.OnLongTutorialClosed += HandleLongTutorialClosed;
+        }
+        else
+        {
+            ShowTutorial(_walkTutorialText);
+        }
+    }
+
+    private void HandleLongTutorialClosed()
+    {
+        _uiManager.OnLongTutorialClosed -= HandleLongTutorialClosed;
+        ShowTutorial(_walkTutorialText);
     }
 
     private void SetAudio(AudioSource newAudio)
@@ -132,17 +200,14 @@ public class GameManager : MonoBehaviour
         }
 
         #region Get new spike dificulty
-        //Todo we are at the end of the spikes check if we have around enough time 
-        //If we have to much time we can up the dificulty
-        //If we have to litle time we should make it easier 
         bool updateDificulty = false;
         int currentDificulty = _configManager.Config.CurrentSpikeDificulty;
-        if (spikeFinishTimeLeft < _timeLeftAfterSpikes.x) //To little time left
+        if (spikeFinishTimeLeft < _timeLeftAfterSpikes.x)
         {
             updateDificulty = true;
             currentDificulty--;
         }
-        else if (spikeFinishTimeLeft > _timeLeftAfterSpikes.y) //To much time left
+        else if (spikeFinishTimeLeft > _timeLeftAfterSpikes.y)
         {
             updateDificulty = true;
             currentDificulty++;
@@ -163,7 +228,6 @@ public class GameManager : MonoBehaviour
 
     public void MiniGameData(bool hasOpend, bool hasFinished)
     {
-        Debug.Log($"MiniGameData called: hasFinished={hasFinished}, IsTestLevel={IsTestLevel}");
         if (!TrySetConfig(out ConfigManager config))
         {
             return;
@@ -194,6 +258,7 @@ public class GameManager : MonoBehaviour
 
         if (!TrySetConfig(out ConfigManager config))
         {
+            _fadeToBlack.Fade();
             return;
         }
 
@@ -292,8 +357,6 @@ public class GameManager : MonoBehaviour
         }
     }
 
-
-
     public void MinigameStarted(float timeLeft)
     {
         if (!TrySetConfig(out ConfigManager config))
@@ -319,5 +382,48 @@ public class GameManager : MonoBehaviour
             return;
         }
         config.SetPhase2EnterTime(timeLeft);
+    }
+
+    public bool ShowTutorialIntro()
+    {
+        if (_configManager == null || !IsFirstTutorialRound || _configManager.Config.TutorialIntroShown)
+        {
+            return false;
+        }
+        _uiManager.ShowLongTutorialIntro();
+        _configManager.MarkTutorialIntroShown();
+        return true;
+    }
+
+    public bool ShowTrainingIntro()
+    {
+        if (_configManager == null || !IsFirstTrainingRound || _configManager.Config.TrainingIntroShown)
+        {
+            return false;
+        }
+        _uiManager.ShowLongTrainingTutorial();
+        _configManager.MarkTrainingIntroShown();
+        return true;
+    }
+
+    public bool ShowTestIntro()
+    {
+        if (_configManager == null || !IsFirstTestRound || _configManager.Config.TestIntroShown)
+        {
+            return false;
+        }
+        _uiManager.ShowLongTestTutorial();
+        _configManager.MarkTestIntroShown();
+        return true;
+    }
+
+    public bool ShouldShowMinigameHowTo()
+    {
+        if (_configManager == null || !IsFirstTrainingRound || _configManager.Config.MinigameHowToShown)
+        {
+            return false;
+        }
+        _configManager.MarkMinigameHowToShown();
+        return true;
     }
 }
