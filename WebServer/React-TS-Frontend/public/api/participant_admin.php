@@ -30,7 +30,7 @@ if (isset($_GET['logout'])) {
 $authed = isset($_SESSION['admin_auth']) && $_SESSION['admin_auth'] === true;
 
 $participants = [];
-$counts = ['L' => 0, 'R' => 0];
+$counts = array_fill_keys(CONDITIONS, 0);
 
 if ($authed) {
     try {
@@ -45,10 +45,10 @@ if ($authed) {
                     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
                         $error = 'Please enter a valid email address.';
                     } else {
-                        $condition = in_array($force, ['L', 'R'], true)
+                        $condition = in_array($force, CONDITIONS, true)
                             ? $force
                             : pickBalancedCondition(countByCondition($db));
-                        $forced = in_array($force, ['L', 'R'], true) ? 1 : 0;
+                        $forced = in_array($force, CONDITIONS, true) ? 1 : 0;
 
                         $stmt = $db->prepare(
                             'INSERT INTO participants (email, condition_group, forced) VALUES (?, ?, ?)'
@@ -79,19 +79,21 @@ if ($authed) {
                         'id'
                     );
                     shuffle($ids);
-                    $half = (int) floor(count($ids) / 2);
-                    $firstGroup = random_int(0, 1) === 0 ? 'L' : 'R';
-                    $secondGroup = $firstGroup === 'L' ? 'R' : 'L';
+                    $groups = CONDITIONS;
+                    // Shuffle group order too, so if the count isn't evenly
+                    // divisible by 4 the "extra" participant(s) don't always
+                    // land in the same condition run after run.
+                    shuffle($groups);
 
                     $stmt = $db->prepare(
                         'UPDATE participants SET condition_group = ?, forced = 0 WHERE id = ?'
                     );
                     foreach ($ids as $i => $id) {
-                        $condition = $i < $half ? $firstGroup : $secondGroup;
+                        $condition = $groups[$i % count($groups)];
                         $stmt->bind_param('si', $condition, $id);
                         $stmt->execute();
                     }
-                    $message = 'Reassigned all ' . count($ids) . ' participant(s) to a fresh 50/50 split.';
+                    $message = 'Reassigned all ' . count($ids) . ' participant(s) into a fresh, evenly balanced 4-way split.';
                     break;
             }
         }
@@ -244,7 +246,8 @@ if ($authed) {
 
         .counts {
             display: flex;
-            gap: 1.5rem;
+            flex-wrap: wrap;
+            gap: 0.75rem 1.5rem;
             font-size: 0.8rem;
             color: #64748b;
             margin-bottom: 1rem;
@@ -369,12 +372,14 @@ if ($authed) {
                 <label for="email">Email</label>
                 <input type="email" id="email" name="email" placeholder="participant@example.com" required>
             </div>
-            <div class="field" style="flex: 0 0 180px;">
+            <div class="field" style="flex: 0 0 200px;">
                 <label for="force_condition">Condition</label>
                 <select id="force_condition" name="force_condition">
                     <option value="">Auto-balance</option>
-                    <option value="L">Force L</option>
-                    <option value="R">Force R</option>
+                    <option value="ML">Force Moderate L</option>
+                    <option value="MR">Force Moderate R</option>
+                    <option value="EL">Force Extensive L</option>
+                    <option value="ER">Force Extensive R</option>
                 </select>
             </div>
             <button type="submit" class="btn">Add</button>
@@ -388,8 +393,10 @@ if ($authed) {
         </div>
         <div class="counts">
             <span>Total: <strong><?= count($participants) ?></strong></span>
-            <span>L: <strong><?= $counts['L'] ?></strong></span>
-            <span>R: <strong><?= $counts['R'] ?></strong></span>
+            <span>Moderate L: <strong><?= $counts['ML'] ?></strong></span>
+            <span>Moderate R: <strong><?= $counts['MR'] ?></strong></span>
+            <span>Extensive L: <strong><?= $counts['EL'] ?></strong></span>
+            <span>Extensive R: <strong><?= $counts['ER'] ?></strong></span>
         </div>
 
         <?php if (empty($participants)): ?>
@@ -429,11 +436,11 @@ if ($authed) {
 
     <div class="panel">
         <h2>Danger zone</h2>
-        <form method="POST" onsubmit="return confirm('This will re-randomize the L/R condition for ALL participants into a fresh 50/50 split, including anyone already assigned. If the study is already in progress, this WILL interfere with collected data. Are you absolutely sure?')">
+        <form method="POST" onsubmit="return confirm('This will re-randomize the condition for ALL participants into a fresh, evenly balanced 4-way split (Moderate L / Moderate R / Extensive L / Extensive R), including anyone already assigned. If the study is already in progress, this WILL interfere with collected data. Are you absolutely sure?')">
             <input type="hidden" name="action" value="reassign_all">
-            <button type="submit" class="btn danger">Reassign all participants (50/50)</button>
+            <button type="submit" class="btn danger">Reassign all participants (4-way split)</button>
         </form>
-        <p class="danger-zone-note">Re-splits every current participant into a new random 50/50 L/R assignment and clears any manual "forced" flags. Do not use this once the study has started unless you intend to change existing participants' conditions.</p>
+        <p class="danger-zone-note">Re-splits every current participant into a new random, evenly balanced assignment across all 4 conditions and clears any manual "forced" flags. Do not use this once the study has started unless you intend to change existing participants' conditions.</p>
     </div>
 </div>
 

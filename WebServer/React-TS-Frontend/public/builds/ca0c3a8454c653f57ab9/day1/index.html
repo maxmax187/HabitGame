@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Condition ER, Day 3 build placeholder</title>
+    <title>Condition MR, single-day build placeholder</title>
     <style>
       body {
         margin: 0;
@@ -31,20 +31,21 @@
   <body>
     <div class="wrap">
       <p>
-        Condition ER, Day 3 build placeholder.<br />
-        Replace the contents of <code>public/builds/4e868a6f2c029521d9e4/day3/</code> with
-        the exported Unity WebGL build for condition ER, day 3
+        Condition MR (moderate dosage, single-day), build placeholder.<br />
+        Replace the contents of <code>public/builds/ca0c3a8454c653f57ab9/day1/</code> with
+        the exported Unity WebGL build for condition MR
         (keeping <code>index.html</code> at this path).
       </p>
+      <p>This condition only has one game session - there is no day2/day3 for it.</p>
       <p>This page is loaded in an iframe with query params the game should read:</p>
-      <pre>?email=participant%40example.com&day=3</pre>
-      <p>When the day's data is ready, POST it to the API (same origin, path relative to the site root) so it's saved server-side instead of downloaded:</p>
+      <pre>?email=participant%40example.com&day=1</pre>
+      <p>When the session's data is ready, POST it to the API (same origin, path relative to the site root) so it's saved server-side instead of downloaded:</p>
       <pre>POST /f8622112/api/submit-data.php
 Content-Type: application/json
 
 {
   "email": "participant@example.com",
-  "day": 3,
+  "day": 1,
   "data": { ...the game's JSON... }
 }</pre>
       <p>Response: <code>{ "success": true }</code> on save, or
