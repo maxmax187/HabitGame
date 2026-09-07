@@ -33,6 +33,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] private string[] _trainingIntroPages;
     [SerializeField] private string[] _testIntroPages;
 
+    [Header("Level Time")]
+    [SerializeField] private float _fixedLevelTime = 60f;
+
     private ConfigManager _configManager;
     private int _currentPhase;
     private List<PhaseData> _levelPhases;
@@ -128,6 +131,7 @@ public class GameManager : MonoBehaviour
         }
 
         _levelPhases = GetPhases(out float time);
+        time = _fixedLevelTime;
         Phase currentPhase = Instantiate(_levelPhases[_currentPhase].Phase);
         currentPhase.GameManager = this;
 
