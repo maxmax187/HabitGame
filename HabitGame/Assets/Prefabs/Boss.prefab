@@ -767,6 +767,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a966f76fa76c432b8e582122390022fb, type: 3}
   m_Name:
   m_EditorClassIdentifier:
+  _teleportEnabled: 0
   _teleportLocations: []
   _teleportInterval: 5
   _randomOrder: 0
