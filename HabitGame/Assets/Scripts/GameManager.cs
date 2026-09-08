@@ -36,6 +36,11 @@ public class GameManager : MonoBehaviour
     [Header("Level Time")]
     [SerializeField] private float _fixedLevelTime = 60f;
 
+    [Header("Boss Schedule")]
+    [SerializeField] private int _tutorialBossIndex = 0;
+    [SerializeField] private int[] _trainingBossSchedule = { 0, 0, 1, 1, 2, 3, 4, 5, 6, 7, 8, 8 };
+    [SerializeField] private int[] _testBossSchedule = { 8 };
+
     private ConfigManager _configManager;
     private int _currentPhase;
     private List<PhaseData> _levelPhases;
@@ -44,8 +49,8 @@ public class GameManager : MonoBehaviour
     private bool _isLastBoss;
     private AudioSource _currentAudio;
 
-    private const int TutorialRoundCount = 1;
-    private const int TrainingRoundCount = 1;
+    private const int TutorialRoundCount = 2;
+    private const int TrainingRoundCount = 12;
     private const int TestRoundCount = 1;
     public const int TotalRoundCount = TutorialRoundCount + TrainingRoundCount + TestRoundCount;
 
@@ -331,18 +336,46 @@ public class GameManager : MonoBehaviour
 
     private PhaseData GetBossPhase()
     {
-        int currentBossIndex = 0;
+        int bossIndex = GetScheduledBossIndex();
+        int phaseThreeCount = _phases.PhasesThree.Length;
+        bossIndex = math.clamp(bossIndex, 0, phaseThreeCount - 1);
+
         if (_configManager != null)
         {
-            currentBossIndex = _configManager.CurrentBoss();
+            _configManager.SetCurrentBossIndex(bossIndex);
         }
-
-        int phaseThreeCount = _phases.PhasesThree.Length;
-        int bossPhaseIndex = math.min(currentBossIndex, phaseThreeCount - 1);
 
         _isLastBoss = CurrentRound >= TotalRoundCount;
 
-        return _phases.PhasesThree[bossPhaseIndex];
+        return _phases.PhasesThree[bossIndex];
+    }
+
+    private int GetScheduledBossIndex()
+    {
+        if (IsTutorialLevel)
+        {
+            return _tutorialBossIndex;
+        }
+
+        if (IsTestLevel)
+        {
+            int testRoundIndex = CurrentRound - (TutorialRoundCount + TrainingRoundCount) - 1;
+            return GetFromSchedule(_testBossSchedule, testRoundIndex);
+        }
+
+        int trainingRoundIndex = CurrentRound - TutorialRoundCount - 1;
+        return GetFromSchedule(_trainingBossSchedule, trainingRoundIndex);
+    }
+
+    private int GetFromSchedule(int[] schedule, int index)
+    {
+        if (schedule == null || schedule.Length == 0)
+        {
+            return 0;
+        }
+
+        index = math.clamp(index, 0, schedule.Length - 1);
+        return schedule[index];
     }
 
     public void ExitPhase(Phases phases)

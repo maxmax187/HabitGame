@@ -32,9 +32,17 @@ MonoBehaviour:
     PhaseTime: 10
   - Phase: {fileID: 3561860285486744107, guid: 7f4bd2e4ec0c73d44abff99c179ab682, type: 3}
     PhaseTime: 20
-  - Phase: {fileID: 3561860285486744107, guid: ba4d8d778350d6d41b0106c91cd6f40e, type: 3}
-    PhaseTime: 20
-  - Phase: {fileID: 3561860285486744107, guid: 33fef4ae9fb9227a18bcee2ed7eca775, type: 3}
-    PhaseTime: 20
   - Phase: {fileID: 3561860285486744107, guid: a821ae71f43b88e73a4457451af1e6e1, type: 3}
+    PhaseTime: 20
+  - Phase: {fileID: 3561860285486744107, guid: 2c721a99b859cd49f9375774c5c207d2, type: 3}
+    PhaseTime: 20
+  - Phase: {fileID: 3561860285486744107, guid: 9588eabfcd4f195c38aae296d27aa3be, type: 3}
+    PhaseTime: 30
+  - Phase: {fileID: 3561860285486744107, guid: df0cbb3c51db19306ba2f0648da23aa2, type: 3}
+    PhaseTime: 30
+  - Phase: {fileID: 3561860285486744107, guid: 21c526dc72bf4a8d8adf047e02ba5c85, type: 3}
+    PhaseTime: 30
+  - Phase: {fileID: 3561860285486744107, guid: e59bee47917fda140bb372676230dc32, type: 3}
+    PhaseTime: 30
+  - Phase: {fileID: 3561860285486744107, guid: ba4d8d778350d6d41b0106c91cd6f40e, type: 3}
     PhaseTime: 30

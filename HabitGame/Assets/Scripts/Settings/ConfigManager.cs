@@ -41,32 +41,13 @@ public class ConfigManager : MonoBehaviour
 
     public void StartLevelData(LevelType levelType)
     {
-        int bossIndex = 0;
-        float bossHealth = 0;
-        bool isTypeTransition = false;
-
         if (!Config.LevelsData.IsNullOrEmpty())
         {
             LevelData lastLevel = Config.LevelsData[GetCurrentLevelIndex()];
-            bossIndex = lastLevel.CurrentBoss;
-            if (lastLevel.KilledTheBoss)
+            if (lastLevel.KilledTheBoss && !Config.TutorialFinished)
             {
-                bossIndex++;
-                if (!Config.TutorialFinished)
-                {
-                    TutorialDone(true);
-                }
+                TutorialDone(true);
             }
-            bossHealth = lastLevel.BossHealthLeft;
-            
-            // Reset whenever the level type changes (tutorial -> training, training -> test)
-            isTypeTransition = levelType != lastLevel.Level;
-        }
-
-        if (isTypeTransition)
-        {
-            bossIndex = 0;
-            bossHealth = 0;
         }
 
         LevelData newLevelData = new()
@@ -74,13 +55,21 @@ public class ConfigManager : MonoBehaviour
             Index = Config.LevelsData.Count,
             PhaseTimes = new System.Collections.Generic.List<PhaseTimeData>(),
             SpikeDificulty = Config.CurrentSpikeDificulty,
-            CurrentBoss = bossIndex,
-            BossHealthLeft = bossHealth,
             Level = levelType,
         };
 
         Config.LevelsData.Add(newLevelData);
         Config.Save(Config);
+    }
+
+    public void SetCurrentBossIndex(int bossIndex)
+    {
+        int currentIndex = GetCurrentLevelIndex();
+        if (currentIndex < 0)
+        {
+            return;
+        }
+        Config.LevelsData[currentIndex].CurrentBoss = bossIndex;
     }
 
     public void SetTotalTime(float levelTime)

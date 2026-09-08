@@ -847,6 +847,9 @@ MonoBehaviour:
   _trainingIntroPages: []
   _testIntroPages: []
   _fixedLevelTime: 60
+  _tutorialBossIndex: 0
+  _trainingBossSchedule: 000000000000000001000000010000000200000003000000040000000500000006000000070000000800000008000000
+  _testBossSchedule: 08000000
 --- !u!4 &380437866
 Transform:
   m_ObjectHideFlags: 0
@@ -2633,7 +2636,7 @@ MonoBehaviour:
   - <b>MINIGAME</b>\n\n Opening the chest triggers a minigame that costs some time.
     During the minigame press <sprite=6> when the arrow is pointing at the green
     part of the circle. Hit it 4 times to finish the minigame.
-  - <b>WEAPON UPGRADE</b>\n\n After finishing the minigame your weapon get upgraded
+  - <b>WEAPON UPGRADE</b>\n\n After finishing the minigame your weapon gets  upgraded
     and you give more damage to the boss. Your weapon resets to base damage after
     the level is finished.
   - <size=150%><b>HAVE FUN!</b></size>\n\n
