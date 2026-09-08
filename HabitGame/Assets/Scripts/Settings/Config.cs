@@ -20,6 +20,10 @@ public class Config
     [DllImport("__Internal")]
     private static extern void DownloadFile(string filename, string content);
 
+    // First field on purpose - JsonUtility serializes in declaration order,
+    // and this is meant to be the first thing visible when opening the file.
+    public string Email;
+
     public bool TutorialFinished;
     public bool SpikeTutorialShown;
     public bool BossTutorialShown;
@@ -78,9 +82,29 @@ public class Config
         return config;
     }
 
+    // Sentinel value used whenever the participant email can't be read
+    // from the page URL - Download must never be blocked by this, it
+    // should always still produce a file.
+    private const string UnknownEmail = "UNKNOWN";
+
+    // Never fails - falls back to UnknownEmail if there's no page URL
+    // (e.g. the Editor) or no ?email= on it.
+    private static string GetEmailFromUrlOrUnknown()
+    {
+#if UNITY_WEBGL && !UNITY_EDITOR
+        Dictionary<string, string> queryParams = ParseQueryString(Application.absoluteURL);
+        if (queryParams.TryGetValue("email", out string email) && !string.IsNullOrEmpty(email))
+        {
+            return email;
+        }
+#endif
+        return UnknownEmail;
+    }
+
     public static void Download(Config config)
     {
         string saveFile = SaveFilenName();
+        config.Email = GetEmailFromUrlOrUnknown();
         string json = JsonUtility.ToJson(config, true);
 
 #if UNITY_WEBGL && !UNITY_EDITOR
@@ -124,6 +148,10 @@ public class Config
             onComplete?.Invoke(false, msg);
             return;
         }
+
+        // Embed the same email in the JSON content, not just the outer
+        // {email, day, data} wrapper the server reads for routing.
+        config.Email = email;
 
         if (!queryParams.TryGetValue("day", out string dayString) || !int.TryParse(dayString, out int day))
         {
