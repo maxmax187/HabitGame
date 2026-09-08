@@ -35,7 +35,7 @@ public class BossTeleport : MonoBehaviour
     {
         if (_spriteTransform != null)
         {
-            _spriteBaseScaleY = _spriteTransform.localScale.x;
+            _spriteBaseScaleY = _spriteTransform.localScale.y;
         }
     }
 
@@ -100,12 +100,12 @@ public class BossTeleport : MonoBehaviour
 
     private IEnumerator TeleportToLocation(Transform location)
     {
-        yield return ScaleSpriteHorizontally(1f, 0f);
+        yield return ScaleSpriteVertically(1f, 0f);
         transform.position = location.position;
-        yield return ScaleSpriteHorizontally(0f, 1f);
+        yield return ScaleSpriteVertically(0f, 1f);
     }
 
-    private IEnumerator ScaleSpriteHorizontally(float from, float to)
+    private IEnumerator ScaleSpriteVertically(float from, float to)
     {
         if (_spriteTransform == null || _phaseDuration <= 0f)
         {
@@ -117,12 +117,12 @@ public class BossTeleport : MonoBehaviour
         while (elapsed < _phaseDuration)
         {
             elapsed += Time.deltaTime;
-            scale.x = Mathf.SmoothStep(from, to, elapsed / _phaseDuration) * _spriteBaseScaleY;
+            scale.y = Mathf.SmoothStep(from, to, elapsed / _phaseDuration) * _spriteBaseScaleY;
             _spriteTransform.localScale = scale;
             yield return null;
         }
 
-        scale.x = to * _spriteBaseScaleY;
+        scale.y = to * _spriteBaseScaleY;
         _spriteTransform.localScale = scale;
     }
 
@@ -134,7 +134,7 @@ public class BossTeleport : MonoBehaviour
         }
 
         Vector3 scale = _spriteTransform.localScale;
-        scale.x = _spriteBaseScaleY;
+        scale.y = _spriteBaseScaleY;
         _spriteTransform.localScale = scale;
     }
 
