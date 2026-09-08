@@ -9799,7 +9799,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1584796899245064, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: _teleportLocations.Array.size
-      value: 3
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 1584796899245064, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: '_teleportLocations.Array.data[0]'
@@ -9808,15 +9808,15 @@ PrefabInstance:
     - target: {fileID: 1584796899245064, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: '_teleportLocations.Array.data[1]'
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 4544585063201457338}
     - target: {fileID: 1584796899245064, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: '_teleportLocations.Array.data[2]'
       value: 
-      objectReference: {fileID: 4544585063201457338}
+      objectReference: {fileID: 373365382491036514}
     - target: {fileID: 1584796899245064, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: '_teleportLocations.Array.data[3]'
       value: 
-      objectReference: {fileID: 5579310847822709126}
+      objectReference: {fileID: 215074811053029480}
     - target: {fileID: 1584796899245064, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: '_teleportLocations.Array.data[4]'
       value: 
