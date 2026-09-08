@@ -57,13 +57,21 @@ public class BossTeleport : MonoBehaviour
     private void TeleportToNextLocation()
     {
         int index = _randomOrder ? Random.Range(0, _teleportLocations.Length) : _nextLocationIndex;
-        transform.position = _teleportLocations[index].position;
 
         _nextLocationIndex++;
         if (_nextLocationIndex >= _teleportLocations.Length)
         {
             _nextLocationIndex = 0;
         }
+
+        Transform location = _teleportLocations[index];
+        if (location == null)
+        {
+            Debug.LogWarning($"BossTeleport: location at index {index} is not assigned, skipping this teleport.", this);
+            return;
+        }
+
+        transform.position = location.position;
     }
 
     private void OnDrawGizmosSelected()
