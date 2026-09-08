@@ -20,22 +20,35 @@ public class BossTeleport : MonoBehaviour
     [Tooltip("When enabled, locations are chosen at random. When disabled, locations are visited in the order listed above.")]
     [SerializeField] private bool _randomOrder;
 
-    [Header("Animation")] 
+    [Header("Animation")]
     [Tooltip("The boss's visual sprite transform (not the root). Squished to nothing and back during each teleport. Leave empty to teleport instantly with no animation.")]
     [SerializeField] private Transform _spriteTransform;
 
     [Tooltip("How long, in seconds, the collapse and the re-appear each take. Keep this short so the boss isn't invisible for long while attacks may still be firing.")]
-    [SerializeField] private float _phaseDuration = 0.12f;
+    [SerializeField] private float _animationDuration = 0.12f;
+
+    [Tooltip("Easing for the scale/collapse over the animation duration. X axis = normalized time (0-1), Y axis = normalized progress (0-1) from the starting scale to the target scale.")]
+    [SerializeField] private AnimationCurve _scaleCurve = AnimationCurve.EaseInOut(0f, 0f, 1f, 1f);
+
+    [Tooltip("Easing for the sprite's fade over the animation duration. X axis = normalized time (0-1), Y axis = normalized progress (0-1) from the starting opacity to the target opacity.")]
+    [SerializeField] private AnimationCurve _fadeCurve = AnimationCurve.EaseInOut(0f, 0f, 1f, 1f);
 
     private Coroutine _teleportCoroutine;
     private int _nextLocationIndex;
     private float _spriteBaseScaleY = 1f;
+    private SpriteRenderer _spriteRenderer;
+    private Color _spriteBaseColor = Color.white;
 
     private void Awake()
     {
         if (_spriteTransform != null)
         {
             _spriteBaseScaleY = _spriteTransform.localScale.y;
+            _spriteRenderer = _spriteTransform.GetComponent<SpriteRenderer>();
+            if (_spriteRenderer != null)
+            {
+                _spriteBaseColor = _spriteRenderer.color;
+            }
         }
     }
 
@@ -60,7 +73,7 @@ public class BossTeleport : MonoBehaviour
         StopCoroutine(_teleportCoroutine);
         _teleportCoroutine = null;
 
-        RestoreSpriteScale();
+        RestoreSpriteState();
     }
 
     private IEnumerator TeleportLoop()
@@ -100,33 +113,51 @@ public class BossTeleport : MonoBehaviour
 
     private IEnumerator TeleportToLocation(Transform location)
     {
-        yield return ScaleSpriteVertically(1f, 0f);
+        yield return AnimateSprite(1f, 0f, mirrored: false);
         transform.position = location.position;
-        yield return ScaleSpriteVertically(0f, 1f);
+        yield return AnimateSprite(0f, 1f, mirrored: true);
     }
 
-    private IEnumerator ScaleSpriteVertically(float from, float to)
+    private IEnumerator AnimateSprite(float from, float to, bool mirrored)
     {
-        if (_spriteTransform == null || _phaseDuration <= 0f)
+        if (_spriteTransform == null || _animationDuration <= 0f)
         {
             yield break;
         }
 
-        Vector3 scale = _spriteTransform.localScale;
         float elapsed = 0f;
-        while (elapsed < _phaseDuration)
+        while (elapsed < _animationDuration)
         {
             elapsed += Time.deltaTime;
-            scale.y = Mathf.SmoothStep(from, to, elapsed / _phaseDuration) * _spriteBaseScaleY;
-            _spriteTransform.localScale = scale;
+            ApplySpriteState(from, to, elapsed / _animationDuration, mirrored);
             yield return null;
         }
 
-        scale.y = to * _spriteBaseScaleY;
-        _spriteTransform.localScale = scale;
+        ApplySpriteState(from, to, 1f, mirrored);
     }
 
-    private void RestoreSpriteScale()
+    private void ApplySpriteState(float from, float to, float t, bool mirrored)
+    {
+        Vector3 scale = _spriteTransform.localScale;
+        scale.y = Mathf.LerpUnclamped(from, to, EvaluateCurve(_scaleCurve, t, mirrored)) * _spriteBaseScaleY;
+        _spriteTransform.localScale = scale;
+
+        if (_spriteRenderer != null)
+        {
+            Color color = _spriteRenderer.color;
+            color.a = Mathf.LerpUnclamped(from, to, EvaluateCurve(_fadeCurve, t, mirrored)) * _spriteBaseColor.a;
+            _spriteRenderer.color = color;
+        }
+    }
+
+    // Reappearing after a teleport uses the opposite of the configured curve
+    // (mirrored in both time and value) so it doesn't just replay the collapse forwards.
+    private static float EvaluateCurve(AnimationCurve curve, float t, bool mirrored)
+    {
+        return mirrored ? 1f - curve.Evaluate(1f - t) : curve.Evaluate(t);
+    }
+
+    private void RestoreSpriteState()
     {
         if (_spriteTransform == null)
         {
@@ -136,6 +167,11 @@ public class BossTeleport : MonoBehaviour
         Vector3 scale = _spriteTransform.localScale;
         scale.y = _spriteBaseScaleY;
         _spriteTransform.localScale = scale;
+
+        if (_spriteRenderer != null)
+        {
+            _spriteRenderer.color = _spriteBaseColor;
+        }
     }
 
     private void OnDrawGizmosSelected()
