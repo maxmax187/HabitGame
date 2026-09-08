@@ -607,7 +607,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -3.000061}
+  m_AnchoredPosition: {x: 0, y: -3}
   m_SizeDelta: {x: 0, y: 6.0001473}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &238827018
@@ -843,6 +843,13 @@ MonoBehaviour:
   _walkTutorialText: Use <sprite=1><sprite=2><sprite=3><sprite=0>\nto move around
   _backgroundAudio: {fileID: 1752383371}
   _backgroundBattleAudio: {fileID: 580285009}
+  _tutorialIntroPages: []
+  _trainingIntroPages: []
+  _testIntroPages: []
+  _fixedLevelTime: 60
+  _tutorialBossIndex: 0
+  _trainingBossSchedule: 000000000000000001000000010000000200000003000000040000000500000006000000070000000800000008000000
+  _testBossSchedule: 08000000
 --- !u!4 &380437866
 Transform:
   m_ObjectHideFlags: 0
@@ -897,7 +904,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -3.000061}
+  m_AnchoredPosition: {x: 0, y: -3}
   m_SizeDelta: {x: -100, y: -106}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &397944650
@@ -1608,7 +1615,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 9, z: 180}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 0, y: -8.62}
+  m_AnchoredPosition: {x: 0, y: -8.620117}
   m_SizeDelta: {x: 40, y: 46.666668}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &558640366
@@ -1902,7 +1909,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 0, y: 13.080017}
+  m_AnchoredPosition: {x: 0, y: 13.080078}
   m_SizeDelta: {x: -100, y: 104}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &591377239
@@ -2610,25 +2617,34 @@ MonoBehaviour:
   _text: {fileID: 506734105}
   _pageIndicator: {fileID: 76927263}
   _tutorialPages:
-  - <b>INSTRUCTIONS</b>\n\n The goal of this game is to avoid obstacles, pass through
-    the door, and defeat the boss withing set time
-  - <b>MOVEMENT</b>\n \nUse <sprite=1><sprite=2><sprite=3><sprite=0> to navigate
-  - <b>TIMER</b>\n\n The timer indicates also your life, every collision with spikes
-    takes -3 seconds, attack from the boss takes -10 seconds from your remaining
-    time. If the time runs out, the round is over.
-  - <b>HAVE FUN!</b>
+  - '<b>MISSION</b>\n\n You are in a labyrinth. Your task is to navigate different
+    rooms, avoid obstacles and fight monsters. Your goal is to kill as many monsters
+    as you can. '
+  - <b>CONTROLS</b>\n\n Navigate the labyrinth using <sprite=1><sprite=2><sprite=3><sprite=0>
+    or arrow keys. Press <sprite=6> to attack the monster.
+  - <b>LEVELS</b>\n\n Each level is a bit different but all of them have three parts
+    - falling spikes, room with a door and monster chamber. In total there is X levels
+    (today).
+  - <b>CLOCK</b>\n\n There is a timer on top of the screen. You have one minute for
+    each level. Every collision with spikes reduces your remaining time by 3 seconds.
+    A shot from a monster takes 10 seconds from your remaining time. If the time
+    runs out, the level is over.
+  - <size=150%><b>HAVE FUN!</b></size>\n\n
   _trainingPages:
   - <b>NEW OBJECT</b>\n       <size=300%><sprite name="Dungeon_Tileset_85"></size>\n\n
-    In the room with a door is now a chest. You can open the chest pressing <sprite=5>
-    to trigger a minigame.
-  - <b>MINIGAME</b>\n\n After completing the minigame you get a weapon upgrade that
-    increases the damage you give to the boss, but the minigame costs some time.
-  - <b>HAVE FUN!</b>
+    In the room with a door is now a chest. You can open the chest pressing <sprite=5>.
+  - <b>MINIGAME</b>\n\n Opening the chest triggers a minigame that costs some time.
+    During the minigame press <sprite=6> when the arrow is pointing at the green
+    part of the circle. Hit it 4 times to finish the minigame.
+  - <b>WEAPON UPGRADE</b>\n\n After finishing the minigame your weapon gets  upgraded
+    and you deal more damage to the boss. Your weapon resets to base damage after
+    the level is finished.
+  - <size=150%><b>HAVE FUN!</b></size>\n\n
   _testPages:
   - <b>RULE CHANGE!</b>
-  - <b>NO WEAPON UPGRADE</b>\n\n You can still play the minigame, but it does not
-    provide any weapon upgrade anymore but still costs some time.
-  - <b>HAVE FUN!</b>
+  - <b>NO WEAPON UPGRADE</b>\n\n You can still play the chest minigame, but it does
+    NOT provide any weapon upgrade anymore, it only costs time.
+  - <size=150%><b>HAVE FUN!</b></size>\n\n
 --- !u!4 &814126479
 Transform:
   m_ObjectHideFlags: 0
@@ -3694,7 +3710,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 1786852013}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0, g: 0, b: 0, a: 0}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -3766,7 +3782,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 0, y: 13.080017}
+  m_AnchoredPosition: {x: 0, y: 13.080078}
   m_SizeDelta: {x: -140, y: 28.9}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &1412193881
@@ -4492,7 +4508,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 23.994991}
+  m_AnchoredPosition: {x: 0, y: 23.994873}
   m_SizeDelta: {x: -30, y: -92.00999}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1677081581
@@ -4754,7 +4770,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 1786852013}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0, g: 0, b: 0, a: 0}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
