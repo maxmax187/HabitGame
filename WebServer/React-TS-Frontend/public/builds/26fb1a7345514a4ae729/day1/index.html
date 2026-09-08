@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Condition ML, single-day build placeholder</title>
+    <style>
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font: 16px/1.6 system-ui, sans-serif;
+        color: #eee;
+        background: #111;
+        text-align: center;
+        padding: 24px;
+        box-sizing: border-box;
+      }
+      .wrap { max-width: 640px; text-align: left; }
+      code { background: #222; padding: 1px 5px; border-radius: 3px; }
+      pre {
+        background: #000;
+        border: 1px solid #333;
+        padding: 12px;
+        overflow-x: auto;
+        font-size: 13px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <p>
+        Condition ML (moderate dosage, single-day), build placeholder.<br />
+        Replace the contents of <code>public/builds/26fb1a7345514a4ae729/day1/</code> with
+        the exported Unity WebGL build for condition ML
+        (keeping <code>index.html</code> at this path).
+      </p>
+      <p>This condition only has one game session - there is no day2/day3 for it.</p>
+      <p>This page is loaded in an iframe with query params the game should read:</p>
+      <pre>?email=participant%40example.com&day=1</pre>
+      <p>When the session's data is ready, POST it to the API (same origin, path relative to the site root) so it's saved server-side instead of downloaded:</p>
+      <pre>POST /f8622112/api/submit-data.php
+Content-Type: application/json
+
+{
+  "email": "participant@example.com",
+  "day": 1,
+  "data": { ...the game's JSON... }
+}</pre>
+      <p>Response: <code>{ "success": true }</code> on save, or
+      <code>{ "success": false, "message": "..." }</code> on failure (e.g. the
+      email isn't a registered participant).</p>
+    </div>
+  </body>
+</html>
