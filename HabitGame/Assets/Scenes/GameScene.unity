@@ -2637,7 +2637,7 @@ MonoBehaviour:
     During the minigame press <sprite=6> when the arrow is pointing at the green
     part of the circle. Hit it 4 times to finish the minigame.
   - <b>WEAPON UPGRADE</b>\n\n After finishing the minigame your weapon gets  upgraded
-    and you give more damage to the boss. Your weapon resets to base damage after
+    and you deal more damage to the boss. Your weapon resets to base damage after
     the level is finished.
   - <size=150%><b>HAVE FUN!</b></size>\n\n
   _testPages:
@@ -3710,7 +3710,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 1786852013}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0, g: 0, b: 0, a: 0}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -4770,7 +4770,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 1786852013}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0, g: 0, b: 0, a: 0}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
