@@ -20,8 +20,24 @@ public class BossTeleport : MonoBehaviour
     [Tooltip("When enabled, locations are chosen at random. When disabled, locations are visited in the order listed above.")]
     [SerializeField] private bool _randomOrder;
 
+    [Header("Animation")] 
+    [Tooltip("The boss's visual sprite transform (not the root). Squished to nothing and back during each teleport. Leave empty to teleport instantly with no animation.")]
+    [SerializeField] private Transform _spriteTransform;
+
+    [Tooltip("How long, in seconds, the collapse and the re-appear each take. Keep this short so the boss isn't invisible for long while attacks may still be firing.")]
+    [SerializeField] private float _phaseDuration = 0.12f;
+
     private Coroutine _teleportCoroutine;
     private int _nextLocationIndex;
+    private float _spriteBaseScaleY = 1f;
+
+    private void Awake()
+    {
+        if (_spriteTransform != null)
+        {
+            _spriteBaseScaleY = _spriteTransform.localScale.x;
+        }
+    }
 
     public void StartTeleporting()
     {
@@ -43,6 +59,8 @@ public class BossTeleport : MonoBehaviour
 
         StopCoroutine(_teleportCoroutine);
         _teleportCoroutine = null;
+
+        RestoreSpriteScale();
     }
 
     private IEnumerator TeleportLoop()
@@ -50,11 +68,18 @@ public class BossTeleport : MonoBehaviour
         while (true)
         {
             yield return new WaitForSeconds(_teleportInterval);
-            TeleportToNextLocation();
+
+            Transform location = GetNextLocation();
+            if (location == null)
+            {
+                continue;
+            }
+
+            yield return TeleportToLocation(location);
         }
     }
 
-    private void TeleportToNextLocation()
+    private Transform GetNextLocation()
     {
         int index = _randomOrder ? Random.Range(0, _teleportLocations.Length) : _nextLocationIndex;
 
@@ -68,10 +93,49 @@ public class BossTeleport : MonoBehaviour
         if (location == null)
         {
             Debug.LogWarning($"BossTeleport: location at index {index} is not assigned, skipping this teleport.", this);
+        }
+
+        return location;
+    }
+
+    private IEnumerator TeleportToLocation(Transform location)
+    {
+        yield return ScaleSpriteHorizontally(1f, 0f);
+        transform.position = location.position;
+        yield return ScaleSpriteHorizontally(0f, 1f);
+    }
+
+    private IEnumerator ScaleSpriteHorizontally(float from, float to)
+    {
+        if (_spriteTransform == null || _phaseDuration <= 0f)
+        {
+            yield break;
+        }
+
+        Vector3 scale = _spriteTransform.localScale;
+        float elapsed = 0f;
+        while (elapsed < _phaseDuration)
+        {
+            elapsed += Time.deltaTime;
+            scale.x = Mathf.SmoothStep(from, to, elapsed / _phaseDuration) * _spriteBaseScaleY;
+            _spriteTransform.localScale = scale;
+            yield return null;
+        }
+
+        scale.x = to * _spriteBaseScaleY;
+        _spriteTransform.localScale = scale;
+    }
+
+    private void RestoreSpriteScale()
+    {
+        if (_spriteTransform == null)
+        {
             return;
         }
 
-        transform.position = location.position;
+        Vector3 scale = _spriteTransform.localScale;
+        scale.x = _spriteBaseScaleY;
+        _spriteTransform.localScale = scale;
     }
 
     private void OnDrawGizmosSelected()

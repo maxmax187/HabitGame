@@ -9790,6 +9790,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 3439296262324916909}
     m_Modifications:
     - target: {fileID: 1584796899245064, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
+      propertyPath: _phaseDuration
+      value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 1584796899245064, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: _teleportEnabled
       value: 1
       objectReference: {fileID: 0}

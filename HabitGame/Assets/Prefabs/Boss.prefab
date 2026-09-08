@@ -771,6 +771,8 @@ MonoBehaviour:
   _teleportLocations: []
   _teleportInterval: 5
   _randomOrder: 0
+  _spriteTransform: {fileID: 6281282113604258883}
+  _phaseDuration: 0.12
 --- !u!1 &6381787754787301512
 GameObject:
   m_ObjectHideFlags: 0
