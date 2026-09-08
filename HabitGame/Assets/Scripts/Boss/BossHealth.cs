@@ -20,6 +20,7 @@ public class BossHealth : Health
 
     private PlayerHealth _playerHealth;
     private BossAttackController _attack;
+    private BossTeleport _teleport;
 
     protected override void Start()
     {
@@ -30,8 +31,10 @@ public class BossHealth : Health
 
         _playerHealth = PlayerHealth.Instance;
         _attack = GetComponent<BossAttackController>();
+        _teleport = GetComponent<BossTeleport>();
 
         _attack.BossActivate(_playerHealth, this);
+        _teleport?.StartTeleporting();
         _playerHealth.ActivateAttack();
 
         if (_gameManager == null)
@@ -84,6 +87,7 @@ public class BossHealth : Health
         {
             //Boss dies you win
             _attack?.StopAttacks();
+            _teleport?.StopTeleporting();
             _animator.SetTrigger("Dead");
             _bossDeathAudio.Play();
             float animationLenght = _animator.GetCurrentAnimatorStateInfo(0).length;
