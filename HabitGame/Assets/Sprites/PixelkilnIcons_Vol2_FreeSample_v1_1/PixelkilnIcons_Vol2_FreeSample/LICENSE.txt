@@ -1,0 +1,36 @@
+PIXELKILN ASSET LICENSE v1.0
+============================
+
+Copyright (c) 2026 Pixelkiln
+
+By purchasing or downloading this asset pack you are granted the
+following rights:
+
+YOU CAN
+-------
+* Use the assets in unlimited personal and commercial projects
+  (games, apps, videos, streams, game jams, client work).
+* Modify, recolour, crop, and adapt the assets to fit your project.
+* Ship the assets inside your compiled game/app on any platform,
+  including paid products.
+
+YOU CANNOT
+----------
+* Redistribute, resell, or sublicense the assets AS ASSETS, whether
+  original or modified (e.g. re-uploading them to asset stores,
+  bundling them in templates/engines/tools, or sharing the files).
+* Use the assets in NFT/blockchain collections or sell them as NFTs.
+* Use the assets to train, fine-tune, or seed machine-learning /
+  generative-AI models or datasets.
+* Claim authorship of the original assets.
+
+CREDIT
+------
+Credit ("UI by Pixelkiln - z3er1n.itch.io") is appreciated but NOT
+required.
+
+One licence covers one individual or one team working on shared
+projects. This licence is non-exclusive and non-transferable. Assets
+are provided "as is", without warranty of any kind.
+
+Questions: via the Pixelkiln itch.io page.
