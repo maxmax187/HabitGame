@@ -38,8 +38,8 @@ public class GameManager : MonoBehaviour
 
     [Header("Boss Schedule")]
     [SerializeField] private int _tutorialBossIndex = 0;
-    [SerializeField] private int[] _trainingBossSchedule = { 1, 2, 3, 4, 5, 6, 7, 8 };
-    [SerializeField] private int[] _testBossSchedule = { 9 };
+    [SerializeField] private int[] _trainingBossSchedule = { 0, 1, 2, 3, 4, 5, 6, 7 };
+    [SerializeField] private int[] _testBossSchedule = { 8, 9 };
 
     private ConfigManager _configManager;
     private int _currentPhase;

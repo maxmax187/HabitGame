@@ -103,8 +103,9 @@ InitTestScene*.unity*
 /[Aa]ssets/[Ii]nit[Tt]est[Ss]cene*.unity*
 
 # Custom build output (not covered by standard Build/Builds patterns)
-GitSave.x86_64
-GitSave_Data/
+GitSave/
+*.x86_64
+*_Data/
 HabitGame_BurstDebugInformation_DoNotShip/
 UnityPlayer.so
 libdecor*.so*
