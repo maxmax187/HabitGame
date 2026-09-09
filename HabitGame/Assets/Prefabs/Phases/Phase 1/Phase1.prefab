@@ -5475,8 +5475,6 @@ MonoBehaviour:
     SpawnEveryRows: 4
   - OpenSpace: 3
     SpawnEveryRows: 4
-  - OpenSpace: 3
-    SpawnEveryRows: 3
 --- !u!61 &5080026289106702287
 BoxCollider2D:
   m_ObjectHideFlags: 0

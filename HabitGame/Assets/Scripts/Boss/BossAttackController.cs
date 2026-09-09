@@ -1,10 +1,15 @@
 using System;
+using System.Collections;
 using UnityEngine;
 
 public class BossAttackController : MonoBehaviour
 {
     [SerializeField] private float _waitForStart;
     [SerializeField] private AttackPaternHealth[] _attackPaternHealth;
+
+    [Header("Attack Warning")]
+    [SerializeField] private GameObject _warningSprite;
+    [SerializeField] private float _warningLeadTime = 1f;
 
     private int _attackPaternHealthIndex;
     private int _attackIndex;
@@ -27,6 +32,14 @@ public class BossAttackController : MonoBehaviour
         public float TimeBeforeNextAttack;
     }
     #endregion
+
+    private void Awake()
+    {
+        if (_warningSprite != null)
+        {
+            _warningSprite.SetActive(false);
+        }
+    }
 
     //Activated once the player enters the boss room
     public void BossActivate(PlayerHealth player, BossHealth bossHealth)
@@ -80,7 +93,29 @@ public class BossAttackController : MonoBehaviour
 
     private void WaitForAttack(float time)
     {
-        _attackCoroutine = StartCoroutine(HelperWait.ActionAfterWait(time, Attack));
+        _attackCoroutine = StartCoroutine(AttackAfterDelay(time));
+    }
+
+    private IEnumerator AttackAfterDelay(float time)
+    {
+        float warningTime = Mathf.Min(_warningLeadTime, time);
+        float preWarningWait = Mathf.Max(0f, time - warningTime);
+
+        yield return new WaitForSeconds(preWarningWait);
+
+        if (_warningSprite != null)
+        {
+            _warningSprite.SetActive(true);
+        }
+
+        yield return new WaitForSeconds(warningTime);
+
+        if (_warningSprite != null)
+        {
+            _warningSprite.SetActive(false);
+        }
+
+        Attack();
     }
 
     public void StopAttacks()
@@ -90,5 +125,10 @@ public class BossAttackController : MonoBehaviour
             return;
         }
         StopCoroutine(_attackCoroutine);
+
+        if (_warningSprite != null)
+        {
+            _warningSprite.SetActive(false);
+        }
     }
 }

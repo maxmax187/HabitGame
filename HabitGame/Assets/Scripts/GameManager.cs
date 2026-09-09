@@ -38,8 +38,8 @@ public class GameManager : MonoBehaviour
 
     [Header("Boss Schedule")]
     [SerializeField] private int _tutorialBossIndex = 0;
-    [SerializeField] private int[] _trainingBossSchedule = { 0, 0, 1, 1, 2, 3, 4, 5, 6, 7, 8, 8 };
-    [SerializeField] private int[] _testBossSchedule = { 8 };
+    [SerializeField] private int[] _trainingBossSchedule = { 1, 2, 3, 4, 5, 6, 7, 8 };
+    [SerializeField] private int[] _testBossSchedule = { 9 };
 
     private ConfigManager _configManager;
     private int _currentPhase;
@@ -50,8 +50,8 @@ public class GameManager : MonoBehaviour
     private AudioSource _currentAudio;
 
     private const int TutorialRoundCount = 2;
-    private const int TrainingRoundCount = 12;
-    private const int TestRoundCount = 1;
+    private const int TrainingRoundCount = 8;
+    private const int TestRoundCount = 2;
     public const int TotalRoundCount = TutorialRoundCount + TrainingRoundCount + TestRoundCount;
 
     public int CurrentRound => _configManager != null ? _configManager.Config.LevelsData.Count : 1;
