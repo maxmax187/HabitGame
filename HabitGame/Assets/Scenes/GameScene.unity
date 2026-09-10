@@ -847,9 +847,9 @@ MonoBehaviour:
   _trainingIntroPages: []
   _testIntroPages: []
   _fixedLevelTime: 60
-  _tutorialBossIndex: 0
-  _trainingBossSchedule: 000000000000000001000000010000000200000003000000040000000500000006000000070000000800000008000000
-  _testBossSchedule: 08000000
+  _tutorialBossIndex: 1
+  _trainingBossSchedule: 02000000030000000400000005000000060000000700000008000000
+  _testBossSchedule: 09000000
 --- !u!4 &380437866
 Transform:
   m_ObjectHideFlags: 0

@@ -37,9 +37,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] private float _fixedLevelTime = 60f;
 
     [Header("Boss Schedule")]
-    [SerializeField] private int _tutorialBossIndex = 0;
-    [SerializeField] private int[] _trainingBossSchedule = { 0, 1, 2, 3, 4, 5, 6, 7 };
-    [SerializeField] private int[] _testBossSchedule = { 8, 9 };
+    [SerializeField] private int _tutorialBossIndex = 1;
+    [SerializeField] private int[] _trainingBossSchedule = { 5, 7 };
+    [SerializeField] private int[] _testBossSchedule = { 8 };
 
     private ConfigManager _configManager;
     private int _currentPhase;
@@ -49,9 +49,9 @@ public class GameManager : MonoBehaviour
     private bool _isLastBoss;
     private AudioSource _currentAudio;
 
-    private const int TutorialRoundCount = 2;
-    private const int TrainingRoundCount = 8;
-    private const int TestRoundCount = 2;
+    private const int TutorialRoundCount = 1;
+    private const int TrainingRoundCount = 7;
+    private const int TestRoundCount = 1;
     public const int TotalRoundCount = TutorialRoundCount + TrainingRoundCount + TestRoundCount;
 
     public int CurrentRound => _configManager != null ? _configManager.Config.LevelsData.Count : 1;
@@ -340,6 +340,8 @@ public class GameManager : MonoBehaviour
         int phaseThreeCount = _phases.PhasesThree.Length;
         bossIndex = math.clamp(bossIndex, 0, phaseThreeCount - 1);
 
+        Debug.Log($"GetBossPhase: bossIndex={bossIndex}, phaseAsset={_phases.PhasesThree[bossIndex].Phase.name}");
+
         if (_configManager != null)
         {
             _configManager.SetCurrentBossIndex(bossIndex);
@@ -352,6 +354,8 @@ public class GameManager : MonoBehaviour
 
     private int GetScheduledBossIndex()
     {
+        Debug.Log($"GetScheduledBossIndex: CurrentRound={CurrentRound}, IsTutorialLevel={IsTutorialLevel}, IsTestLevel={IsTestLevel}");
+
         if (IsTutorialLevel)
         {
             return _tutorialBossIndex;
@@ -360,10 +364,12 @@ public class GameManager : MonoBehaviour
         if (IsTestLevel)
         {
             int testRoundIndex = CurrentRound - (TutorialRoundCount + TrainingRoundCount) - 1;
+            Debug.Log($"Test round index = {testRoundIndex}");
             return GetFromSchedule(_testBossSchedule, testRoundIndex);
         }
 
         int trainingRoundIndex = CurrentRound - TutorialRoundCount - 1;
+        Debug.Log($"Training round index = {trainingRoundIndex}");
         return GetFromSchedule(_trainingBossSchedule, trainingRoundIndex);
     }
 
