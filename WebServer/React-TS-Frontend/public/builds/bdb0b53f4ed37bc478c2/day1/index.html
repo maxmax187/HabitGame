@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Condition EL, Day 3 build placeholder</title>
+    <title>Condition SHORT, single-session build placeholder</title>
     <style>
       body {
         margin: 0;
@@ -31,20 +31,26 @@
   <body>
     <div class="wrap">
       <p>
-        Condition EL, Day 3 build placeholder.<br />
-        Replace the contents of <code>public/builds/e71408556147d1f4a022/day3/</code> with
-        the exported Unity WebGL build for condition EL, day 3
+        Condition SHORT (simplified single session), build placeholder.<br />
+        Replace the contents of <code>public/builds/bdb0b53f4ed37bc478c2/day1/</code> with
+        the exported Unity WebGL build for condition SHORT
         (keeping <code>index.html</code> at this path).
       </p>
+      <p>
+        This is a separate, non-balanced condition for participants who
+        registered but didn't want the full 3-day study - they're routed
+        straight here from the Gateway page, skipping the day1/2/3
+        overview. There is no day2/day3 for it.
+      </p>
       <p>This page is loaded in an iframe with query params the game should read:</p>
-      <pre>?email=participant%40example.com&day=3</pre>
-      <p>When the day's data is ready, POST it to the API (same origin, path relative to the site root) so it's saved server-side instead of downloaded:</p>
+      <pre>?email=participant%40example.com&day=1</pre>
+      <p>When the session's data is ready, POST it to the API (same origin, path relative to the site root) so it's saved server-side instead of downloaded:</p>
       <pre>POST /f8622112/api/submit-data.php
 Content-Type: application/json
 
 {
   "email": "participant@example.com",
-  "day": 3,
+  "day": 1,
   "data": { ...the game's JSON... }
 }</pre>
       <p>Response: <code>{ "success": true }</code> on save, or

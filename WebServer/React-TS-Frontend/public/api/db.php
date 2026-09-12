@@ -2,10 +2,17 @@
 require_once __DIR__ . '/env.php';
 loadEnv();
 
-// ML/MR = moderate dosage (1 day), EL/ER = extensive dosage (3 days),
-// each crossed with L/R bias. Participants are balanced equally across
-// all four.
-const CONDITIONS = ['ML', 'MR', 'EL', 'ER'];
+// All 4 main conditions now run the full 3 days. BETWEEN_* participants
+// are tested only at the end of day 3; WITHIN_* participants are tested
+// on both day 1 and day 3 (both handled entirely in-game) - each crossed
+// with L/R bias. Participants are balanced equally across these four.
+const BALANCED_CONDITIONS = ['BETWEEN_L', 'BETWEEN_R', 'WITHIN_L', 'WITHIN_R'];
+
+// SHORT is a fifth, separate condition - a single simplified session for
+// participants who registered but don't want the full 3-day study.
+// Deliberately excluded from BALANCED_CONDITIONS: never auto-assigned and
+// never touched by "reassign all", only reachable via a forced assignment.
+const CONDITIONS = [...BALANCED_CONDITIONS, 'SHORT'];
 
 function getDb(): mysqli {
     // PHP 8.1+ makes mysqli throw on SQL errors (e.g. duplicate key) by
@@ -38,13 +45,16 @@ function countByCondition(mysqli $db): array {
     return $counts;
 }
 
+// Only ever picks among BALANCED_CONDITIONS - SHORT is never auto-assigned,
+// even though $counts (from countByCondition) also includes its count.
 function pickBalancedCondition(array $counts): string {
-    $minCount = min($counts);
-    $candidates = array_keys($counts, $minCount, true);
+    $balanced = array_intersect_key($counts, array_flip(BALANCED_CONDITIONS));
+    $minCount = min($balanced);
+    $candidates = array_keys($balanced, $minCount, true);
     return $candidates[array_rand($candidates)];
 }
 
-// ML/MR (moderate) only ever have a single day; EL/ER (extensive) have 3.
+// SHORT is a single session; every other condition now runs the full 3 days.
 function conditionDayCount(string $condition): int {
-    return in_array($condition, ['ML', 'MR'], true) ? 1 : 3;
+    return $condition === 'SHORT' ? 1 : 3;
 }

@@ -17,7 +17,11 @@ function Gateway() {
     try {
       const resolved = await checkEmail(email)
       if (resolved) {
-        navigate(`/${resolved.slug}?email=${encodeURIComponent(resolved.email)}`)
+        // SHORT participants get a single simplified session, not the
+        // multi-day overview - send them straight into the game.
+        const target =
+          resolved.condition === 'SHORT' ? `/${resolved.slug}/day1` : `/${resolved.slug}`
+        navigate(`${target}?email=${encodeURIComponent(resolved.email)}`)
         return
       }
       setError('not-found')
@@ -37,9 +41,8 @@ function Gateway() {
 
         <section className="intro-card">
           <p>
-            Over the next three days, you will be asked to play a short
-            game once per day. Enter the email address you registered
-            with below to reach your games.
+            Enter the email address you registered with below to reach
+            your game.
           </p>
           
           <p>

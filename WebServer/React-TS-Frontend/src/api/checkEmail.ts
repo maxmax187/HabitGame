@@ -4,6 +4,7 @@ import { CONDITION_SLUGS, type Condition } from '../data/conditions'
 export interface ResolvedParticipant {
   slug: string
   email: string
+  condition: Condition
 }
 
 interface CheckEmailResponse {
@@ -30,5 +31,5 @@ export async function checkEmail(
   const result = (await response.json()) as CheckEmailResponse
   if (!result.found || !result.condition) return null
 
-  return { slug: CONDITION_SLUGS[result.condition], email }
+  return { slug: CONDITION_SLUGS[result.condition], email, condition: result.condition }
 }

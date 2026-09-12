@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Condition ML, single-day build placeholder</title>
+    <title>Condition BETWEEN_L, Day 3 build placeholder</title>
     <style>
       body {
         margin: 0;
@@ -31,21 +31,20 @@
   <body>
     <div class="wrap">
       <p>
-        Condition ML (moderate dosage, single-day), build placeholder.<br />
-        Replace the contents of <code>public/builds/26fb1a7345514a4ae729/day1/</code> with
-        the exported Unity WebGL build for condition ML
+        Condition BETWEEN_L, Day 3 build placeholder.<br />
+        Replace the contents of <code>public/builds/ad27dc55c8b9bae0fea0/day3/</code> with
+        the exported Unity WebGL build for condition BETWEEN_L, day 3
         (keeping <code>index.html</code> at this path).
       </p>
-      <p>This condition only has one game session - there is no day2/day3 for it.</p>
       <p>This page is loaded in an iframe with query params the game should read:</p>
-      <pre>?email=participant%40example.com&day=1</pre>
-      <p>When the session's data is ready, POST it to the API (same origin, path relative to the site root) so it's saved server-side instead of downloaded:</p>
+      <pre>?email=participant%40example.com&day=3</pre>
+      <p>When the day's data is ready, POST it to the API (same origin, path relative to the site root) so it's saved server-side instead of downloaded:</p>
       <pre>POST /f8622112/api/submit-data.php
 Content-Type: application/json
 
 {
   "email": "participant@example.com",
-  "day": 1,
+  "day": 3,
   "data": { ...the game's JSON... }
 }</pre>
       <p>Response: <code>{ "success": true }</code> on save, or
