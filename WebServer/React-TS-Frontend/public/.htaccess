@@ -24,6 +24,12 @@ Options -Indexes
   RewriteCond %{REQUEST_FILENAME} -d
   RewriteRule ^ - [L]
 
+  # A missing file under builds/ (e.g. no build uploaded for that day yet)
+  # must stay a plain 404 - never fall back to index.html, or the whole
+  # site ends up rendering inside what's meant to be the game iframe.
+  RewriteCond %{REQUEST_URI} ^/f8622112/builds/
+  RewriteRule ^ - [L]
+
   # Everything else falls back to index.html so React Router can handle it
   RewriteRule ^ index.html [L]
 </IfModule>
