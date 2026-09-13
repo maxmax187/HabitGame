@@ -44,7 +44,17 @@ function ConditionOverview() {
             </Link>
           ) : (
             Array.from({ length: dayCount }, (_, i) => i + 1).map((day) => (
-              <Link key={day} to={withQuery(`/${slug}/day${day}`)} className="day-button">
+              <Link
+                key={day}
+                to={withQuery(`/${slug}/day${day}`)}
+                className="day-button"
+                onClick={(event) => {
+                  const confirmed = window.confirm(
+                    `You are about to start Day ${day}. Please make sure this is the correct day before continuing.`,
+                  )
+                  if (!confirmed) event.preventDefault()
+                }}
+              >
                 <span className="day-button-label">Day {day}</span>
               </Link>
             ))
