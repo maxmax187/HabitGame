@@ -79,7 +79,7 @@
 //     (already done in this project's .gitignore).
 //
 //  3) In Unity, use Tools > WebGL FTP Deploy > Target > and pick one of:
-//     Between L/Within L/Between R/Within R (each with a Day 1/2/3
+//     Between L/Between R/Within L/Within R (each with a Day 1/2/3
 //     submenu), Short, Demo 1/2/3, or Test. This selection is remembered
 //     between builds until changed.
 //

@@ -31,7 +31,7 @@ function DayPage({ day }: DayPageProps) {
   const query = searchParams.toString()
   const backTo = query ? `/${slug}?${query}` : `/${slug}`
 
-  // Single-day (moderate) conditions don't reveal day-numbering to the
+  // Single-day conditions (SHORT) don't reveal day-numbering to the
   // participant, matching the overview button reading "to the game"
   // instead of "Day 1".
   const heading = dayCount === 1 ? 'Game' : `Day ${day}`
