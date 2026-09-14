@@ -9930,11 +9930,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 376306507026067121, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: m_SpriteTilingProperty.oldSize.x
-      value: 0.11
+      value: 0.16
       objectReference: {fileID: 0}
     - target: {fileID: 376306507026067121, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: m_SpriteTilingProperty.oldSize.y
-      value: 0.13
+      value: 0.16
       objectReference: {fileID: 0}
     - target: {fileID: 901763946936060440, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: m_AnchorMax.x
@@ -10075,26 +10075,26 @@ PrefabInstance:
     - target: {fileID: 4323095950062116083, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 6199791883379630216, guid: 91cf8173a1d79884fa11706eea37ab75, type: 3}
+      objectReference: {fileID: -2851127834306816864, guid: 91cf8173a1d79884fa11706eea37ab75, type: 3}
     - target: {fileID: 4840009478468677974, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 5876570029868465104, guid: 91cf8173a1d79884fa11706eea37ab75, type: 3}
+      objectReference: {fileID: -1858865680, guid: 2fe37ee33bf093d4d8beaaa285faa0c7, type: 3}
     - target: {fileID: 4840009478468677974, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: m_Color.b
-      value: 0
+      value: 0.10590956
       objectReference: {fileID: 0}
     - target: {fileID: 4840009478468677974, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: m_Color.g
-      value: 0
+      value: 0.4009434
       objectReference: {fileID: 0}
     - target: {fileID: 4840009478468677974, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: m_Color.r
-      value: 1
+      value: 0.1637593
       objectReference: {fileID: 0}
     - target: {fileID: 4964789261547559803, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: _speed
-      value: 1.5
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5322893820811334904, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: m_LocalPosition.x
@@ -10150,7 +10150,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8811735804161747027, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

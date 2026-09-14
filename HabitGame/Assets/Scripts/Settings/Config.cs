@@ -37,6 +37,7 @@ public class Config
     public int CurrentSpikeDificulty;
     public ChestSide ChestSide;
     public int Day;
+    public int Group;
     public List<LevelData> LevelsData;
 
     // public bool TutorialIntroShown;

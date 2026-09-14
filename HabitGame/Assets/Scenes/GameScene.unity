@@ -847,8 +847,8 @@ MonoBehaviour:
   _trainingIntroPages: []
   _testIntroPages: []
   _fixedLevelTime: 60
-  _tutorialBossIndex: 1
-  _trainingBossSchedule: 02000000030000000400000005000000060000000700000008000000
+  _tutorialBossIndex: 0
+  _trainingBossSchedule: 01000000010000000100000001000000020000000200000002000000020000000300000004000000050000000600000009000000090000000900000009000000
   _testBossSchedule: 09000000
 --- !u!4 &380437866
 Transform:
@@ -2623,8 +2623,11 @@ MonoBehaviour:
   - <b>CONTROLS</b>\n\n Navigate the labyrinth using <sprite=1><sprite=2><sprite=3><sprite=0>
     or arrow keys. Press <sprite=6> to attack the monster.
   - <b>LEVELS</b>\n\n Each level is a bit different but all of them have three parts
-    - falling spikes, room with a door and monster chamber. In total there is X levels
-    (today).
+    - falling spikes, room with a door and monster chamber. In total there is 24
+    levels today.
+  - '<b>MONSTERS</b>\n\n <size=150%><sprite name="DummyBoss_0"> <sprite name="Dungeon_Character_2_7">
+    <sprite name="Bat_1"> <sprite name="Dungeon_Character_2_10"> <sprite name="Dungeon_Character_2_8"></size>
+    \n\n There are several types of monsters. Each has its own attack style and strategy. '
   - <b>CLOCK</b>\n\n There is a timer on top of the screen. You have one minute for
     each level. Every collision with spikes reduces your remaining time by 3 seconds.
     A shot from a monster takes 10 seconds from your remaining time. If the time
