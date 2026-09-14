@@ -176,21 +176,10 @@ server's certificate chain is missing intermediates, so the deploy script
 pins to the fingerprint instead of relying on normal validation.
 Certificate typically automatically renews every ~90 days.
 
-## Common tasks
-
-- **Add a participant**: `participant_admin.php` -> Add participant. Leave
-  "Condition" on Auto-balance unless you specifically need `SHORT` or a
-  forced condition.
-- **Check/export collected data**: `data_admin.php` -> pick a view, or
-  "Download all data (.zip)".
-- **Redeploy a game build**: in Unity, set the target under
-  `Tools > WebGL FTP Deploy > Target`, turn on Auto-Deploy, then build WebGL
-  normally (File > Build Settings > Build).
-- **Change the condition scheme**: start in
+## Misc
+- **Changing the condition scheme**: start in
   `WebServer/React-TS-Frontend/src/data/conditions.ts` (slugs/day counts) and
   `public/api/db.php` (balancing), then update `schema.sql` and add a
   `migrate_*.sql` to adjust the existing DB tables, then update 
   `FTPDeployWebGL.cs`'s targets/env keys and `HabitGame/.env`.
 
-TODO this is SHORT condition link????
-[text](.../builds/bdb0b53f4ed37bc478c2/day1)
