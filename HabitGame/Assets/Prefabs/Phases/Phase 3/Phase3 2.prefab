@@ -9940,19 +9940,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2953918441078659866, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.14064398
+      value: 0.3564367
       objectReference: {fileID: 0}
     - target: {fileID: 2953918441078659866, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.12439442
+      value: 0.3330013
       objectReference: {fileID: 0}
     - target: {fileID: 2953918441078659866, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.0139
+      value: 0.0043
       objectReference: {fileID: 0}
     - target: {fileID: 2953918441078659866, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.0149
+      value: 0.0046
       objectReference: {fileID: 0}
     - target: {fileID: 4323095950062116083, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: m_FlipX
@@ -10064,19 +10064,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6281282113604258883, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.5957
+      value: 0.5098001
       objectReference: {fileID: 0}
     - target: {fileID: 6281282113604258883, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.6856
+      value: 0.5798805
       objectReference: {fileID: 0}
     - target: {fileID: 6281282113604258883, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.002
+      value: 0.003
       objectReference: {fileID: 0}
     - target: {fileID: 6281282113604258883, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.001
+      value: 0.019
       objectReference: {fileID: 0}
     - target: {fileID: 7788196321626605594, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: HealthAmount
