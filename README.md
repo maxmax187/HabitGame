@@ -78,6 +78,10 @@ per-day subfolder) are all defined in
 [`conditions.ts`](WebServer/React-TS-Frontend/src/data/conditions.ts) - this
 is the single source of truth on the website side.
 
+Participants that do not wish to parttake in the full study, but who need to play the game
+without their data being recorded, can enter the game through this direct link without being
+registered: https://htionline.tue.nl/f8622112/builds/bdb0b53f4ed37bc478c2/day1 
+
 **Currently, every condition/day combination needs its own separate Unity
 WebGL build** - there's no single build that adapts these parameters at runtime. 
 That's 4 conditions x 3 days, plus `SHORT`, plus the 3 demo
