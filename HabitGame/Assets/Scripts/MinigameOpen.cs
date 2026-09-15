@@ -3,8 +3,18 @@ using UnityEngine;
 [RequireComponent(typeof(BoxCollider2D))]
 public class MinigameOpen : MonoBehaviour
 {
+    [SerializeField] private GameObject _interactPrompt;
+
     private bool _isInRange;
     private bool _hasEnterd;
+
+    private void Awake()
+    {
+        if (_interactPrompt != null)
+        {
+            _interactPrompt.SetActive(false);
+        }
+    }
 
     private void OnTriggerEnter2D(Collider2D col)
     {
@@ -22,6 +32,11 @@ public class MinigameOpen : MonoBehaviour
         {
             _isInRange = isInRange;
             player.IsInMinigameRange = isInRange;
+
+            if (_interactPrompt != null)
+            {
+                _interactPrompt.SetActive(isInRange);
+            }
 
             if (isInRange && !_hasEnterd)
             {
