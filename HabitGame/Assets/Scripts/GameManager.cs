@@ -50,8 +50,8 @@ public class GameManager : MonoBehaviour
     private AudioSource _currentAudio;
 
     private const int TutorialRoundCount = 0;
-    private const int TrainingRoundCount = 2;
-    private const int TestRoundCount = 2;
+    private const int TrainingRoundCount = 1;
+    private const int TestRoundCount = 0;
     public const int TotalRoundCount = TutorialRoundCount + TrainingRoundCount + TestRoundCount;
 
     public int CurrentRound => _configManager != null ? _configManager.Config.LevelsData.Count : 1;

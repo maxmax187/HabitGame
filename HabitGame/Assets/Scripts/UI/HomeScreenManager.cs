@@ -21,6 +21,8 @@ public class HomeScreenManager : MonoBehaviour
 
     [SerializeField] private AudioSource _homeScreenAudio;
 
+    [SerializeField] private StatsScreen _statsScreen;
+
     private ConfigManager _configManager;
 
     private void Start()
@@ -47,6 +49,7 @@ public class HomeScreenManager : MonoBehaviour
             ShowLastLevelResult(finished);
         }
     }
+    
     private void ShowLastLevelResult(bool isFinalRound)
     {
         int lastIndex = _configManager.Config.LevelsData.Count - 1;
@@ -61,6 +64,10 @@ public class HomeScreenManager : MonoBehaviour
             if (isFinalRound)
             {
                 _endLevelPopup.Hide();
+                _statsScreen.Show(bossKillCount, () =>
+                {
+                    DonePanel(true);
+                });
             }
             else
             {
@@ -150,6 +157,4 @@ public class HomeScreenManager : MonoBehaviour
             SceneSwitchManager.Instance.SwitchScene(Scenes.GameScene);
         });
     }
-
-
 }
