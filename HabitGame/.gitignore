@@ -110,4 +110,5 @@ HabitGame_BurstDebugInformation_DoNotShip/
 UnityPlayer.so
 libdecor*.so*
 HabitGame_link_*/
+itchBuild*/
 *.unityweb

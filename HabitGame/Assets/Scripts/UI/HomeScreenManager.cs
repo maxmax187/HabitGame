@@ -31,17 +31,11 @@ public class HomeScreenManager : MonoBehaviour
 
         _configManager = ConfigManager.Instance;
         _downloadButton.onClick.AddListener(DownloadButton);
+        _submitButton.onClick.AddListener(SubmitButton);
 
         if (_configManager == null)
         {
-            _configManager = ConfigManager.Instance;
-            _downloadButton.onClick.AddListener(DownloadButton);
-            _submitButton.onClick.AddListener(SubmitButton);
-
-            if (_configManager != null)
-            {
-                DonePanel(_configManager.Config.FinishedAllBosses);
-            }
+            return;
         }
 
         bool finished = _configManager.Config.FinishedAllBosses;
@@ -53,7 +47,6 @@ public class HomeScreenManager : MonoBehaviour
             ShowLastLevelResult(finished);
         }
     }
-
     private void ShowLastLevelResult(bool isFinalRound)
     {
         int lastIndex = _configManager.Config.LevelsData.Count - 1;

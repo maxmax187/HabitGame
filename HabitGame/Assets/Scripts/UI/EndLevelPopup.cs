@@ -16,13 +16,17 @@ public class EndLevelPopup : MonoBehaviour
     [SerializeField] private float _countUpDuration = 0.6f;
     [SerializeField] private float _displayHoldTime = 1.5f;
 
+    [Header("Audio")]
+    [SerializeField] private AudioSource _bossKilledAudio;
+    [SerializeField] private AudioSource _timeIsOutAudio;
+
     public void Show(bool killedBoss, int levelNumber, int bossKillCount, System.Action onComplete)
     {
         gameObject.SetActive(true);
         _canvasGroup.alpha = 0f;
         _panel.localScale = Vector3.one * 0.8f;
 
-        _titleText.text = killedBoss ? "BOSS KILLED!" : "TIME's UP!";
+        _titleText.text = killedBoss ? "BOSS KILLED!" : "TIME'S UP!";
 
         int previousLevel = killedBoss ? levelNumber - 1 : levelNumber;
         int previousKills = killedBoss ? bossKillCount - 1 : bossKillCount;
@@ -42,6 +46,11 @@ public class EndLevelPopup : MonoBehaviour
                 AnimateCount(_bossKillText, "Boss Kills", previousKills, bossKillCount);
             });
             sequence.AppendInterval(_countUpDuration);
+
+            _bossKilledAudio?.Play();
+        }
+        else{
+            _timeIsOutAudio?.Play();
         }
 
         sequence.AppendInterval(_displayHoldTime);
