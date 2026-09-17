@@ -22,6 +22,7 @@ public class PlayerMovement : MonoBehaviour
     private Animator _animator;
 
     private bool _isAttacking;
+    private bool _movementLocked;
 
     public bool IsInMinigameRange
     {
@@ -38,9 +39,18 @@ public class PlayerMovement : MonoBehaviour
         _animator = GetComponentInChildren<Animator>();
     }
 
+    public void SetMovementLocked(bool locked)
+    {
+        _movementLocked = locked;
+        if (locked)
+        {
+            _rigidbody.linearVelocity = Vector3.zero;
+        }
+    }
+
     private void FixedUpdate()
     {
-        if (_isAttacking)
+        if (_isAttacking || _movementLocked)
         {
             _rigidbody.linearVelocity = Vector3.zero;
             return;

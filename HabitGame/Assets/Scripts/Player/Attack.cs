@@ -27,6 +27,8 @@ public class Attack : MonoBehaviour
     private float _attackCircleAlpha;
     private Vector3 _attackCircleScale;
 
+    private float _lastAttackTime = -999f;
+
     public Vector2 UpgradeDamage
     {
         get { return new Vector2(_normalDamage, _upgradeDamage); }
@@ -58,6 +60,12 @@ public class Attack : MonoBehaviour
             return false;
         }
 
+        if (Time.time - _lastAttackTime < _timeBetweenAttack)
+        {
+            return false;
+        }
+
+        _lastAttackTime = Time.time;
         StartCoroutine(AttackRoutine(moveInput));
 
         return true;

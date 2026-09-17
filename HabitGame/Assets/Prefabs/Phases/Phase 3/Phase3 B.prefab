@@ -10790,7 +10790,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1401935514879983567, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: _attackPaternHealth.Array.data[1].AttackPatern.Array.data[0].TimeBeforeNextAttack
-      value: 2
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 1401935514879983567, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: _attackPaternHealth.Array.data[1].AttackPatern.Array.data[1].TimeBeforeNextAttack

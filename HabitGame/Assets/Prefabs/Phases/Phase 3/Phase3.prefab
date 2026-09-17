@@ -9707,10 +9707,15 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7788196321626605594, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
+      propertyPath: DamageTime
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7788196321626605594, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: HealthAmount
       value: 30
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 1584796899245064, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 6267716414323396454, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}

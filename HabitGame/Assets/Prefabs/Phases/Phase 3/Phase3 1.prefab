@@ -9654,11 +9654,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1401935514879983567, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: _attackPaternHealth.Array.size
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1401935514879983567, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: _attackPaternHealth.Array.data[0].Health
-      value: 30
+      value: 40
       objectReference: {fileID: 0}
     - target: {fileID: 1401935514879983567, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: _attackPaternHealth.Array.data[1].Health
@@ -9759,6 +9759,10 @@ PrefabInstance:
     - target: {fileID: 6267716414323396454, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7788196321626605594, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
+      propertyPath: DamageTime
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7788196321626605594, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: HealthAmount

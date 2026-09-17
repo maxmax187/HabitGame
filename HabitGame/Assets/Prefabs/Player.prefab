@@ -107,7 +107,7 @@ MonoBehaviour:
   _attackAnimator: {fileID: 8183326891232544012}
   _normalDamage: 5
   _upgradeDamage: 10
-  _timeBetweenAttack: 0.5
+  _timeBetweenAttack: 1
   _attackAudio: {fileID: 7013415205328701737}
 --- !u!95 &8183326891232544012
 Animator:

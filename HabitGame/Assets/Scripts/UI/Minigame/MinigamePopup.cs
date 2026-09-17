@@ -67,6 +67,8 @@ public class MinigamePopup : MonoBehaviour
             if (!show)
             {
                 PlayChestAudio(show);
+                FindFirstObjectByType<PlayerMovement>()?.SetMovementLocked(false);
+                Time.timeScale = 1f;
             }
             gameObject.SetActive(show);
             if (show)
@@ -122,6 +124,7 @@ public class MinigamePopup : MonoBehaviour
             }
         }
 
+        Time.timeScale = 0f;
         ShowPopup(true);
         _minigameDone = true;
     }
@@ -161,6 +164,9 @@ public class MinigamePopup : MonoBehaviour
         {
             return;
         }
+
+        PlayerMovement playerMovement = FindFirstObjectByType<PlayerMovement>();
+        playerMovement?.SetMovementLocked(true);
 
         _minigameActive = true;
         _upgradeWeaponUI.gameObject.SetActive(false);

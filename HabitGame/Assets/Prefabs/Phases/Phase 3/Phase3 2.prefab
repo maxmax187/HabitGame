@@ -9844,7 +9844,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1401935514879983567, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: _waitForStart
-      value: 2
+      value: 2.5
       objectReference: {fileID: 0}
     - target: {fileID: 1401935514879983567, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: _warningSprite
@@ -9852,7 +9852,7 @@ PrefabInstance:
       objectReference: {fileID: 7006754299640473172}
     - target: {fileID: 1401935514879983567, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: _warningLeadTime
-      value: 0.5
+      value: 0.6
       objectReference: {fileID: 0}
     - target: {fileID: 1401935514879983567, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: _attackPaternHealth.Array.size
@@ -9860,7 +9860,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1401935514879983567, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: _attackPaternHealth.Array.data[0].Health
-      value: 30
+      value: 40
       objectReference: {fileID: 0}
     - target: {fileID: 1401935514879983567, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: _attackPaternHealth.Array.data[1].Health
@@ -9908,15 +9908,15 @@ PrefabInstance:
       objectReference: {fileID: 4309475329075965568}
     - target: {fileID: 1401935514879983567, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: _attackPaternHealth.Array.data[0].AttackPatern.Array.data[0].TimeBeforeNextAttack
-      value: 0.7
+      value: 0.6
       objectReference: {fileID: 0}
     - target: {fileID: 1401935514879983567, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: _attackPaternHealth.Array.data[0].AttackPatern.Array.data[1].TimeBeforeNextAttack
-      value: 0.7
+      value: 0.6
       objectReference: {fileID: 0}
     - target: {fileID: 1401935514879983567, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: _attackPaternHealth.Array.data[0].AttackPatern.Array.data[2].TimeBeforeNextAttack
-      value: 0.7
+      value: 0.6
       objectReference: {fileID: 0}
     - target: {fileID: 1401935514879983567, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: _attackPaternHealth.Array.data[0].AttackPatern.Array.data[3].TimeBeforeNextAttack
@@ -10008,7 +10008,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4964789261547559803, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: _speed
-      value: 1.4
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 5116398879243386058, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: m_IsActive
