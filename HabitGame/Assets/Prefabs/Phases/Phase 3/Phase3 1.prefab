@@ -9766,7 +9766,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7788196321626605594, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: HealthAmount
-      value: 30
+      value: 40
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 1584796899245064, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}

@@ -32,6 +32,11 @@ public class MinigamePopup : MonoBehaviour
 
     private void Update()
     {
+        if (gameObject.activeSelf)
+        {
+            Debug.Log($"MinigamePopup.Update: Time.timeScale={Time.timeScale}");
+        }
+
         if (_waitTime > 0f)
         {
             _waitTime = Mathf.Max(0f, _waitTime - Time.deltaTime);
@@ -125,6 +130,7 @@ public class MinigamePopup : MonoBehaviour
         }
 
         Time.timeScale = 0f;
+        Debug.Log($"Set timeScale to 0. Actual value now: {Time.timeScale}");
         ShowPopup(true);
         _minigameDone = true;
     }

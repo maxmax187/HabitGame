@@ -77,6 +77,8 @@ public class PlayerHealth : Health
             return;
         }
 
+        Debug.Log($"PlayerHealth.Update: Time.timeScale={Time.timeScale}, Time.deltaTime={Time.deltaTime}, CurrentHealth={CurrentHealth}");
+
         CurrentHealth -= Time.deltaTime;
         _countdown.UpdateTimer(CurrentHealth);
     }

@@ -1,5 +1,6 @@
 using DG.Tweening;
 using System.Collections.Generic;
+using System.Collections;
 using Unity.Mathematics;
 using UnityEngine;
 using static PhasesData;
@@ -50,8 +51,8 @@ public class GameManager : MonoBehaviour
     private AudioSource _currentAudio;
 
     private const int TutorialRoundCount = 0;
-    private const int TrainingRoundCount = 2;
-    private const int TestRoundCount = 0;
+    private const int TrainingRoundCount = 1;
+    private const int TestRoundCount = 1;
     public const int TotalRoundCount = TutorialRoundCount + TrainingRoundCount + TestRoundCount;
 
     public int CurrentRound => _configManager != null ? _configManager.Config.LevelsData.Count : 1;
@@ -143,6 +144,11 @@ public class GameManager : MonoBehaviour
         _playerHealth = currentPhase.Spawnpoint.SpawnPlayer();
         _playerHealth.SetData(time, _countDown);
 
+        if (IsTestLevel)
+        {
+            StartCoroutine(ApplyTestUpgradeNextFrame());
+        }
+
         if (_configManager != null)
         {
             _configManager.SetTotalTime(time);
@@ -159,6 +165,12 @@ public class GameManager : MonoBehaviour
         {
             ShowTutorial(_walkTutorialText);
         }
+    }
+
+    private IEnumerator ApplyTestUpgradeNextFrame()
+    {
+        yield return null; // wait one frame, so Attack.Start() has already run
+        _playerHealth.UpgradeAttack();
     }
 
     private void HandleLongTutorialClosed()
