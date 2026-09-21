@@ -879,8 +879,8 @@ MonoBehaviour:
   _testIntroPages: []
   _fixedLevelTime: 60
   _tutorialBossIndex: 0
-  _trainingBossSchedule: 0100000002000000
-  _testBossSchedule: 00000000
+  _trainingBossSchedule: 01000000010000000100000001000000020000000200000002000000020000000300000005000000070000000800000009000000090000000900000009000000
+  _testBossSchedule: 09000000
 --- !u!4 &380437866
 Transform:
   m_ObjectHideFlags: 0
@@ -2677,8 +2677,8 @@ MonoBehaviour:
   - <size=150%><b>HAVE FUN!</b></size>\n\n
   _testPages:
   - <b>RULE CHANGE!</b>
-  - <b>NO WEAPON UPGRADE</b>\n\n You can still play the chest minigame, but it does
-    NOT provide any weapon upgrade anymore, it only costs time.
+  - <b>PERMANENT WEAPON UPGRADE</b>\n\n "story why" You can still  play the chest
+    minigame, but you already have the upgraded weapon regradless.
   - <size=150%><b>HAVE FUN!</b></size>\n\n
 --- !u!4 &814126479
 Transform:
