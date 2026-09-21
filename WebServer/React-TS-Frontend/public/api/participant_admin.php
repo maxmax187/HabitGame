@@ -74,26 +74,33 @@ if ($authed) {
                     break;
 
                 case 'reassign_all':
-                    $ids = array_column(
-                        $db->query('SELECT id FROM participants')->fetch_all(MYSQLI_ASSOC),
-                        'id'
-                    );
+                    // SHORT participants are never touched by this - only
+                    // participants currently in the balanced pool get
+                    // re-shuffled among BALANCED_CONDITIONS.
+                    $balancedConditions = BALANCED_CONDITIONS;
+                    $placeholders = implode(',', array_fill(0, count($balancedConditions), '?'));
+                    $types = str_repeat('s', count($balancedConditions));
+                    $stmt = $db->prepare("SELECT id FROM participants WHERE condition_group IN ($placeholders)");
+                    $stmt->bind_param($types, ...$balancedConditions);
+                    $stmt->execute();
+                    $ids = array_column($stmt->get_result()->fetch_all(MYSQLI_ASSOC), 'id');
+
                     shuffle($ids);
-                    $groups = CONDITIONS;
+                    $groups = BALANCED_CONDITIONS;
                     // Shuffle group order too, so if the count isn't evenly
                     // divisible by 4 the "extra" participant(s) don't always
                     // land in the same condition run after run.
                     shuffle($groups);
 
-                    $stmt = $db->prepare(
+                    $update = $db->prepare(
                         'UPDATE participants SET condition_group = ?, forced = 0 WHERE id = ?'
                     );
                     foreach ($ids as $i => $id) {
                         $condition = $groups[$i % count($groups)];
-                        $stmt->bind_param('si', $condition, $id);
-                        $stmt->execute();
+                        $update->bind_param('si', $condition, $id);
+                        $update->execute();
                     }
-                    $message = 'Reassigned all ' . count($ids) . ' participant(s) into a fresh, evenly balanced 4-way split.';
+                    $message = 'Reassigned ' . count($ids) . ' participant(s) into a fresh, evenly balanced 4-way split (SHORT participants were left untouched).';
                     break;
             }
         }
@@ -376,10 +383,11 @@ if ($authed) {
                 <label for="force_condition">Condition</label>
                 <select id="force_condition" name="force_condition">
                     <option value="">Auto-balance</option>
-                    <option value="ML">Force Moderate L</option>
-                    <option value="MR">Force Moderate R</option>
-                    <option value="EL">Force Extensive L</option>
-                    <option value="ER">Force Extensive R</option>
+                    <option value="BETWEEN_L">Force Between L</option>
+                    <option value="BETWEEN_R">Force Between R</option>
+                    <option value="WITHIN_L">Force Within L</option>
+                    <option value="WITHIN_R">Force Within R</option>
+                    <option value="SHORT">Force Short</option>
                 </select>
             </div>
             <button type="submit" class="btn">Add</button>
@@ -393,10 +401,11 @@ if ($authed) {
         </div>
         <div class="counts">
             <span>Total: <strong><?= count($participants) ?></strong></span>
-            <span>Moderate L: <strong><?= $counts['ML'] ?></strong></span>
-            <span>Moderate R: <strong><?= $counts['MR'] ?></strong></span>
-            <span>Extensive L: <strong><?= $counts['EL'] ?></strong></span>
-            <span>Extensive R: <strong><?= $counts['ER'] ?></strong></span>
+            <span>Between L: <strong><?= $counts['BETWEEN_L'] ?></strong></span>
+            <span>Between R: <strong><?= $counts['BETWEEN_R'] ?></strong></span>
+            <span>Within L: <strong><?= $counts['WITHIN_L'] ?></strong></span>
+            <span>Within R: <strong><?= $counts['WITHIN_R'] ?></strong></span>
+            <span>Short: <strong><?= $counts['SHORT'] ?></strong></span>
         </div>
 
         <?php if (empty($participants)): ?>
@@ -436,11 +445,11 @@ if ($authed) {
 
     <div class="panel">
         <h2>Danger zone</h2>
-        <form method="POST" onsubmit="return confirm('This will re-randomize the condition for ALL participants into a fresh, evenly balanced 4-way split (Moderate L / Moderate R / Extensive L / Extensive R), including anyone already assigned. If the study is already in progress, this WILL interfere with collected data. Are you absolutely sure?')">
+        <form method="POST" onsubmit="return confirm('This will re-randomize the condition for every BETWEEN/WITHIN participant into a fresh, evenly balanced 4-way split (Between L / Between R / Within L / Within R), including anyone already assigned. SHORT participants are left untouched. If the study is already in progress, this WILL interfere with collected data. Are you absolutely sure?')">
             <input type="hidden" name="action" value="reassign_all">
             <button type="submit" class="btn danger">Reassign all participants (4-way split)</button>
         </form>
-        <p class="danger-zone-note">Re-splits every current participant into a new random, evenly balanced assignment across all 4 conditions and clears any manual "forced" flags. Do not use this once the study has started unless you intend to change existing participants' conditions.</p>
+        <p class="danger-zone-note">Re-splits every participant currently in Between/Within into a new random, evenly balanced assignment across those 4 conditions and clears any manual "forced" flags. SHORT participants are never included. Do not use this once the study has started unless you intend to change existing participants' conditions.</p>
     </div>
 </div>
 

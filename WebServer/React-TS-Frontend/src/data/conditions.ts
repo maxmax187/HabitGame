@@ -1,25 +1,35 @@
 // Non-guessable path segments for each study condition's game builds.
 // Participants only ever learn one of these, via a redirect after entering
-// a valid access code on the landing page - never both, and never any of
-// the "moderate"/"extensive"/"L"/"R" wording itself.
+// a registered email on the landing page - never both, and never any of
+// the "between"/"within"/"L"/"R" wording itself.
 //
-// ML/MR = moderate dosage (1 day), EL/ER = extensive dosage (3 days),
-// crossed with L/R bias. Participants are balanced equally across all 4.
+// All 4 main conditions now run the full 3 days. The axis that used to be
+// dosage (moderate/extensive) is now the in-game testing schedule:
+// BETWEEN_* participants are only tested at the end of day 3, WITHIN_*
+// participants are tested on both day 1 and day 3 (both handled entirely
+// in-game, not by this site) - each crossed with L/R bias, balanced
+// equally across all 4.
 export const CONDITION_SLUGS = {
-  ML: '26fb1a7345514a4ae729',
-  MR: 'ca0c3a8454c653f57ab9',
-  EL: 'e71408556147d1f4a022',
-  ER: '4e868a6f2c029521d9e4',
+  BETWEEN_L: 'ad27dc55c8b9bae0fea0',
+  BETWEEN_R: '60daee13203a118c2dd0',
+  WITHIN_L: '8b2d195f6f4428a73784',
+  WITHIN_R: '346d6a2016c334eed14f',
+  // Fifth, separate condition: a single simplified session for
+  // participants who registered but don't want the full 3-day study.
+  // Deliberately excluded from auto-balancing and "reassign all" - only
+  // reachable by being force-assigned in participant_admin.php.
+  SHORT: 'bdb0b53f4ed37bc478c2',
 } as const
 
 export type Condition = keyof typeof CONDITION_SLUGS
 
 // How many day-builds each condition actually has.
 const CONDITION_DAY_COUNT: Record<Condition, number> = {
-  ML: 1,
-  MR: 1,
-  EL: 3,
-  ER: 3,
+  BETWEEN_L: 3,
+  BETWEEN_R: 3,
+  WITHIN_L: 3,
+  WITHIN_R: 3,
+  SHORT: 1,
 }
 
 // Scratch testing slug - routes through the same Overview/DayPage flow as a
@@ -31,6 +41,12 @@ const CONDITION_DAY_COUNT: Record<Condition, number> = {
 // generic scratch build, not tied to a specific condition's day count.
 export const TEST_SLUG = 'test'
 
+// Demo branches - fixed, single-day preview builds for showing the game to
+// prospective participants. Not gated by email/DB at all (Submit just
+// won't find a participant row - that's fine, these are previews only) and
+// not part of the balanced study conditions, same spirit as TEST_SLUG.
+export const DEMO_SLUGS = ['demo1', 'demo2', 'demo3'] as const
+
 const SLUG_TO_CONDITION = new Map<string, Condition>(
   (Object.entries(CONDITION_SLUGS) as [Condition, string][]).map(([condition, slug]) => [
     slug,
@@ -38,11 +54,24 @@ const SLUG_TO_CONDITION = new Map<string, Condition>(
   ]),
 )
 
+function isDemoSlug(slug: string): boolean {
+  return (DEMO_SLUGS as readonly string[]).includes(slug)
+}
+
 export function isValidSlug(slug: string | undefined): slug is string {
-  return !!slug && (SLUG_TO_CONDITION.has(slug) || slug === TEST_SLUG)
+  return !!slug && (SLUG_TO_CONDITION.has(slug) || slug === TEST_SLUG || isDemoSlug(slug))
 }
 
 export function getDayCount(slug: string): number {
   const condition = SLUG_TO_CONDITION.get(slug)
-  return condition ? CONDITION_DAY_COUNT[condition] : 3
+  if (condition) return CONDITION_DAY_COUNT[condition]
+  if (isDemoSlug(slug)) return 1
+  return 3
+}
+
+// Flat builds (public/builds/<slug>/index.html) rather than day-numbered
+// subfolders - true for the test slug and the demo branches, which aren't
+// real multi-day study conditions.
+export function isFlatBuildSlug(slug: string): boolean {
+  return slug === TEST_SLUG || isDemoSlug(slug)
 }
