@@ -16,9 +16,9 @@ public class UpgradeWeaponUI : MonoBehaviour
         _stateUpgrade.text = $"Damage: {upgradeDamageData.x} -> {upgradeDamageData.y}";
     }
 
-    public void SetNoUpgradeState(float normalDamage)
-    {
+    public void SetNoUpgradeState(float upgradeDamage)
+    {   
         _title.text = "No upgrade available";
-        _stateUpgrade.text = $"No weapon upgrade (Damage: {normalDamage})";
+        _stateUpgrade.text = $"Damage: {upgradeDamage}";
     }
 }

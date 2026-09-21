@@ -38,7 +38,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private float _fixedLevelTime = 60f;
 
     [Header("Boss Schedule")]
-    [SerializeField] private int _tutorialBossIndex = 1;
+    [SerializeField] private int _tutorialBossIndex = 0;
     [SerializeField] private int[] _trainingBossSchedule = { 5, 7 };
     [SerializeField] private int[] _testBossSchedule = { 8 };
 
@@ -50,9 +50,9 @@ public class GameManager : MonoBehaviour
     private bool _isLastBoss;
     private AudioSource _currentAudio;
 
-    private const int TutorialRoundCount = 0;
-    private const int TrainingRoundCount = 1;
-    private const int TestRoundCount = 1;
+    private const int TutorialRoundCount = 4;
+    private const int TrainingRoundCount = 16;
+    private const int TestRoundCount = 4;
     public const int TotalRoundCount = TutorialRoundCount + TrainingRoundCount + TestRoundCount;
 
     public int CurrentRound => _configManager != null ? _configManager.Config.LevelsData.Count : 1;

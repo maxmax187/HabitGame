@@ -11,6 +11,7 @@ public class Tutorial : MonoBehaviour
 
     private float _inputCooldown = 0.3f;
     private float _lastShowTime;
+    //private bool _isShowing;
 
     private void Awake()
     {
@@ -23,10 +24,16 @@ public class Tutorial : MonoBehaviour
         gameObject.SetActive(true);
         Time.timeScale = 0;
         _lastShowTime = Time.unscaledTime;
+        //_isShowing = true;
     }
 
     public void ContinueGame()
     {
+        //if (!_isShowing)
+        //{
+        //    return;
+        //}
+
         if (Time.unscaledTime - _lastShowTime < _inputCooldown)
         {
             return;
@@ -34,5 +41,6 @@ public class Tutorial : MonoBehaviour
 
         gameObject.SetActive(false);
         Time.timeScale = 1;
+        //_isShowing = false;
     }
 }

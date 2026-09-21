@@ -22,10 +22,10 @@ MonoBehaviour:
   - Phase: {fileID: 296823060232562143, guid: 5560f0d03b43a46beba0935512639665, type: 3}
     PhaseTime: 30
   PhasesTwoTutorial:
-  - Phase: {fileID: 2254876843409693039, guid: 8bed2dbe05ba2c27d9a67d6cd6b3337b, type: 3}
+  - Phase: {fileID: 2254876843409693039, guid: 5935169d779c38c6298e5e5b826aa00a, type: 3}
     PhaseTime: 20
   PhasesTwoRegular:
-  - Phase: {fileID: 2254876843409693039, guid: 7dff45eb124fda0e29421d123bdfe172, type: 3}
+  - Phase: {fileID: 2254876843409693039, guid: 56aa9a3bacfebfe4c83cd638a41ddd65, type: 3}
     PhaseTime: 20
   PhasesThree:
   - Phase: {fileID: 3561860285486744107, guid: 974dd5c5ee8b9be40bb175269fad526d, type: 3}

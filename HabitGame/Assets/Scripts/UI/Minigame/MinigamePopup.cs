@@ -73,7 +73,6 @@ public class MinigamePopup : MonoBehaviour
             {
                 PlayChestAudio(show);
                 FindFirstObjectByType<PlayerMovement>()?.SetMovementLocked(false);
-                Time.timeScale = 1f;
             }
             gameObject.SetActive(show);
             if (show)
@@ -97,7 +96,8 @@ public class MinigamePopup : MonoBehaviour
     }
 
     public void CompletedMinigame()
-    {
+    { 
+        Debug.Log("CompletedMinigame() called");
         _gameManager.MiniGameData(true, true);
 
         if (PlayerHealth.Instance != null)
@@ -121,7 +121,7 @@ public class MinigamePopup : MonoBehaviour
             Vector2 upgradeDamage = PlayerHealth.Instance.PlayerAttackUpgrade;
             if (isTestLevel)
             {
-                _upgradeWeaponUI.SetNoUpgradeState(upgradeDamage.x);
+                _upgradeWeaponUI.SetNoUpgradeState(upgradeDamage.y);
             }
             else
             {
@@ -132,11 +132,14 @@ public class MinigamePopup : MonoBehaviour
         Time.timeScale = 0f;
         Debug.Log($"Set timeScale to 0. Actual value now: {Time.timeScale}");
         ShowPopup(true);
+        ShowPopup(true);
         _minigameDone = true;
     }
 
     public void TapInput()
     {
+        Debug.Log($"TapInput called. _waitTime={_waitTime}, _minigameDone={_minigameDone}");
+
         if (_waitTime > 0)
         {
             return;
@@ -160,7 +163,6 @@ public class MinigamePopup : MonoBehaviour
 
             return;
         }
-
         ShowPopup(false);
     }
 

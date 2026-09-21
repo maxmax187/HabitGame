@@ -332,22 +332,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Config:
+    Email: 
     TutorialFinished: 0
     SpikeTutorialShown: 0
     BossTutorialShown: 0
     ChestTutorialShown: 0
+    TutorialIntroShown: 0
+    TrainingIntroShown: 0
+    TestIntroShown: 0
     FinishedAllBosses: 0
     CurrentSpikeDificulty: 0
     ChestSide: 0
     Day: 1
+    Group: 0
     LevelsData: []
-    TutorialIntroShown: 0
-    TrainingIntroShown: 0
-    TestIntroShown: 0
     MinigameHowToShown: 0
     HasOpenedBefore: 0
   _sessionChestSide: 0
-  _sessionDay: 1
+  _sessionDay: 0
+  _group: 0
 --- !u!4 &1835306766
 Transform:
   m_ObjectHideFlags: 0
