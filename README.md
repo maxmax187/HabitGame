@@ -124,7 +124,15 @@ Lives in `public/api/` and is deployed alongside the built site. Key files:
 - `participant_admin.php` - password-gated dashboard: add/remove
   participants, force a specific condition, or "reassign all" (re-randomizes
   every `BETWEEN`/`WITHIN` participant into a fresh balanced split - never
-  touches `SHORT` participants).
+  touches `SHORT` participants), plus a danger-zone "delete all registered
+  participants" action (empties `participants`, leaves `game_data` alone).
+  Participants can also be imported in bulk
+  from a Microsoft Forms export (.xlsx) or a .csv/.txt file: the email
+  column is detected by content (not by name), and a preview shows which
+  addresses are new, already registered, duplicated or invalid before
+  anything is added.
+- `import_parser.php` - file-reading helpers for the bulk import (blocked
+  from direct HTTP access in `api/.htaccess`).
 - `data_admin.php` - password-gated dashboard: summary counts and several
   views (by day, by condition, day x condition, per-participant completion,
   recent submissions), a "download all data as .zip" link, and a "delete all

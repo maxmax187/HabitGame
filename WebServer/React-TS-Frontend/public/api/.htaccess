@@ -1,5 +1,5 @@
 # Block direct access to sensitive files
-<FilesMatch "^(env\.php|db\.php|php-errors\.log)$">
+<FilesMatch "^(env\.php|db\.php|import_parser\.php|php-errors\.log)$">
     Order allow,deny
     Deny from all
 </FilesMatch>
