@@ -80,9 +80,60 @@ per-day subfolder) are all defined in
 [`conditions.ts`](WebServer/React-TS-Frontend/src/data/conditions.ts) - this
 is the single source of truth on the website side.
 
-Participants that do not wish to parttake in the full study, but who need to play the game
-without their data being recorded, can enter the game through this direct link without being
-registered: https://htionline.tue.nl/f8622112/builds/bdb0b53f4ed37bc478c2/day1 
+### Direct links (manual fallback)
+
+The landing page, participant registration and automatic data upload are
+optional. In the manual approach, none of them are used: each condition group
+gets one shared link per day, and participants send in their data file
+themselves. Nobody has to be registered, and nothing needs to be set up on
+the server apart from the game builds.
+
+**How it works:**
+1. Split participants into the four groups yourself (e.g. a condition column
+   in the form export).
+2. Send each group the link(s) for its condition from the table below: one
+   link for Moderate, three for Extensive (one per day).
+3. At the end of each session the game tries to upload the data. Because the
+   link has no email, this fails **by design**, and the game shows the red
+   "ERROR SUBMITTING DATA - DO NOT CLOSE THE GAME" message. The participant
+   then clicks **Download** and emails the JSON file to the researcher. Tell
+   participants in the invitation that this message is expected and what to
+   do, so it doesn't worry them.
+4. Combine the received files with a script.
+
+| Condition | Link (website) | Link (build only) |
+|---|---|---|
+| Moderate Removal | https://htionline.tue.nl/f8622112/583130b11053b121a6e1/day1 | https://htionline.tue.nl/f8622112/builds/583130b11053b121a6e1/day1/ |
+| Moderate Devaluation | https://htionline.tue.nl/f8622112/d017714ca7706c3b9319/day1 | https://htionline.tue.nl/f8622112/builds/d017714ca7706c3b9319/day1/ |
+| Extensive Removal, day 1 | https://htionline.tue.nl/f8622112/a131a02f2abd8c554cbf/day1 | https://htionline.tue.nl/f8622112/builds/0f2d679ee812aeb0abfe/day1/ |
+| Extensive Removal, day 2 | https://htionline.tue.nl/f8622112/a131a02f2abd8c554cbf/day2 | https://htionline.tue.nl/f8622112/builds/0f2d679ee812aeb0abfe/day2/ |
+| Extensive Removal, day 3 | https://htionline.tue.nl/f8622112/a131a02f2abd8c554cbf/day3 | https://htionline.tue.nl/f8622112/builds/a131a02f2abd8c554cbf/day3/ |
+| Extensive Devaluation, day 1 | https://htionline.tue.nl/f8622112/49d9065b16b9ff9fe57f/day1 | https://htionline.tue.nl/f8622112/builds/0f2d679ee812aeb0abfe/day1/ |
+| Extensive Devaluation, day 2 | https://htionline.tue.nl/f8622112/49d9065b16b9ff9fe57f/day2 | https://htionline.tue.nl/f8622112/builds/0f2d679ee812aeb0abfe/day2/ |
+| Extensive Devaluation, day 3 | https://htionline.tue.nl/f8622112/49d9065b16b9ff9fe57f/day3 | https://htionline.tue.nl/f8622112/builds/49d9065b16b9ff9fe57f/day3/ |
+| Short | https://htionline.tue.nl/f8622112/bdb0b53f4ed37bc478c2/day1 | https://htionline.tue.nl/f8622112/builds/bdb0b53f4ed37bc478c2/day1/ |
+
+Both columns open the same game. The website link shows the page header and a
+"Day N" / "Game" heading above the game, which helps participants notice they
+opened the right day. The build-only link shows just the game. Extensive days
+1 and 2 are one shared build, so those links are identical for Removal and
+Devaluation.
+
+**What the received files do and don't contain:**
+- `Email` is `"UNKNOWN"`: the game only knows the email when it's in the
+  link. Identify the participant by the address the file was sent from.
+- `Day` is the day the build was made for (set in the Unity Inspector), so it
+  shows which day's build was actually played.
+- The condition is **not** in the file. Derive it from the group the sender
+  was assigned to. For Extensive days 1 and 2 that's the only way, because
+  both groups play the same build.
+- Every download has the same file name, so rename files as they come in
+  (e.g. `<condition>_day<N>_<email>.json`) to avoid overwriting.
+- A participant who clicks the wrong day's link sends in a file whose `Day`
+  repeats a day or is out of order. Check the dates of the emails.
+
+This also covers people who should only play without taking part in the
+study: send them a link and don't collect their file.
 
 **Every condition/day combination needs its own Unity WebGL build** -
 there's no single build that adapts these parameters at runtime. Extensive
