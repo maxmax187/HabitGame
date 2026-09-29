@@ -148,10 +148,12 @@ Lives in `HabitGame/`. Unity 6000.0.60f1, WebGL Build Support module required.
 - `Assets/Scripts/Settings/Config.cs` - the participant's save data.
   `Email` is read from the page URL (`?email=...`), always present in
   Download/Submit output (falls back to `"UNKNOWN"` if it can't be read -
-  Download always works even then). `Day` and `ChestSide` are set in-game
-  (`ConfigManager.cs`) from the site's own `?day=` URL param and the
-  assigned condition - kept deliberately independent from the URL's `day` so
-  the two can be cross-checked against each other as a sanity check.
+  Download always works even then). `Day` and `ChestSide` are **not** read
+  from the URL - they're set manually per build in the Unity Inspector
+  (`ConfigManager` component, "Session Settings") before building each
+  condition/day target. The server's `game_data.day` column comes from the
+  URL's `?day=` instead - the two are deliberately independent so a mismatch
+  (e.g. a Day 2 build uploaded to the Day 3 slot) can be spotted in the data.
 - `Assets/Editor/FTPDeployWebGL.cs` - a build post-processor that uploads
   the WebGL build to the FTP server. See its own header comment for full
   setup instructions. In short:
