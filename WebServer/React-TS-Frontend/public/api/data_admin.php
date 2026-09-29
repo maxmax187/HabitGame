@@ -447,9 +447,13 @@ function viewLink(string $view, string $label, string $current): string
                             <tr>
                                 <td><?= htmlspecialchars($row['email']) ?></td>
                                 <td><?= htmlspecialchars($row['condition_group']) ?></td>
-                                <td class="<?= $row['day1'] ? 'check' : 'cross' ?>"><?= $row['day1'] ? '✓' : '—' ?></td>
-                                <td class="<?= $row['day2'] ? 'check' : 'cross' ?>"><?= $row['day2'] ? '✓' : '—' ?></td>
-                                <td class="<?= $row['day3'] ? 'check' : 'cross' ?>"><?= $row['day3'] ? '✓' : '—' ?></td>
+                                <?php for ($d = 1; $d <= 3; $d++): ?>
+                                    <?php if ($d > conditionDayCount($row['condition_group'])): ?>
+                                        <td class="cross">n/a</td>
+                                    <?php else: ?>
+                                        <td class="<?= $row['day' . $d] ? 'check' : 'cross' ?>"><?= $row['day' . $d] ? '✓' : '—' ?></td>
+                                    <?php endif; ?>
+                                <?php endfor; ?>
                                 <td><?= (int) $row['total'] ?></td>
                             </tr>
                         <?php endforeach; ?>

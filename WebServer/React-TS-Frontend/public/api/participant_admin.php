@@ -11,6 +11,23 @@ require_once __DIR__ . '/import_parser.php';
 
 session_start();
 
+// Display names for the dashboard; keys must match CONDITIONS in db.php.
+const CONDITION_LABELS = [
+    'MODERATE_REMOVAL' => 'Moderate Removal',
+    'MODERATE_DEVALUATION' => 'Moderate Devaluation',
+    'EXTENSIVE_REMOVAL' => 'Extensive Removal',
+    'EXTENSIVE_DEVALUATION' => 'Extensive Devaluation',
+    'SHORT' => 'Short',
+];
+
+function conditionOptions(): string {
+    $html = '<option value="">Auto-balance</option>';
+    foreach (CONDITION_LABELS as $value => $label) {
+        $html .= '<option value="' . $value . '">Force ' . $label . '</option>';
+    }
+    return $html;
+}
+
 $error = '';
 $message = '';
 
@@ -525,12 +542,7 @@ if ($authed) {
             <div class="field" style="flex: 0 0 200px;">
                 <label for="force_condition">Condition</label>
                 <select id="force_condition" name="force_condition">
-                    <option value="">Auto-balance</option>
-                    <option value="BETWEEN_L">Force Between L</option>
-                    <option value="BETWEEN_R">Force Between R</option>
-                    <option value="WITHIN_L">Force Within L</option>
-                    <option value="WITHIN_R">Force Within R</option>
-                    <option value="SHORT">Force Short</option>
+                    <?= conditionOptions() ?>
                 </select>
             </div>
             <button type="submit" class="btn">Add</button>
@@ -600,12 +612,7 @@ if ($authed) {
                 <div class="field" style="flex: 0 0 200px;">
                     <label for="bulk_force">Condition</label>
                     <select id="bulk_force" name="force_condition">
-                        <option value="">Auto-balance</option>
-                        <option value="BETWEEN_L">Force Between L</option>
-                        <option value="BETWEEN_R">Force Between R</option>
-                        <option value="WITHIN_L">Force Within L</option>
-                        <option value="WITHIN_R">Force Within R</option>
-                        <option value="SHORT">Force Short</option>
+                        <?= conditionOptions() ?>
                     </select>
                 </div>
                 <button type="submit" class="btn" <?= empty($bulkStatus['new']) ? 'disabled' : '' ?>>Add <?= $bulkStatus['new'] ?? 0 ?> new participant(s)</button>
@@ -624,11 +631,9 @@ if ($authed) {
         </div>
         <div class="counts">
             <span>Total: <strong><?= count($participants) ?></strong></span>
-            <span>Between L: <strong><?= $counts['BETWEEN_L'] ?></strong></span>
-            <span>Between R: <strong><?= $counts['BETWEEN_R'] ?></strong></span>
-            <span>Within L: <strong><?= $counts['WITHIN_L'] ?></strong></span>
-            <span>Within R: <strong><?= $counts['WITHIN_R'] ?></strong></span>
-            <span>Short: <strong><?= $counts['SHORT'] ?></strong></span>
+            <?php foreach (CONDITION_LABELS as $condition => $label): ?>
+                <span><?= $label ?>: <strong><?= $counts[$condition] ?? 0 ?></strong></span>
+            <?php endforeach; ?>
         </div>
 
         <?php if (empty($participants)): ?>
@@ -668,11 +673,11 @@ if ($authed) {
 
     <div class="panel">
         <h2>Danger zone</h2>
-        <form method="POST" onsubmit="return confirm('This will re-randomize the condition for every BETWEEN/WITHIN participant into a fresh, evenly balanced 4-way split (Between L / Between R / Within L / Within R), including anyone already assigned. SHORT participants are left untouched. If the study is already in progress, this WILL interfere with collected data. Are you absolutely sure?')">
+        <form method="POST" onsubmit="return confirm('This will re-randomize the condition for every Moderate/Extensive participant into a fresh, evenly balanced 4-way split (Moderate Removal / Moderate Devaluation / Extensive Removal / Extensive Devaluation), including anyone already assigned. This can move people between the 1-day and 3-day versions. SHORT participants are left untouched. If the study is already in progress, this WILL interfere with collected data. Are you absolutely sure?')">
             <input type="hidden" name="action" value="reassign_all">
             <button type="submit" class="btn danger">Reassign all participants (4-way split)</button>
         </form>
-        <p class="danger-zone-note">Re-splits every participant currently in Between/Within into a new random, evenly balanced assignment across those 4 conditions and clears any manual "forced" flags. SHORT participants are never included. Do not use this once the study has started unless you intend to change existing participants' conditions.</p>
+        <p class="danger-zone-note">Re-splits every participant currently in Moderate/Extensive into a new random, evenly balanced assignment across those 4 conditions and clears any manual "forced" flags. SHORT participants are never included. Do not use this once the study has started unless you intend to change existing participants' conditions.</p>
 
         <form method="POST" style="margin-top: 1.25rem;" onsubmit="return confirm('This will PERMANENTLY DELETE all <?= count($participants) ?> registered participant(s) in every condition, including SHORT. They will no longer be able to log in to the game. This cannot be undone. Are you absolutely sure?')">
             <input type="hidden" name="action" value="delete_all_participants">

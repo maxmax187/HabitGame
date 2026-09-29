@@ -46,11 +46,11 @@ WebBuild/                      Gitignored local output folder for Unity WebGL bu
    isolated to the game builds for their condition and people outside the study
    cannot access the website. If they are not registered they will not get past
    the landing page.
-3. **Playing** - for the 4 main conditions, the participant sees an overview
-   page with Day 1/2/3 buttons; each loads that day's Unity WebGL build in an
-   iframe, with the participant's email and the day number passed in via the
-   URL. For the `SHORT` condition, they're sent straight to the (single)
-   game page instead.
+3. **Playing** - for the 3-day (`EXTENSIVE_*`) conditions, the participant
+   sees an overview page with Day 1/2/3 buttons; each loads that day's Unity
+   WebGL build in an iframe, with the participant's email and the day number
+   passed in via the URL. For the 1-day conditions (`MODERATE_*` and
+   `SHORT`), they're sent straight to the (single) game page instead.
 4. **Data** - when the participant is done, the game automatically attempts to 
    upload their game data to the DataBase on the server. In the event that this fails, 
    the participant can download their data and send it via email as a backup.
@@ -61,17 +61,19 @@ WebBuild/                      Gitignored local output folder for Unity WebGL bu
 
 There are 5 condition values, plus 2 kinds of non-study preview builds.
 
-| Condition   | Days | In-game testing schedule             | Balanced? |
-|-------------|------|--------------------------------------|-----------|
-| `BETWEEN_L` | 3    | Tested only at the end of day 3      | Yes (auto-assigned, part of "reassign all") |
-| `BETWEEN_R` | 3    | Tested only at the end of day 3      | Yes |
-| `WITHIN_L`  | 3    | Tested at day 1 *and* day 3          | Yes |
-| `WITHIN_R`  | 3    | Tested at day 1 *and* day 3          | Yes |
-| `SHORT`     | 1    | n/a - single simplified session      | **No** - only reachable by force-assigning it in the admin dashboard; never auto-assigned or touched by "reassign all" |
+| Condition               | Days | Outcome manipulation                | Balanced? |
+|-------------------------|------|-------------------------------------|-----------|
+| `MODERATE_REMOVAL`      | 1    | Removal                             | Yes (auto-assigned, part of "reassign all") |
+| `MODERATE_DEVALUATION`  | 1    | Devaluation                         | Yes |
+| `EXTENSIVE_REMOVAL`     | 3    | Removal (day 3)                     | Yes |
+| `EXTENSIVE_DEVALUATION` | 3    | Devaluation (day 3)                 | Yes |
+| `SHORT`                 | 1    | n/a - single simplified session     | **No** - only reachable by force-assigning it in the admin dashboard; never auto-assigned or touched by "reassign all" |
 
-`BETWEEN` vs `WITHIN` is the in-game testing schedule (handled entirely by the
-Unity build, not the website); `L`/`R` is the bias condition. All of this is
-hidden from participants - they only ever see a random-looking URL slug.
+This is a 2 x 2 between-subjects design: training length (`MODERATE` = 1 day
+vs `EXTENSIVE` = 3 days) x outcome manipulation (`REMOVAL` vs `DEVALUATION`,
+handled entirely by the Unity build, not the website). There is no chest-side
+(L/R) condition any more. All of this is hidden from participants - they
+only ever see a random-looking URL slug.
 
 Condition slugs, day counts, and which slugs are "flat" builds (test/demo, no
 per-day subfolder) are all defined in
@@ -82,11 +84,24 @@ Participants that do not wish to parttake in the full study, but who need to pla
 without their data being recorded, can enter the game through this direct link without being
 registered: https://htionline.tue.nl/f8622112/builds/bdb0b53f4ed37bc478c2/day1 
 
-**Currently, every condition/day combination needs its own separate Unity
-WebGL build** - there's no single build that adapts these parameters at runtime. 
-That's 4 conditions x 3 days, plus `SHORT`, plus the 3 demo
-branches and `test` - 17 separate build targets in total. This is 
-what the auto-deploy tooling described under **Unity game** below exists for.
+**Every condition/day combination needs its own Unity WebGL build** -
+there's no single build that adapts these parameters at runtime. Extensive
+days 1 and 2 are identical for Removal and Devaluation, so they're built once
+and stored in a shared folder that both Extensive conditions load:
+
+| Build                        | Folder under `builds/`         |
+|------------------------------|--------------------------------|
+| Moderate Removal             | `583130b11053b121a6e1/day1/`   |
+| Moderate Devaluation         | `d017714ca7706c3b9319/day1/`   |
+| Extensive day 1 (shared)     | `0f2d679ee812aeb0abfe/day1/`   |
+| Extensive day 2 (shared)     | `0f2d679ee812aeb0abfe/day2/`   |
+| Extensive day 3 Removal      | `a131a02f2abd8c554cbf/day3/`   |
+| Extensive day 3 Devaluation  | `49d9065b16b9ff9fe57f/day3/`   |
+| Short                        | `bdb0b53f4ed37bc478c2/day1/`   |
+
+That's 7 study builds, plus the 3 demo branches and `test` - 11 build
+targets in total. This is what the auto-deploy tooling described under
+**Unity game** below exists for.
 
 ## Website (React + TypeScript + Vite)
 
@@ -98,7 +113,9 @@ Router:
   game" button for single-day conditions).
 - `/:slug/day1`, `/day2`, `/day3` - **DayPage**: loads that day's Unity WebGL
   build in an iframe, at `public/builds/<slug>/day<N>/index.html` (or
-  `public/builds/<slug>/index.html` for test/demo, which are flat).
+  `public/builds/<slug>/index.html` for test/demo, which are flat). Extensive
+  days 1 and 2 load from the shared folder instead (`getBuildPath` in
+  `conditions.ts`).
 
 If changes are needed on
 the website frontend text or anywhere else on the server deployment, a new build is needed.
@@ -123,7 +140,7 @@ Lives in `public/api/` and is deployed alongside the built site. Key files:
 - `submit-data.php` - validates and stores one day's submitted game data.
 - `participant_admin.php` - password-gated dashboard: add/remove
   participants, force a specific condition, or "reassign all" (re-randomizes
-  every `BETWEEN`/`WITHIN` participant into a fresh balanced split - never
+  every `MODERATE`/`EXTENSIVE` participant into a fresh balanced split - never
   touches `SHORT` participants), plus a danger-zone "delete all registered
   participants" action (empties `participants`, leaves `game_data` alone).
   Participants can also be imported in bulk
@@ -156,17 +173,17 @@ Lives in `HabitGame/`. Unity 6000.0.60f1, WebGL Build Support module required.
 - `Assets/Scripts/Settings/Config.cs` - the participant's save data.
   `Email` is read from the page URL (`?email=...`), always present in
   Download/Submit output (falls back to `"UNKNOWN"` if it can't be read -
-  Download always works even then). `Day` and `ChestSide` are **not** read
-  from the URL - they're set manually per build in the Unity Inspector
-  (`ConfigManager` component, "Session Settings") before building each
-  condition/day target. The server's `game_data.day` column comes from the
+  Download always works even then). `Day` is **not** read from the URL -
+  it's set manually per build in the Unity Inspector (`ConfigManager`
+  component, "Session Settings") before building each target: Day 1 for the
+  Moderate and Short builds, Day 1/2/3 for the Extensive ones. The server's `game_data.day` column comes from the
   URL's `?day=` instead - the two are deliberately independent so a mismatch
   (e.g. a Day 2 build uploaded to the Day 3 slot) can be spotted in the data.
 - `Assets/Editor/FTPDeployWebGL.cs` - a build post-processor that uploads
   the WebGL build to the FTP server. See its own header comment for full
   setup instructions. In short:
-  - `Tools > WebGL FTP Deploy > Target` picks which condition/day (or
-    Short/Demo/Test) the *next* build uploads to.
+  - `Tools > WebGL FTP Deploy > Target` picks which of the 7 study builds
+    (or Demo/Test) the *next* build uploads to.
   - `Tools > WebGL FTP Deploy > Enable Auto-Deploy` is **off by default** -
     turn it on deliberately before a build you actually want uploaded, so a
     routine build never silently overwrites something live, and remember to
@@ -193,7 +210,9 @@ Certificate typically automatically renews every ~90 days.
 ## Misc
 - **Changing the condition scheme**: start in
   `WebServer/React-TS-Frontend/src/data/conditions.ts` (slugs/day counts) and
-  `public/api/db.php` (balancing), then update `schema.sql` and add a
-  `migrate_*.sql` to adjust the existing DB tables, then update 
-  `FTPDeployWebGL.cs`'s targets/env keys and `HabitGame/.env`.
+  `public/api/db.php` (balancing, day counts), then update `schema.sql` and
+  add a `migrate_*.sql` to adjust the existing DB tables, then update
+  `CONDITION_LABELS` in `participant_admin.php`, the `Targets` table and header
+  in `FTPDeployWebGL.cs`, the `FTP_SLUG_*` keys in `HabitGame/.env` and
+  `.env.example`, and the placeholder folders in `public/builds/`.
 

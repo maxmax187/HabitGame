@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Header from '../components/Header'
 import { checkEmail } from '../api/checkEmail'
+import { getDayCount } from '../data/conditions'
 
 type FormError = 'not-found' | 'server' | null
 
@@ -17,10 +18,10 @@ function Gateway() {
     try {
       const resolved = await checkEmail(email)
       if (resolved) {
-        // SHORT participants get a single simplified session, not the
-        // multi-day overview - send them straight into the game.
+        // Single-day conditions (MODERATE_*, SHORT) skip the multi-day
+        // overview - send them straight into the game.
         const target =
-          resolved.condition === 'SHORT' ? `/${resolved.slug}/day1` : `/${resolved.slug}`
+          getDayCount(resolved.slug) === 1 ? `/${resolved.slug}/day1` : `/${resolved.slug}`
         navigate(`${target}?email=${encodeURIComponent(resolved.email)}`)
         return
       }

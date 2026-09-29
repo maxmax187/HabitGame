@@ -2,14 +2,13 @@
 require_once __DIR__ . '/env.php';
 loadEnv();
 
-// All 4 main conditions now run the full 3 days. BETWEEN_* participants
-// are tested only at the end of day 3; WITHIN_* participants are tested
-// on both day 1 and day 3 (both handled entirely in-game) - each crossed
-// with L/R bias. Participants are balanced equally across these four.
-const BALANCED_CONDITIONS = ['BETWEEN_L', 'BETWEEN_R', 'WITHIN_L', 'WITHIN_R'];
+// 2 x 2 between-subjects design: training length (MODERATE = 1 day,
+// EXTENSIVE = 3 days) x outcome manipulation (REMOVAL vs DEVALUATION,
+// handled entirely in-game). Participants are balanced equally across these four.
+const BALANCED_CONDITIONS = ['MODERATE_REMOVAL', 'MODERATE_DEVALUATION', 'EXTENSIVE_REMOVAL', 'EXTENSIVE_DEVALUATION'];
 
 // SHORT is a fifth, separate condition - a single simplified session for
-// participants who registered but don't want the full 3-day study.
+// participants who registered but don't want the full study.
 // Deliberately excluded from BALANCED_CONDITIONS: never auto-assigned and
 // never touched by "reassign all", only reachable via a forced assignment.
 const CONDITIONS = [...BALANCED_CONDITIONS, 'SHORT'];
@@ -54,7 +53,6 @@ function pickBalancedCondition(array $counts): string {
     return $candidates[array_rand($candidates)];
 }
 
-// SHORT is a single session; every other condition now runs the full 3 days.
 function conditionDayCount(string $condition): int {
-    return $condition === 'SHORT' ? 1 : 3;
+    return str_starts_with($condition, 'EXTENSIVE_') ? 3 : 1;
 }
