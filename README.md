@@ -203,8 +203,8 @@ Lives in `public/api/` and is deployed alongside the built site. Key files:
   from direct HTTP access in `api/.htaccess`).
 - `data_admin.php` - password-gated dashboard: summary counts and several
   views (by day, by condition, day x condition, per-participant completion,
-  recent submissions), a "download all data as .zip" link, and a "delete all
-  data" danger-zone action.
+  all submissions with a per-entry Remove button), a "download all data as
+  .zip" link, and a "delete all data" danger-zone action.
 - `export.php` - builds the .zip for the above.
 - `sql/schema.sql` - run once against a fresh database.
 - `DBadmin.php` - a generic, password-gated low-level DB admin tool (raw
