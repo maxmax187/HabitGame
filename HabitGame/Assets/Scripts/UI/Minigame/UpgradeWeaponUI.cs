@@ -18,7 +18,19 @@ public class UpgradeWeaponUI : MonoBehaviour
 
     public void SetNoUpgradeState(float upgradeDamage)
     {   
+        _imageGold.SetActive(false);
+        _imageSilver.SetActive(true);
         _title.text = "No upgrade available";
         _stateUpgrade.text = $"Damage: {upgradeDamage}";
+    }
+
+    public void SetAlreadyStrongerState(Vector2 upgradeDamageData, float currentDamage)
+    {
+        // Group 1 has the top weapon (12 dmg) -> show Gold image
+        _imageGold.SetActive(true);
+        _imageSilver.SetActive(false);
+        _title.text = "Your weapon has been upgraded";
+
+        _stateUpgrade.text = $"Damage: {upgradeDamageData.x} -> {upgradeDamageData.y}\n<color=#FFD700>You already have a stronger weapon (Damage: {currentDamage})</color>";
     }
 }

@@ -6,9 +6,8 @@ using UnityEngine;
 using static PhasesData;
 
 /// <summary>
-/// GameManager is the script where the level data gets saved
+/// GameManager handles level flow, round setups, and metrics logging.
 /// </summary>
-
 public class GameManager : MonoBehaviour
 {
     [Header("References")]
@@ -42,17 +41,22 @@ public class GameManager : MonoBehaviour
     [SerializeField] private int[] _trainingBossSchedule = { 5, 7 };
     [SerializeField] private int[] _testBossSchedule = { 8 };
 
+    [Header("Test Level Damage By Group")]
+    [SerializeField] private float _testDamageGroup0 = 5;
+    [SerializeField] private float _testDamageGroup1 = 12;
+
     private ConfigManager _configManager;
     private int _currentPhase;
     private List<PhaseData> _levelPhases;
     private PlayerHealth _playerHealth;
+    private Attack _playerAttack;
     private Phase _phase;
     private bool _isLastBoss;
     private AudioSource _currentAudio;
 
-    private const int TutorialRoundCount = 4;
-    private const int TrainingRoundCount = 16;
-    private const int TestRoundCount = 4;
+    private const int TutorialRoundCount = 1;
+    private const int TrainingRoundCount = 1;
+    private const int TestRoundCount = 1;
     public const int TotalRoundCount = TutorialRoundCount + TrainingRoundCount + TestRoundCount;
 
     public int CurrentRound => _configManager != null ? _configManager.Config.LevelsData.Count : 1;
@@ -61,69 +65,20 @@ public class GameManager : MonoBehaviour
     public bool IsTestLevel => CurrentLevelType == LevelType.Test;
 
     public bool IsFirstTutorialRound => CurrentRound == 1;
-    public bool IsFirstTrainingRound => CurrentRound == TutorialRoundCount + 1; // assuming number of train rounds != 0
+    public bool IsFirstTrainingRound => CurrentRound == TutorialRoundCount + 1;
     public bool IsFirstTestRound => CurrentRound == TutorialRoundCount + TrainingRoundCount + 1;
 
     public int BossKillCount => _configManager != null ? _configManager.GetBossKillCount() : 0;
+    public int Group => _configManager != null ? _configManager.Config.Group : 0;
+    public float TestDamage => Group == 1 ? _testDamageGroup1 : _testDamageGroup0;
 
-    private LevelType GetLevelType(int round)
-    {
-        if (round <= TutorialRoundCount)
-        {
-            return LevelType.Tutorial;
-        }
-        if (round <= TutorialRoundCount + TrainingRoundCount)
-        {
-            return LevelType.Training;
-        }
-        return LevelType.Test;
-    }
+    // Public accessors for UI or Chest interactions
+    public Attack PlayerAttack => _playerAttack;
+    public PlayerHealth PlayerHealth => _playerHealth;
 
     public Phase CurrentPhase
     {
         set { _phase = value; }
-    }
-
-    public void ShowSpikeTutorial(string text)
-    {
-        if (_configManager == null || _configManager.Config.Day != 1 || !IsFirstTutorialRound)
-        {
-            return;
-        }
-        if (_configManager.Config.SpikeTutorialShown)
-        {
-            return;
-        }
-        ShowTutorial(text);
-        _configManager.MarkSpikeTutorialShown();
-    }
-
-    public void ShowBossTutorial(string text)
-    {
-        if (_configManager == null || _configManager.Config.Day != 1 || !IsFirstTutorialRound)
-        {
-            return;
-        }
-        if (_configManager.Config.BossTutorialShown)
-        {
-            return;
-        }
-        ShowTutorial(text);
-        _configManager.MarkBossTutorialShown();
-    }
-
-    public void ShowChestTutorial(string text)
-    {
-        if (_configManager == null || !IsFirstTrainingRound)
-        {
-            return;
-        }
-        if (_configManager.Config.ChestTutorialShown)
-        {
-            return;
-        }
-        ShowTutorial(text);
-        _configManager.MarkChestTutorialShown();
     }
 
     private void Start()
@@ -141,13 +96,12 @@ public class GameManager : MonoBehaviour
         Phase currentPhase = Instantiate(_levelPhases[_currentPhase].Phase);
         currentPhase.GameManager = this;
 
+        // Spawn player and cache both components
         _playerHealth = currentPhase.Spawnpoint.SpawnPlayer();
+        _playerAttack = _playerHealth.GetComponentInChildren<Attack>();
+        
         _playerHealth.SetData(time, _countDown);
-
-        if (IsTestLevel)
-        {
-            StartCoroutine(ApplyTestUpgradeNextFrame());
-        }
+        SetupPlayerAttackRules();
 
         if (_configManager != null)
         {
@@ -167,50 +121,145 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private IEnumerator ApplyTestUpgradeNextFrame()
+    private void SetupPlayerAttackRules()
     {
-        yield return null; // wait one frame, so Attack.Start() has already run
-        _playerHealth.UpgradeAttack();
+        Debug.Log($"[DEBUG GM] SetupPlayerAttackRules called. _playerAttack is null? {(_playerAttack == null)}");
+        if (_playerAttack == null) return;
+
+        Debug.Log($"[DEBUG GM] LevelType={CurrentLevelType}, IsTutorial={IsTutorialLevel}, IsTest={IsTestLevel}, Group={Group}, TestDamage={TestDamage}");
+        if (IsTutorialLevel)
+        {
+            // Tutorial: damage = 5, no upgrades
+            _playerAttack.Initialize(canUpgrade: false, overrideDamage: 5f);
+        }
+        else if (IsTestLevel)
+        {
+            // Test: Group 0 = 5 dmg, Group 1 = 12 dmg; upgrades disabled
+            _playerAttack.Initialize(canUpgrade: false, overrideDamage: TestDamage);
+        }
+        else
+        {
+            // Training: damage = 5, upgradable to 10
+            _playerAttack.Initialize(canUpgrade: true, overrideDamage: 5f);
+        }
     }
 
-    private void HandleLongTutorialClosed()
+    private LevelType GetLevelType(int round)
     {
-        _uiManager.OnLongTutorialClosed -= HandleLongTutorialClosed;
-        ShowTutorial(_walkTutorialText);
+        if (round <= TutorialRoundCount)
+        {
+            return LevelType.Tutorial;
+        }
+        if (round <= TutorialRoundCount + TrainingRoundCount)
+        {
+            return LevelType.Training;
+        }
+        return LevelType.Test;
     }
 
-    private void SetAudio(AudioSource newAudio)
+    public void MiniGameData(bool hasOpened, bool hasFinished)
     {
-        if (newAudio == _currentAudio)
+        Debug.Log($"[DEBUG GM] MiniGameData called: hasOpened={hasOpened}, hasFinished={hasFinished}, IsTestLevel={IsTestLevel}, _playerAttack is null? {(_playerAttack == null)}");
+
+        if (!TrySetConfig(out ConfigManager config))
         {
             return;
         }
 
-        if (_currentAudio != null)
-        {
-            _currentAudio.Stop();
-        }
+        config.MinigameData(hasOpened, hasFinished);
 
-        _currentAudio = newAudio;
-        if (_currentAudio != null)
+        if (hasFinished && !IsTestLevel && _playerAttack != null)
         {
-            _currentAudio.Play();
-        }   
+            Debug.Log("[DEBUG GM] Calling _playerAttack.UpgradeAttack()");
+            _playerAttack.UpgradeAttack();
+        }
     }
 
-    public void FadeAudio(float fadeTime)
+    public void MinigameStarted(float timeLeft)
     {
-        if (_currentAudio == null)
+        if (!TrySetConfig(out ConfigManager config))
+        {
+            return;
+        }
+        config.SetMinigameStartTime(timeLeft);
+    }
+
+    // Overload in case caller does not supply remaining time directly
+    public void MinigameStarted()
+    {
+        float timeLeft = _playerHealth != null ? _playerHealth.CurrentPlayerHealth : 0f;
+        MinigameStarted(timeLeft);
+    }
+
+    public void MinigameFinished(float timeLeft)
+    {
+        if (!TrySetConfig(out ConfigManager config))
+        {
+            return;
+        }
+        config.SetMinigameEndTime(timeLeft);
+    }
+
+    // Overload in case caller does not supply remaining time directly
+    public void MinigameFinished()
+    {
+        float timeLeft = _playerHealth != null ? _playerHealth.CurrentPlayerHealth : 0f;
+        MinigameFinished(timeLeft);
+    }
+
+    public void Phase2Entered(float timeLeft)
+    {
+        if (!TrySetConfig(out ConfigManager config))
+        {
+            return;
+        }
+        config.SetPhase2EnterTime(timeLeft);
+    }
+
+    public void ExitPhase(Phases phases)
+    {
+        if (_configManager == null)
         {
             return;
         }
 
-        _currentAudio.DOFade(0f, fadeTime);
+        float time = _playerHealth != null ? _playerHealth.CurrentPlayerHealth : 0f;
+        _configManager.AddPhaseTime(phases, time);
+
+        if (phases == Phases.Phase2)
+        {
+            _configManager.SetPhase2ExitTime(time);
+        }
     }
 
-    public void ShowTutorial(string text)
+    public void EnterBossRoom(float bossHealth)
     {
-        _uiManager.ShowTutorial(text);
+        SetAudio(_backgroundBattleAudio);
+        if (_playerAttack != null)
+        {
+            _playerAttack.EnterBossRoom();
+        }
+
+        if (ConfigManager.Instance == null)
+        {
+            return;
+        }
+
+        _configManager.BossRoom(bossHealth);
+    }
+
+    public void EndGame(bool killedBoss = false, float timeLeft = 0f)
+    {
+        _phase.EndPhase();
+
+        if (!TrySetConfig(out ConfigManager config))
+        {
+            _fadeToBlack.Fade();
+            return;
+        }
+
+        config.BossFightEnd(killedBoss, _isLastBoss, timeLeft);
+        _fadeToBlack.Fade();
     }
 
     public void SpikeSectionDone(float spikeFinishTimeLeft, int maxDificulty)
@@ -247,44 +296,99 @@ public class GameManager : MonoBehaviour
         config.SpikeLevelData(spikeFinishTimeLeft, currentDificulty);
     }
 
-    public void MiniGameData(bool hasOpend, bool hasFinished)
+    private void SetAudio(AudioSource newAudio)
     {
-        if (!TrySetConfig(out ConfigManager config))
+        if (newAudio == _currentAudio)
         {
             return;
         }
 
-        config.MinigameData(hasOpend, hasFinished);
-
-        if (hasFinished && !IsTestLevel)
+        if (_currentAudio != null)
         {
-            _playerHealth.UpgradeAttack();
+            _currentAudio.Stop();
         }
+
+        _currentAudio = newAudio;
+        if (_currentAudio != null)
+        {
+            _currentAudio.Play();
+        }   
     }
 
-    public void EnterBossRoom(float bossHealth)
+    public void FadeAudio(float fadeTime)
     {
-        SetAudio(_backgroundBattleAudio);
-        if (ConfigManager.Instance == null)
+        if (_currentAudio == null)
         {
             return;
         }
 
-        _configManager.BossRoom(bossHealth);
+        _currentAudio.DOFade(0f, fadeTime);
     }
 
-    public void EndGame(bool killedBoss = false, float timeLeft = 0f)
+    public void ShowTutorial(string text) => _uiManager.ShowTutorial(text);
+
+    public void ShowSpikeTutorial(string text)
     {
-        _phase.EndPhase();
+        if (_configManager == null || _configManager.Config.Day != 1 || !IsFirstTutorialRound) return;
+        if (_configManager.Config.SpikeTutorialShown) return;
 
-        if (!TrySetConfig(out ConfigManager config))
-        {
-            _fadeToBlack.Fade();
-            return;
-        }
+        ShowTutorial(text);
+        _configManager.MarkSpikeTutorialShown();
+    }
 
-        config.BossFightEnd(killedBoss, _isLastBoss, timeLeft);
-        _fadeToBlack.Fade();
+    public void ShowBossTutorial(string text)
+    {
+        if (_configManager == null || _configManager.Config.Day != 1 || !IsFirstTutorialRound) return;
+        if (_configManager.Config.BossTutorialShown) return;
+
+        ShowTutorial(text);
+        _configManager.MarkBossTutorialShown();
+    }
+
+    public void ShowChestTutorial(string text)
+    {
+        if (_configManager == null || !IsFirstTrainingRound) return;
+        if (_configManager.Config.ChestTutorialShown) return;
+
+        ShowTutorial(text);
+        _configManager.MarkChestTutorialShown();
+    }
+
+    private void HandleLongTutorialClosed()
+    {
+        _uiManager.OnLongTutorialClosed -= HandleLongTutorialClosed;
+        ShowTutorial(_walkTutorialText);
+    }
+
+    public bool ShowTutorialIntro()
+    {
+        if (_configManager == null || !IsFirstTutorialRound || _configManager.Config.TutorialIntroShown) return false;
+        _uiManager.ShowLongTutorialIntro();
+        _configManager.MarkTutorialIntroShown();
+        return true;
+    }
+
+    public bool ShowTrainingIntro()
+    {
+        if (_configManager == null || !IsFirstTrainingRound || _configManager.Config.TrainingIntroShown) return false;
+        _uiManager.ShowLongTrainingTutorial();
+        _configManager.MarkTrainingIntroShown();
+        return true;
+    }
+
+    public bool ShowTestIntro()
+    {
+        if (_configManager == null || !IsFirstTestRound || _configManager.Config.TestIntroShown) return false;
+        _uiManager.ShowLongTestTutorial();
+        _configManager.MarkTestIntroShown();
+        return true;
+    }
+
+    public bool ShouldShowMinigameHowTo()
+    {
+        if (_configManager == null || !IsFirstTrainingRound || _configManager.Config.MinigameHowToShown) return false;
+        _configManager.MarkMinigameHowToShown();
+        return true;
     }
 
     private bool TrySetConfig(out ConfigManager config)
@@ -352,22 +456,17 @@ public class GameManager : MonoBehaviour
         int phaseThreeCount = _phases.PhasesThree.Length;
         bossIndex = math.clamp(bossIndex, 0, phaseThreeCount - 1);
 
-        Debug.Log($"GetBossPhase: bossIndex={bossIndex}, phaseAsset={_phases.PhasesThree[bossIndex].Phase.name}");
-
         if (_configManager != null)
         {
             _configManager.SetCurrentBossIndex(bossIndex);
         }
 
         _isLastBoss = CurrentRound >= TotalRoundCount;
-
         return _phases.PhasesThree[bossIndex];
     }
 
     private int GetScheduledBossIndex()
     {
-        Debug.Log($"GetScheduledBossIndex: CurrentRound={CurrentRound}, IsTutorialLevel={IsTutorialLevel}, IsTestLevel={IsTestLevel}");
-
         if (IsTutorialLevel)
         {
             return _tutorialBossIndex;
@@ -376,12 +475,10 @@ public class GameManager : MonoBehaviour
         if (IsTestLevel)
         {
             int testRoundIndex = CurrentRound - (TutorialRoundCount + TrainingRoundCount) - 1;
-            Debug.Log($"Test round index = {testRoundIndex}");
             return GetFromSchedule(_testBossSchedule, testRoundIndex);
         }
 
         int trainingRoundIndex = CurrentRound - TutorialRoundCount - 1;
-        Debug.Log($"Training round index = {trainingRoundIndex}");
         return GetFromSchedule(_trainingBossSchedule, trainingRoundIndex);
     }
 
@@ -394,91 +491,5 @@ public class GameManager : MonoBehaviour
 
         index = math.clamp(index, 0, schedule.Length - 1);
         return schedule[index];
-    }
-
-    public void ExitPhase(Phases phases)
-    {
-        if (_configManager == null)
-        {
-            return;
-        }
-
-        float time = _playerHealth.GetCurrentHealth;
-        _configManager.AddPhaseTime(phases, time);
-
-        if (phases == Phases.Phase2)
-        {
-            _configManager.SetPhase2ExitTime(time);
-        }
-    }
-
-    public void MinigameStarted(float timeLeft)
-    {
-        if (!TrySetConfig(out ConfigManager config))
-        {
-            return;
-        }
-        config.SetMinigameStartTime(timeLeft);
-    }
-
-    public void MinigameFinished(float timeLeft)
-    {
-        if (!TrySetConfig(out ConfigManager config))
-        {
-            return;
-        }
-        config.SetMinigameEndTime(timeLeft);
-    }
-
-    public void Phase2Entered(float timeLeft)
-    {
-        if (!TrySetConfig(out ConfigManager config))
-        {
-            return;
-        }
-        config.SetPhase2EnterTime(timeLeft);
-    }
-
-    public bool ShowTutorialIntro()
-    {
-        if (_configManager == null || !IsFirstTutorialRound || _configManager.Config.TutorialIntroShown)
-        {
-            return false;
-        }
-        _uiManager.ShowLongTutorialIntro();
-        _configManager.MarkTutorialIntroShown();
-        return true;
-    }
-
-    public bool ShowTrainingIntro()
-    {
-        if (_configManager == null || !IsFirstTrainingRound || _configManager.Config.TrainingIntroShown)
-        {
-            return false;
-        }
-        _uiManager.ShowLongTrainingTutorial();
-        _configManager.MarkTrainingIntroShown();
-        return true;
-    }
-
-    public bool ShowTestIntro()
-    {
-        if (_configManager == null || !IsFirstTestRound || _configManager.Config.TestIntroShown)
-        {
-            return false;
-        }
-        _uiManager.ShowLongTestTutorial();
-        _configManager.MarkTestIntroShown();
-        return true;
-    }
-
-    public bool ShouldShowMinigameHowTo()
-    {
-        if (_configManager == null || !IsFirstTrainingRound || _configManager.Config.MinigameHowToShown)
-        {
-            return false;
-        }
-        _configManager.MarkMinigameHowToShown();
-        return true;
     }
 }

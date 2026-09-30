@@ -2,108 +2,123 @@ using DG.Tweening;
 using System.Collections;
 using UnityEngine;
 
-/// <summary>
-/// Player attack script is so that the player can attack the boss
-/// </summary>
-
 public class Attack : MonoBehaviour
 {
-    [SerializeField] private SpriteRenderer _attackCircle;
+    public static Attack Instance { get; private set; }
 
+    [SerializeField] private SpriteRenderer _attackCircle;
     [SerializeField] private Animator _attackAnimator;
-    [SerializeField] private float _normalDamage;
-    [SerializeField] private float _upgradeDamage;
-    [SerializeField] private float _timeBetweenAttack;
+
+    [Header("Damage Settings")]
+    [SerializeField] private float _normalDamage = 5f;
+    [SerializeField] private float _upgradedDamage = 10f;
+    [SerializeField] private float _timeBetweenAttack = 1f;
 
     [Header("Audio")]
     [SerializeField] private AudioSource _attackAudio;
 
+    private float _currentDamage = 5f;
+    private bool _canUpgrade = true;
     private bool _isInBossRoom;
     private bool _bossInRange;
     private BossHealth _bossHealth;
-    private float _doDamage;
 
     private Color _attackCircleColor;
     private float _attackCircleAlpha;
     private Vector3 _attackCircleScale;
-
     private float _lastAttackTime = -999f;
 
-    public Vector2 UpgradeDamage
+    public Vector2 UpgradeDamageInfo => new Vector2(_normalDamage, _upgradedDamage);
+    public float CurrentDamage => _currentDamage;
+
+    private void Awake()
     {
-        get { return new Vector2(_normalDamage, _upgradeDamage); }
+        Instance = this;
+        Debug.Log($"[DEBUG Attack] Awake on GameObject '{gameObject.name}', InstanceID={GetInstanceID()}, default damage={_currentDamage}");
+
+        if (_attackCircle != null)
+        {
+            _attackCircleColor = _attackCircle.color;
+            _attackCircleAlpha = _attackCircleColor.a;
+            _attackCircleScale = _attackCircle.transform.localScale;
+
+            _attackCircleColor.a = 0f;
+            _attackCircle.color = _attackCircleColor;
+            _attackCircle.transform.localScale = Vector3.zero;
+        }
     }
 
-    private void Start()
+    // Do NOT reset _currentDamage in Start() because GameManager.SetupPlayerAttackRules()
+    // runs during Start() and setting it here would overwrite test/training overrides!
+
+    public void Initialize(bool canUpgrade, float overrideDamage = -1f)
     {
-        _attackCircleColor = _attackCircle.color;
-        _attackCircleAlpha = _attackCircleColor.a;
-        _attackCircleScale = _attackCircle.transform.localScale;
-
-        _attackCircleColor.a = 0f;
-        _attackCircle.color = _attackCircleColor;
-        _attackCircle.transform.localScale = Vector3.zero;
-
-        _doDamage = _normalDamage;
+        _canUpgrade = canUpgrade;
+        _currentDamage = (overrideDamage > 0f) ? overrideDamage : _normalDamage;
+        Debug.Log($"[Attack.Initialize] Damage set to: {_currentDamage}, CanUpgrade: {_canUpgrade}");
     }
 
     public void UpgradeAttack()
     {
-        _doDamage = _upgradeDamage;
-    }
-
-    //Gets triggerd on input
-    public bool DoAttack(Vector2 moveInput)
-    {
-        if (!_isInBossRoom)
+        if (!_canUpgrade)
         {
-            return false;
+            Debug.Log("[Attack.UpgradeAttack] Upgrade blocked (canUpgrade is false).");
+            return;
         }
 
-        if (Time.time - _lastAttackTime < _timeBetweenAttack)
+        _currentDamage = _upgradedDamage;
+        Debug.Log($"[Attack.UpgradeAttack] Upgraded damage to: {_currentDamage}");
+    }
+
+    public void SetDamage(float damage)
+    {
+        _currentDamage = damage;
+    }
+
+    public void EnterBossRoom()
+    {
+        _isInBossRoom = true;
+    }
+
+    public bool DoAttack(Vector2 moveInput)
+    {
+        if (!_isInBossRoom || Time.time - _lastAttackTime < _timeBetweenAttack)
         {
             return false;
         }
 
         _lastAttackTime = Time.time;
         StartCoroutine(AttackRoutine(moveInput));
-
         return true;
-    }
-
-    //Gets triggerd when you enter the boss room
-    public void BossRoom()
-    {
-        _isInBossRoom = true;
     }
 
     private void OnTriggerEnter2D(Collider2D col)
     {
-        if (col.gameObject.TryGetComponent<BossHealth>(out BossHealth bossHealth))
+        if (col.TryGetComponent<BossHealth>(out var boss))
         {
             _bossInRange = true;
-
-            if (_bossHealth == null)
-            {
-                _bossHealth = bossHealth;
-            }
+            _bossHealth = boss;
         }
     }
 
     private void OnTriggerExit2D(Collider2D col)
     {
-        if (col.gameObject.TryGetComponent<BossHealth>(out _))
+        if (col.TryGetComponent<BossHealth>(out _))
         {
             _bossInRange = false;
         }
     }
 
-    IEnumerator AttackRoutine(Vector2 moveInput)
+    private IEnumerator AttackRoutine(Vector2 moveInput)
     {
         _attackAnimator.SetFloat("AttackX", moveInput.x);
         _attackAnimator.SetFloat("AttackY", moveInput.y);
         _attackAnimator.SetTrigger("Attack");
-        _attackAudio.Play();
+
+        if (_attackAudio != null)
+        {
+            _attackAudio.Play();
+        }
 
         yield return new WaitForEndOfFrame();
 
@@ -116,7 +131,8 @@ public class Attack : MonoBehaviour
 
         if (_bossInRange && _bossHealth != null)
         {
-            _bossHealth.TakeDamage(_doDamage, DamageType.Player);
+            Debug.Log($"[Attack] Hitting boss for {_currentDamage} damage.");
+            _bossHealth.TakeDamage(_currentDamage, DamageType.Player);
         }
 
         _attackCircleColor.a = 0f;

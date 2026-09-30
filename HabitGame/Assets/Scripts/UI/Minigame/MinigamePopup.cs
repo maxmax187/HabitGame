@@ -1,10 +1,6 @@
 using TMPro;
 using UnityEngine;
 
-/// <summary>
-/// This minigame popup is for showing or not showing the popup
-/// </summary>
-
 public class MinigamePopup : MonoBehaviour
 {
     [SerializeField] private GameManager _gameManager;
@@ -12,14 +8,15 @@ public class MinigamePopup : MonoBehaviour
     [SerializeField] private UpgradeWeaponUI _upgradeWeaponUI;
     [SerializeField] private Minigame _minigameScreen;
     [Space]
-    [SerializeField] private float _noTapTime;
+    [SerializeField] private float _noTapTime = 0.3f;
 
     [Header("Audio")]
-    [SerializeField] AudioSource _chestOpenAudio;
-    [SerializeField] AudioSource _chestCloseAudio;
-    [SerializeField] AudioSource _tapHit;
-    [SerializeField] AudioSource _tapMiss;
-    [SerializeField] AudioSource _gameCompleteAudio;
+    [SerializeField] private AudioSource _chestOpenAudio;
+    [SerializeField] private AudioSource _chestCloseAudio;
+    [SerializeField] private AudioSource _tapHit;
+    [SerializeField] private AudioSource _tapMiss;
+    [SerializeField] private AudioSource _gameCompleteAudio;
+    [SerializeField] private AudioSource _noUpgradeAudio; // Plays when Test Level & Group 0
 
     private bool _minigameDone;
     private float _waitTime;
@@ -32,115 +29,131 @@ public class MinigamePopup : MonoBehaviour
 
     private void Update()
     {
-        if (gameObject.activeSelf)
-        {
-            Debug.Log($"MinigamePopup.Update: Time.timeScale={Time.timeScale}");
-        }
-
         if (_waitTime > 0f)
         {
-            _waitTime = Mathf.Max(0f, _waitTime - Time.deltaTime);
+            _waitTime = Mathf.Max(0f, _waitTime - Time.unscaledDeltaTime);
         }
     }
 
     public void ShowTutorial(bool show)
     {
-        _turotial.gameObject.SetActive(show);
+        if (_turotial != null)
+        {
+            _turotial.gameObject.SetActive(show);
+        }
     }
 
     private void PlayChestAudio(bool open)
     {
         if (open)
         {
-            _chestOpenAudio.Play();
+            if (_chestOpenAudio != null) _chestOpenAudio.Play();
         }
         else
         {
-            _chestCloseAudio.Play();
+            if (_chestCloseAudio != null) _chestCloseAudio.Play();
         }
     }
 
     public void ShowPopup(bool show)
     {
-        if (show && _minigameDone)
+        if (show)
         {
-            return;
-        }
-
-        if (show != gameObject.activeSelf)
-        {
-            if (!show)
+            // Only play the chest open sound if the minigame is not already done and opening for the first time
+            if (!_minigameDone && !gameObject.activeSelf)
             {
-                PlayChestAudio(show);
-                FindFirstObjectByType<PlayerMovement>()?.SetMovementLocked(false);
+                PlayChestAudio(true);
             }
-            gameObject.SetActive(show);
-            if (show)
+
+            gameObject.SetActive(true);
+
+            _gameManager.MiniGameData(true, _minigameDone);
+
+            if (!_minigameDone)
             {
-                PlayChestAudio(show);
+                StartMiniGame();
             }
         }
-
-        if (!show)
+        else
         {
-            return;
+            PlayChestAudio(false);
+            FindFirstObjectByType<PlayerMovement>()?.SetMovementLocked(false);
+            Time.timeScale = 1f;
+            gameObject.SetActive(false);
         }
-
-        _gameManager.MiniGameData(true, _minigameDone);
-
-        if (_minigameDone)
-        {
-            return;
-        }
-        StartMiniGame();
     }
 
     public void CompletedMinigame()
-    { 
+    {
         Debug.Log("CompletedMinigame() called");
-        _gameManager.MiniGameData(true, true);
+        _minigameDone = true;
+        _minigameActive = false;
 
-        if (PlayerHealth.Instance != null)
+        // Hide minigame tutorial text so it does not show during the upgrade view
+        ShowTutorial(false);
+
+        if (_gameManager != null)
         {
-            _gameManager.MinigameFinished(PlayerHealth.Instance.GetCurrentHealth);
+            float timeLeft = PlayerHealth.Instance != null ? PlayerHealth.Instance.CurrentPlayerHealth : 0f;
+            _gameManager.MinigameFinished(timeLeft);
+            _gameManager.MiniGameData(true, true);
         }
 
-        _minigameScreen.gameObject.SetActive(false);
-        _turotial.gameObject.SetActive(false);
+        bool isTest = _gameManager != null && _gameManager.IsTestLevel;
+        bool isNoUpgrade = isTest && _gameManager.Group == 0;
 
-        _upgradeWeaponUI.gameObject.SetActive(true);
-
-        bool isTestLevel = _gameManager.IsTestLevel;
-        if (!isTestLevel)
+        // Play special audio if it is a test level with Group 0 (no upgrade available)
+        if (isNoUpgrade && _noUpgradeAudio != null)
         {
-            _gameCompleteAudio?.Play();
+            _noUpgradeAudio.Play();
+        }
+        else if (_gameCompleteAudio != null)
+        {
+            _gameCompleteAudio.Play();
         }
 
-        if (PlayerHealth.Instance != null)
+        if (_minigameScreen != null)
         {
-            Vector2 upgradeDamage = PlayerHealth.Instance.PlayerAttackUpgrade;
-            if (isTestLevel)
+            _minigameScreen.gameObject.SetActive(false);
+        }
+
+        if (_upgradeWeaponUI != null)
+        {
+            _upgradeWeaponUI.gameObject.SetActive(true);
+
+            Vector2 upgradeDamage = _gameManager.PlayerAttack != null 
+                ? _gameManager.PlayerAttack.UpgradeDamageInfo 
+                : new Vector2(5f, 10f);
+
+            if (isTest)
             {
-                _upgradeWeaponUI.SetNoUpgradeState(upgradeDamage.y);
+                if (_gameManager.Group == 1)
+                {
+                    _upgradeWeaponUI.SetAlreadyStrongerState(upgradeDamage, _gameManager.TestDamage);
+                }
+                else
+                {
+                    _upgradeWeaponUI.SetNoUpgradeState(_gameManager.TestDamage);
+                }
             }
             else
             {
-                _upgradeWeaponUI.SetState(upgradeDamage, isTestLevel);
+                _upgradeWeaponUI.SetState(upgradeDamage, isTest);
             }
         }
 
         Time.timeScale = 0f;
-        Debug.Log($"Set timeScale to 0. Actual value now: {Time.timeScale}");
-        ShowPopup(true);
-        ShowPopup(true);
-        _minigameDone = true;
+        _waitTime = _noTapTime;
+
+        if (!gameObject.activeSelf)
+        {
+            gameObject.SetActive(true);
+        }
     }
 
     public void TapInput()
     {
-        Debug.Log($"TapInput called. _waitTime={_waitTime}, _minigameDone={_minigameDone}");
-
-        if (_waitTime > 0)
+        if (_waitTime > 0f)
         {
             return;
         }
@@ -160,9 +173,10 @@ public class MinigamePopup : MonoBehaviour
                     _tapMiss?.Play();
                 }
             }
-
             return;
         }
+
+        // Tap closes the popup after minigame/upgrade is complete
         ShowPopup(false);
     }
 
@@ -177,17 +191,26 @@ public class MinigamePopup : MonoBehaviour
         playerMovement?.SetMovementLocked(true);
 
         _minigameActive = true;
-        _upgradeWeaponUI.gameObject.SetActive(false);
-        _minigameScreen.gameObject.SetActive(true);
+
+        if (_upgradeWeaponUI != null)
+        {
+            _upgradeWeaponUI.gameObject.SetActive(false);
+        }
+
+        if (_minigameScreen != null)
+        {
+            _minigameScreen.gameObject.SetActive(true);
+            _minigameScreen.StartGame();
+        }
+
         _waitTime = _noTapTime;
-        _minigameScreen.StartGame();
 
         bool showHowTo = _gameManager != null && _gameManager.ShouldShowMinigameHowTo();
         ShowTutorial(showHowTo);
 
-        if (PlayerHealth.Instance != null)
+        if (PlayerHealth.Instance != null && _gameManager != null)
         {
-            _gameManager.MinigameStarted(PlayerHealth.Instance.GetCurrentHealth);
+            _gameManager.MinigameStarted(PlayerHealth.Instance.CurrentPlayerHealth);
         }
     }
 }

@@ -10671,7 +10671,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1401935514879983567, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: _attackPaternHealth.Array.size
-      value: 3
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 1401935514879983567, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: _attackPaternHealth.Array.data[0].Health
@@ -10743,7 +10743,7 @@ PrefabInstance:
       objectReference: {fileID: 4309475329075965568}
     - target: {fileID: 1401935514879983567, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: _attackPaternHealth.Array.data[0].AttackPatern.Array.data[0].TimeBeforeNextAttack
-      value: 2
+      value: 2.5
       objectReference: {fileID: 0}
     - target: {fileID: 1401935514879983567, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: _attackPaternHealth.Array.data[0].AttackPatern.Array.data[1].TimeBeforeNextAttack
@@ -10755,7 +10755,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1401935514879983567, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: _attackPaternHealth.Array.data[1].AttackPatern.Array.data[0].TimeBeforeNextAttack
-      value: 1.5
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 1401935514879983567, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: _attackPaternHealth.Array.data[1].AttackPatern.Array.data[1].TimeBeforeNextAttack
@@ -10874,8 +10874,16 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7788196321626605594, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
+      propertyPath: DamageTime
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7788196321626605594, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: HealthAmount
       value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 7788196321626605594, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
+      propertyPath: _takeDamageColor.g
+      value: 0.7058824
       objectReference: {fileID: 0}
     - target: {fileID: 8811735804161747027, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: m_IsActive

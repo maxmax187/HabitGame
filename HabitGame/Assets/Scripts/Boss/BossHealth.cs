@@ -5,7 +5,6 @@ using UnityEngine.UI;
 /// BossHealth is derived from Health and takes care of 
 /// showcasing the health and what happens if the boss is dead
 /// </summary>
-
 [RequireComponent(typeof(BossAttack))]
 public class BossHealth : Health
 {
@@ -35,7 +34,12 @@ public class BossHealth : Health
 
         _attack.BossActivate(_playerHealth, this);
         _teleport?.StartTeleporting();
-        _playerHealth.ActivateAttack();
+
+        // Enable player attacking via Attack component
+        if (Attack.Instance != null)
+        {
+            Attack.Instance.EnterBossRoom();
+        }
 
         if (_gameManager == null)
         {
@@ -46,24 +50,6 @@ public class BossHealth : Health
         _gameManager.EnterBossRoom(CurrentHealth);
     }
 
-    // ------- IF BOSS NOT DEFEATED, BRING REMAINING HEALTH TO THE NEXT LEVEL -------
-    //public void SetBossHealth()
-    //{
-    //    if (ConfigManager == null)
-    //    {
-    //        return;
-    //    }
-    //
-    //    float bossHealth = ConfigManager.GetBossHealth();
-    //    if (bossHealth == 0)
-    //    {
-    //        SetHealth(HealthAmount);
-    //        return;
-    //    }
-    //    SetHealth(bossHealth);
-    //}
-
-    // ------- RESET BOSS HEALTH FOR EACH LEVEL ----------
     public void SetBossHealth()
     {
         SetHealth(HealthAmount);
@@ -85,13 +71,13 @@ public class BossHealth : Health
         #region Boss died
         if (CurrentHealth <= 0)
         {
-            //Boss dies you win
+            // Boss dies you win
             _attack?.StopAttacks();
             _teleport?.StopTeleporting();
             _animator.SetTrigger("Dead");
             _bossDeathAudio.Play();
-            float animationLenght = _animator.GetCurrentAnimatorStateInfo(0).length;
-            StartCoroutine(HelperWait.ActionAfterWait(animationLenght, EndGame));
+            float animationLength = _animator.GetCurrentAnimatorStateInfo(0).length;
+            StartCoroutine(HelperWait.ActionAfterWait(animationLength, EndGame));
             return;
         }
         #endregion

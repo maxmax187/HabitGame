@@ -1,44 +1,27 @@
 using UnityEngine;
 
 /// <summary>
-/// This player health script is derived from health
-/// The health of the player isn't hearts but the time they have left
+/// Handles player health, represented as remaining time.
 /// </summary>
-
 public class PlayerHealth : Health
 {
     public static PlayerHealth Instance;
 
-    [SerializeField] private Attack _playerAttack;
+    // Public accessor so outside classes like GameManager can read remaining health/time
+    public float CurrentPlayerHealth => CurrentHealth;
 
     [Header("Audio")]
     [SerializeField] private AudioSource _damageAudio;
 
     private CountDown _countdown;
-
     private Camera _mainCamera;
     private bool _isPlaying;
-
-    public Vector2 PlayerAttackUpgrade
-    {
-        get { return _playerAttack.UpgradeDamage; }
-    }
 
     protected override void Start()
     {
         base.Start();
         Instance = this;
         _mainCamera = Camera.main;
-    }
-
-    public void ActivateAttack()
-    {
-        _playerAttack.BossRoom();
-    }
-
-    public void UpgradeAttack()
-    {
-        _playerAttack.UpgradeAttack();
     }
 
     public void SetData(float time, CountDown countdown)
@@ -57,27 +40,26 @@ public class PlayerHealth : Health
 
         _ = StartCoroutine(Damage());
 
-        void action()
+        void Action()
         {
             base.TakeDamage(damage, type);
-            _damageAudio.Play();
-            //Update current counter
+            if (_damageAudio != null)
+            {
+                _damageAudio.Play();
+            }
             _countdown.UpdateTimer(CurrentHealth);
         }
 
         Vector3 screenPosition = _mainCamera.WorldToScreenPoint(transform.position);
-        _countdown.LoseTime(damage, screenPosition, action);
+        _countdown.LoseTime(damage, screenPosition, Action);
     }
 
-    //If we have started, the timer will go down
     private void Update()
     {
         if (!_isPlaying || CurrentHealth <= 0)
         {
             return;
         }
-
-        Debug.Log($"PlayerHealth.Update: Time.timeScale={Time.timeScale}, Time.deltaTime={Time.deltaTime}, CurrentHealth={CurrentHealth}");
 
         CurrentHealth -= Time.deltaTime;
         _countdown.UpdateTimer(CurrentHealth);

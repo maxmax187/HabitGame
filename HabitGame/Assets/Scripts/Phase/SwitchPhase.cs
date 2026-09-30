@@ -22,7 +22,7 @@ public class SwitchPhase : MonoBehaviour
         }
         _isEntering = true;
 
-        //Load in next phase
+        // Load in next phase
         Phase next = _phase.NextPhase;
         if (next == null)
         {
@@ -33,11 +33,11 @@ public class SwitchPhase : MonoBehaviour
         _phase.GameManager.CurrentPhase = nextPhase;
         nextPhase.InitializePhase2();
 
-        //Send player to the entrance of the next phase
+        // Send player to the entrance of the next phase
         nextPhase.MainEntrance.PlayerEnter(playerMovement);
         _phase.ExitPhase();
 
-        //Turn off current phase (might want to go back so keep it in the scene)
+        // Turn off current phase
         _phase.gameObject.SetActive(false);
     }
 
@@ -46,12 +46,13 @@ public class SwitchPhase : MonoBehaviour
         SetPhase();
         if (_phase.BossRoom(out _))
         {
-            //TODO If it is the boss room activate the attack and boss fight
-            PlayerHealth.Instance.ActivateAttack();
+            if (Attack.Instance != null)
+            {
+                Attack.Instance.EnterBossRoom();
+            }
         }
 
         _isEntering = true;
-
         playerMovement.Entrance(transform.position);
     }
 

@@ -14,8 +14,7 @@ public class ConfigManager : MonoBehaviour
     [Header("Session Settings (set manually before each session)")]
     [SerializeField] private ChestSide _sessionChestSide;
     [SerializeField] private int _sessionDay = 1;
-    [SerializeField] private int _group = 1;
-
+    [SerializeField] private int _sessionGroup = 0;
 
     public int SpikeDificulty => Config.CurrentSpikeDificulty;
 
@@ -26,7 +25,7 @@ public class ConfigManager : MonoBehaviour
         Config = Config.Load();
         Config.ChestSide = _sessionChestSide;
         Config.Day = _sessionDay;
-        Config.Group = _group;
+        Config.Group = _sessionGroup;
         Config.Save(Config);
     }
 
