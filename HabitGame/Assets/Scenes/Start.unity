@@ -350,7 +350,7 @@ MonoBehaviour:
     HasOpenedBefore: 0
   _sessionChestSide: 1
   _sessionDay: 0
-  _sessionGroup: 0
+  _sessionGroup: 1
 --- !u!4 &1835306766
 Transform:
   m_ObjectHideFlags: 0
