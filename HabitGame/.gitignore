@@ -112,3 +112,5 @@ libdecor*.so*
 HabitGame_link_*/
 itchBuild*/
 *.unityweb
+/WebBuild/*
+HabitGame/testBuild/
