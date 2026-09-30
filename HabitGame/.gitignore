@@ -114,3 +114,4 @@ itchBuild*/
 *.unityweb
 /WebBuild/*
 HabitGame/testBuild/*
+*.meta

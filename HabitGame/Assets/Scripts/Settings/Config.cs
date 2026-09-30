@@ -9,7 +9,6 @@ using UnityEngine.Networking;
 /// <summary>
 /// This is the script where all the players data is stored, saved and read
 /// </summary>
-
 [Serializable]
 public class Config
 {
@@ -19,6 +18,9 @@ public class Config
     // Link to the JSLib plugin
     [DllImport("__Internal")]
     private static extern void DownloadFile(string filename, string content);
+
+    // Guard flag to prevent duplicate submissions from multiple calls
+    private static bool _isSubmittingOrSubmitted = false;
 
     // First field on purpose - JsonUtility serializes in declaration order,
     // and this is meant to be the first thing visible when opening the file.
@@ -40,9 +42,6 @@ public class Config
     public int Group;
     public List<LevelData> LevelsData;
 
-    // public bool TutorialIntroShown;
-    // public bool TrainingIntroShown;
-    // public bool TestIntroShown;
     public bool MinigameHowToShown;
     public bool HasOpenedBefore; // Home Screen Helper
 
@@ -57,7 +56,6 @@ public class Config
         string saveFile = SaveFilenName();
         string json = JsonUtility.ToJson(config, true);
         File.WriteAllText(saveFile, json);
-
 
 #if UNITY_WEBGL && !UNITY_EDITOR
         SyncFiles();
@@ -109,7 +107,7 @@ public class Config
         string json = JsonUtility.ToJson(config, true);
 
 #if UNITY_WEBGL && !UNITY_EDITOR
-            DownloadFile(saveFile, json);
+        DownloadFile(saveFile, json);
 #else
         // Fallback for Editor: Just print to console or save to Desktop
         Debug.Log("Download triggered. Content: " + json);
@@ -138,6 +136,16 @@ public class Config
     /// </summary>
     public static void Submit(Config config, Action<bool, string> onComplete = null)
     {
+        // Prevent duplicate calls from firing multiple requests
+        if (_isSubmittingOrSubmitted)
+        {
+            Debug.LogWarning("[Config] Submit ignored: Data has already been submitted or is currently in progress.");
+            onComplete?.Invoke(true, "Already submitted.");
+            return;
+        }
+
+        _isSubmittingOrSubmitted = true;
+
 #if UNITY_WEBGL && !UNITY_EDITOR
         string pageUrl = Application.absoluteURL;
         Dictionary<string, string> queryParams = ParseQueryString(pageUrl);
@@ -146,6 +154,7 @@ public class Config
         {
             string msg = "Missing 'email' in page URL: " + pageUrl;
             Debug.LogError("[Config] Submit failed: " + msg);
+            _isSubmittingOrSubmitted = false; // Reset on validation failure so player can retry
             onComplete?.Invoke(false, msg);
             return;
         }
@@ -158,6 +167,7 @@ public class Config
         {
             string msg = "Missing/invalid 'day' in page URL: " + pageUrl;
             Debug.LogError("[Config] Submit failed: " + msg);
+            _isSubmittingOrSubmitted = false;
             onComplete?.Invoke(false, msg);
             return;
         }
@@ -167,6 +177,7 @@ public class Config
         {
             string msg = "Could not determine API URL from page URL: " + pageUrl;
             Debug.LogError("[Config] Submit failed: " + msg);
+            _isSubmittingOrSubmitted = false;
             onComplete?.Invoke(false, msg);
             return;
         }
@@ -194,6 +205,7 @@ public class Config
             else
             {
                 Debug.LogError("[Config] Submit failed: " + request.error + " - " + responseText);
+                _isSubmittingOrSubmitted = false; // Reset on network failure so it can retry
             }
 
             onComplete?.Invoke(ok, ok ? responseText : request.error);
