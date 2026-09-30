@@ -47,40 +47,70 @@ public class MinigamePopup : MonoBehaviour
     {
         if (open)
         {
-            if (_chestOpenAudio != null) _chestOpenAudio.Play();
+            if (_chestOpenAudio != null)
+            {
+                _chestOpenAudio.Play();
+            }
         }
         else
         {
-            if (_chestCloseAudio != null) _chestCloseAudio.Play();
+            if (_chestCloseAudio != null)
+            {
+                // PlayClipAtPoint ensures the audio doesn't get abruptly cut off 
+                // when this GameObject is deactivated on the very next line.
+                if (_chestCloseAudio.clip != null)
+                {
+                    AudioSource.PlayClipAtPoint(
+                        _chestCloseAudio.clip,
+                        Camera.main != null ? Camera.main.transform.position : transform.position,
+                        _chestCloseAudio.volume
+                    );
+                }
+                else
+                {
+                    _chestCloseAudio.Play();
+                }
+            }
         }
     }
 
     public void ShowPopup(bool show)
     {
-        if (show)
+        if (show && _minigameDone)
         {
-            // Only play the chest open sound if the minigame is not already done and opening for the first time
-            if (!_minigameDone && !gameObject.activeSelf)
+            return;
+        }
+
+        if (show != gameObject.activeSelf)
+        {
+            if (!show)
+            {
+                PlayChestAudio(false);
+                FindFirstObjectByType<PlayerMovement>()?.SetMovementLocked(false);
+                Time.timeScale = 1f;
+            }
+
+            gameObject.SetActive(show);
+
+            if (show)
             {
                 PlayChestAudio(true);
             }
-
-            gameObject.SetActive(true);
-
-            _gameManager.MiniGameData(true, _minigameDone);
-
-            if (!_minigameDone)
-            {
-                StartMiniGame();
-            }
         }
-        else
+
+        if (!show)
         {
-            PlayChestAudio(false);
-            FindFirstObjectByType<PlayerMovement>()?.SetMovementLocked(false);
-            Time.timeScale = 1f;
-            gameObject.SetActive(false);
+            return;
         }
+
+        _gameManager.MiniGameData(true, _minigameDone);
+
+        if (_minigameDone)
+        {
+            return;
+        }
+
+        StartMiniGame();
     }
 
     public void CompletedMinigame()
@@ -144,11 +174,6 @@ public class MinigamePopup : MonoBehaviour
 
         Time.timeScale = 0f;
         _waitTime = _noTapTime;
-
-        if (!gameObject.activeSelf)
-        {
-            gameObject.SetActive(true);
-        }
     }
 
     public void TapInput()
@@ -176,7 +201,7 @@ public class MinigamePopup : MonoBehaviour
             return;
         }
 
-        // Tap closes the popup after minigame/upgrade is complete
+        // Tapping here closes the popup window after upgrade viewing, triggering PlayChestAudio(false)
         ShowPopup(false);
     }
 

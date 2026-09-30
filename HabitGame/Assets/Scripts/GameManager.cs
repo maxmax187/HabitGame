@@ -54,7 +54,7 @@ public class GameManager : MonoBehaviour
     private bool _isLastBoss;
     private AudioSource _currentAudio;
 
-    private const int TutorialRoundCount = 1;
+    private const int TutorialRoundCount = 0;
     private const int TrainingRoundCount = 1;
     private const int TestRoundCount = 1;
     public const int TotalRoundCount = TutorialRoundCount + TrainingRoundCount + TestRoundCount;
