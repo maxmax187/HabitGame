@@ -55,6 +55,14 @@ if ($authed) {
             }
         }
 
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'remove_entry') {
+            $id = (int) ($_POST['id'] ?? 0);
+            $stmt = $db->prepare('DELETE FROM game_data WHERE id = ?');
+            $stmt->bind_param('i', $id);
+            $stmt->execute();
+            $message = $stmt->affected_rows > 0 ? "Removed entry #$id." : "Entry #$id no longer exists.";
+        }
+
         $summary['total'] = (int) ($db->query('SELECT COUNT(*) AS c FROM game_data')->fetch_assoc()['c'] ?? 0);
         $summary['participants_with_data'] = (int) (
             $db->query('SELECT COUNT(DISTINCT participant_email) AS c FROM game_data')->fetch_assoc()['c'] ?? 0
@@ -90,8 +98,8 @@ if ($authed) {
 
             case 'recent':
                 $recent = $db->query(
-                    'SELECT participant_email, day, condition_group, LENGTH(data) AS size_bytes, submitted_at
-                     FROM game_data ORDER BY submitted_at DESC LIMIT 50'
+                    'SELECT id, participant_email, day, condition_group, LENGTH(data) AS size_bytes, submitted_at
+                     FROM game_data ORDER BY submitted_at DESC, id DESC'
                 )->fetch_all(MYSQLI_ASSOC);
                 break;
 
@@ -296,6 +304,20 @@ function viewLink(string $view, string $label, string $current): string
 
         .empty { color: #94a3b8; font-size: 0.8rem; padding: 1rem 0; }
 
+        .remove-form { display: inline; }
+        .remove-form button {
+            background: none;
+            border: 1px solid #fca5a5;
+            color: #dc2626;
+            font-family: inherit;
+            font-size: 0.65rem;
+            padding: 0.2rem 0.6rem;
+            cursor: pointer;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+        .remove-form button:hover { background: #dc2626; color: #ffffff; border-color: #dc2626; }
+
         .topbar {
             display: flex;
             align-items: center;
@@ -372,7 +394,7 @@ function viewLink(string $view, string $label, string $current): string
             <?= viewLink('by_condition', 'By condition', $view) ?>
             <?= viewLink('cross_tab', 'Day x condition', $view) ?>
             <?= viewLink('completion', 'Participant completion', $view) ?>
-            <?= viewLink('recent', 'Recent submissions', $view) ?>
+            <?= viewLink('recent', 'All submissions', $view) ?>
         </div>
 
         <?php if ($view === 'by_day'): ?>
@@ -447,9 +469,13 @@ function viewLink(string $view, string $label, string $current): string
                             <tr>
                                 <td><?= htmlspecialchars($row['email']) ?></td>
                                 <td><?= htmlspecialchars($row['condition_group']) ?></td>
-                                <td class="<?= $row['day1'] ? 'check' : 'cross' ?>"><?= $row['day1'] ? '✓' : '—' ?></td>
-                                <td class="<?= $row['day2'] ? 'check' : 'cross' ?>"><?= $row['day2'] ? '✓' : '—' ?></td>
-                                <td class="<?= $row['day3'] ? 'check' : 'cross' ?>"><?= $row['day3'] ? '✓' : '—' ?></td>
+                                <?php for ($d = 1; $d <= 3; $d++): ?>
+                                    <?php if ($d > conditionDayCount($row['condition_group'])): ?>
+                                        <td class="cross">n/a</td>
+                                    <?php else: ?>
+                                        <td class="<?= $row['day' . $d] ? 'check' : 'cross' ?>"><?= $row['day' . $d] ? '✓' : '—' ?></td>
+                                    <?php endif; ?>
+                                <?php endfor; ?>
                                 <td><?= (int) $row['total'] ?></td>
                             </tr>
                         <?php endforeach; ?>
@@ -464,26 +490,35 @@ function viewLink(string $view, string $label, string $current): string
                 <table>
                     <thead>
                         <tr>
+                            <th>ID</th>
                             <th>Email</th>
                             <th>Day</th>
                             <th>Condition</th>
                             <th>Size</th>
                             <th>Submitted</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php foreach ($recent as $row): ?>
                             <tr>
+                                <td><?= (int) $row['id'] ?></td>
                                 <td><?= htmlspecialchars($row['participant_email']) ?></td>
                                 <td>Day <?= (int) $row['day'] ?></td>
                                 <td><?= htmlspecialchars($row['condition_group']) ?></td>
                                 <td><?= formatBytes((int) $row['size_bytes']) ?></td>
                                 <td><?= htmlspecialchars($row['submitted_at']) ?></td>
+                                <td>
+                                    <form method="POST" class="remove-form" onsubmit="return confirm('Remove entry #<?= (int) $row['id'] ?> (<?= htmlspecialchars($row['participant_email'], ENT_QUOTES) ?>, day <?= (int) $row['day'] ?>)? This cannot be undone.')">
+                                        <input type="hidden" name="action" value="remove_entry">
+                                        <input type="hidden" name="id" value="<?= (int) $row['id'] ?>">
+                                        <button type="submit">Remove</button>
+                                    </form>
+                                </td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>
                 </table>
-                <p style="font-size:0.7rem;color:#94a3b8;margin-top:0.75rem;">Showing the 50 most recent submissions.</p>
             <?php endif; ?>
         <?php endif; ?>
     </div>

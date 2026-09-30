@@ -15,10 +15,11 @@
 //        FTP_USER=your_username
 //        FTP_PASS=your_password
 //        FTP_BASE_PATH=/builds/
-//        FTP_SLUG_BETWEEN_L=ad27dc55c8b9bae0fea0
-//        FTP_SLUG_BETWEEN_R=60daee13203a118c2dd0
-//        FTP_SLUG_WITHIN_L=8b2d195f6f4428a73784
-//        FTP_SLUG_WITHIN_R=346d6a2016c334eed14f
+//        FTP_SLUG_MODERATE_REMOVAL=583130b11053b121a6e1
+//        FTP_SLUG_MODERATE_DEVALUATION=d017714ca7706c3b9319
+//        FTP_SLUG_EXTENSIVE_SHARED=0f2d679ee812aeb0abfe
+//        FTP_SLUG_EXTENSIVE_REMOVAL=a131a02f2abd8c554cbf
+//        FTP_SLUG_EXTENSIVE_DEVALUATION=49d9065b16b9ff9fe57f
 //        FTP_SLUG_SHORT=bdb0b53f4ed37bc478c2
 //
 //     FTP_CERT_SHA256 is optional. Only set it if the server's TLS
@@ -55,19 +56,27 @@
 //     FTP_BASE_PATH needs the fuller path instead (e.g.
 //     "/httpdocs/f8622112/builds/").
 //
-//     There are 4 main conditions, each running the full 3 days: BETWEEN_L
-//     /BETWEEN_R (tested only at day 3) and WITHIN_L/WITHIN_R (tested at
-//     day 1 and day 3), each crossed with L/R bias. FTP_SLUG_BETWEEN_L /
-//     FTP_SLUG_BETWEEN_R / FTP_SLUG_WITHIN_L / FTP_SLUG_WITHIN_R are the
-//     non-guessable per-condition folder names the web app uses (see
-//     CONDITION_SLUGS in
-//     WebServer/React-TS-Frontend/src/data/conditions.ts). If those ever
+//     The study is a 2 x 2 design: Moderate (1 day) vs Extensive (3 days)
+//     x Removal vs Devaluation. That needs 7 builds, each with its own
+//     target and FTP_SLUG_* folder:
+//
+//        Moderate Removal          FTP_SLUG_MODERATE_REMOVAL/day1/
+//        Moderate Devaluation      FTP_SLUG_MODERATE_DEVALUATION/day1/
+//        Extensive Day 1 (shared)  FTP_SLUG_EXTENSIVE_SHARED/day1/
+//        Extensive Day 2 (shared)  FTP_SLUG_EXTENSIVE_SHARED/day2/
+//        Extensive Day 3 Removal   FTP_SLUG_EXTENSIVE_REMOVAL/day3/
+//        Extensive Day 3 Devaluation FTP_SLUG_EXTENSIVE_DEVALUATION/day3/
+//        Short                     FTP_SLUG_SHORT/day1/
+//
+//     Extensive days 1 and 2 are the same for Removal and Devaluation, so
+//     the website loads both conditions' day 1/2 from the shared folder.
+//     The slugs must match CONDITION_SLUGS / EXTENSIVE_SHARED_SLUG in
+//     WebServer/React-TS-Frontend/src/data/conditions.ts. If those ever
 //     change, update them here too.
 //
-//     SHORT is a fifth, separate condition (a single simplified session,
-//     always stored as day1 on disk) - excluded from the study's
-//     auto-balancing, but still a real, email-gated condition, so it
-//     needs FTP_SLUG_SHORT the same way the other four do.
+//     SHORT is a fifth, separate condition (a single simplified session)
+//     - excluded from the study's auto-balancing, but still a real,
+//     email-gated condition.
 //
 //     Demo 1/2/3 are open preview branches with no participant gating at
 //     all - like the Test target, they don't need a slug and always
@@ -79,9 +88,10 @@
 //     (already done in this project's .gitignore).
 //
 //  3) In Unity, use Tools > WebGL FTP Deploy > Target > and pick one of:
-//     Between L/Between R/Within L/Within R (each with a Day 1/2/3
-//     submenu), Short, Demo 1/2/3, or Test. This selection is remembered
-//     between builds until changed.
+//     one of the 7 study builds above, Demo 1/2/3, or Test. This selection
+//     is remembered between builds until changed. Also set the
+//     ConfigManager "Session Settings" in the Inspector to match (Day 1
+//     for the Moderate and Short builds, Day 1/2/3 for the Extensive ones).
 //
 //  4) Auto-deploy is OFF BY DEFAULT (per machine, via Tools > WebGL FTP
 //     Deploy > Enable Auto-Deploy) so a routine build never silently
@@ -112,102 +122,81 @@ public class FTPDeployWebGL : IPostprocessBuildWithReport
 
     private const string TargetKey = "FTPDeployWebGL_Target";
     private const string EnableKey = "FTPDeployWebGL_Enabled";
-    private const string DefaultTarget = "BL1";
+    private const string DefaultTarget = "TEST";
     // Off by default so a build never silently overwrites something on the
     // FTP server unless auto-deploy is deliberately turned on first.
     private const bool DefaultEnabled = false;
 
     // ---------------- Menu: choose target ----------------
-    // Target ids: "BL1".."BL3" / "BR1".."BR3" (Between, bias + day),
-    // "WL1".."WL3" / "WR1".."WR3" (Within, bias + day), "SHORT" (single
-    // session), "DEMO1"/"DEMO2"/"DEMO3" (open preview branches), or "TEST".
+    // Each target maps to a label, the .env key holding its folder slug
+    // (null for fixed folders), and the subfolder under that slug.
 
-    [MenuItem("Tools/WebGL FTP Deploy/Target/Between L/Day 1", false, 1)]
-    private static void SetTargetBL1() => SetTarget("BL1");
+    private static readonly Dictionary<string, (string Label, string SlugKey, string Folder)> Targets =
+        new Dictionary<string, (string, string, string)>
+        {
+            { "MR", ("Moderate Removal", "FTP_SLUG_MODERATE_REMOVAL", "day1/") },
+            { "MD", ("Moderate Devaluation", "FTP_SLUG_MODERATE_DEVALUATION", "day1/") },
+            { "E1", ("Extensive Day 1 (shared)", "FTP_SLUG_EXTENSIVE_SHARED", "day1/") },
+            { "E2", ("Extensive Day 2 (shared)", "FTP_SLUG_EXTENSIVE_SHARED", "day2/") },
+            { "ER3", ("Extensive Day 3 Removal", "FTP_SLUG_EXTENSIVE_REMOVAL", "day3/") },
+            { "ED3", ("Extensive Day 3 Devaluation", "FTP_SLUG_EXTENSIVE_DEVALUATION", "day3/") },
+            { "SHORT", ("Short", "FTP_SLUG_SHORT", "day1/") },
+            { "DEMO1", ("Demo 1", null, "demo1/") },
+            { "DEMO2", ("Demo 2", null, "demo2/") },
+            { "DEMO3", ("Demo 3", null, "demo3/") },
+            { "TEST", ("Test", null, "test/") },
+        };
 
-    [MenuItem("Tools/WebGL FTP Deploy/Target/Between L/Day 2", false, 2)]
-    private static void SetTargetBL2() => SetTarget("BL2");
+    [MenuItem("Tools/WebGL FTP Deploy/Target/Moderate Removal", false, 1)]
+    private static void SetTargetMr() => SetTarget("MR");
 
-    [MenuItem("Tools/WebGL FTP Deploy/Target/Between L/Day 3", false, 3)]
-    private static void SetTargetBL3() => SetTarget("BL3");
+    [MenuItem("Tools/WebGL FTP Deploy/Target/Moderate Devaluation", false, 2)]
+    private static void SetTargetMd() => SetTarget("MD");
 
-    [MenuItem("Tools/WebGL FTP Deploy/Target/Between R/Day 1", false, 4)]
-    private static void SetTargetBR1() => SetTarget("BR1");
+    [MenuItem("Tools/WebGL FTP Deploy/Target/Extensive/Day 1 (shared)", false, 3)]
+    private static void SetTargetE1() => SetTarget("E1");
 
-    [MenuItem("Tools/WebGL FTP Deploy/Target/Between R/Day 2", false, 5)]
-    private static void SetTargetBR2() => SetTarget("BR2");
+    [MenuItem("Tools/WebGL FTP Deploy/Target/Extensive/Day 2 (shared)", false, 4)]
+    private static void SetTargetE2() => SetTarget("E2");
 
-    [MenuItem("Tools/WebGL FTP Deploy/Target/Between R/Day 3", false, 6)]
-    private static void SetTargetBR3() => SetTarget("BR3");
+    [MenuItem("Tools/WebGL FTP Deploy/Target/Extensive/Day 3 Removal", false, 5)]
+    private static void SetTargetEr3() => SetTarget("ER3");
 
-    [MenuItem("Tools/WebGL FTP Deploy/Target/Within L/Day 1", false, 7)]
-    private static void SetTargetWL1() => SetTarget("WL1");
+    [MenuItem("Tools/WebGL FTP Deploy/Target/Extensive/Day 3 Devaluation", false, 6)]
+    private static void SetTargetEd3() => SetTarget("ED3");
 
-    [MenuItem("Tools/WebGL FTP Deploy/Target/Within L/Day 2", false, 8)]
-    private static void SetTargetWL2() => SetTarget("WL2");
-
-    [MenuItem("Tools/WebGL FTP Deploy/Target/Within L/Day 3", false, 9)]
-    private static void SetTargetWL3() => SetTarget("WL3");
-
-    [MenuItem("Tools/WebGL FTP Deploy/Target/Within R/Day 1", false, 10)]
-    private static void SetTargetWR1() => SetTarget("WR1");
-
-    [MenuItem("Tools/WebGL FTP Deploy/Target/Within R/Day 2", false, 11)]
-    private static void SetTargetWR2() => SetTarget("WR2");
-
-    [MenuItem("Tools/WebGL FTP Deploy/Target/Within R/Day 3", false, 12)]
-    private static void SetTargetWR3() => SetTarget("WR3");
-
-    [MenuItem("Tools/WebGL FTP Deploy/Target/Short", false, 13)]
+    [MenuItem("Tools/WebGL FTP Deploy/Target/Short", false, 7)]
     private static void SetTargetShort() => SetTarget("SHORT");
 
-    [MenuItem("Tools/WebGL FTP Deploy/Target/Demo 1", false, 14)]
+    [MenuItem("Tools/WebGL FTP Deploy/Target/Demo 1", false, 8)]
     private static void SetTargetDemo1() => SetTarget("DEMO1");
 
-    [MenuItem("Tools/WebGL FTP Deploy/Target/Demo 2", false, 15)]
+    [MenuItem("Tools/WebGL FTP Deploy/Target/Demo 2", false, 9)]
     private static void SetTargetDemo2() => SetTarget("DEMO2");
 
-    [MenuItem("Tools/WebGL FTP Deploy/Target/Demo 3", false, 16)]
+    [MenuItem("Tools/WebGL FTP Deploy/Target/Demo 3", false, 10)]
     private static void SetTargetDemo3() => SetTarget("DEMO3");
 
-    [MenuItem("Tools/WebGL FTP Deploy/Target/Test", false, 17)]
+    [MenuItem("Tools/WebGL FTP Deploy/Target/Test", false, 11)]
     private static void SetTargetTest() => SetTarget("TEST");
 
-    [MenuItem("Tools/WebGL FTP Deploy/Target/Between L/Day 1", true)]
-    private static bool ValidateBL1() { Menu.SetChecked("Tools/WebGL FTP Deploy/Target/Between L/Day 1", GetTarget() == "BL1"); return true; }
+    [MenuItem("Tools/WebGL FTP Deploy/Target/Moderate Removal", true)]
+    private static bool ValidateMr() { Menu.SetChecked("Tools/WebGL FTP Deploy/Target/Moderate Removal", GetTarget() == "MR"); return true; }
 
-    [MenuItem("Tools/WebGL FTP Deploy/Target/Between L/Day 2", true)]
-    private static bool ValidateBL2() { Menu.SetChecked("Tools/WebGL FTP Deploy/Target/Between L/Day 2", GetTarget() == "BL2"); return true; }
+    [MenuItem("Tools/WebGL FTP Deploy/Target/Moderate Devaluation", true)]
+    private static bool ValidateMd() { Menu.SetChecked("Tools/WebGL FTP Deploy/Target/Moderate Devaluation", GetTarget() == "MD"); return true; }
 
-    [MenuItem("Tools/WebGL FTP Deploy/Target/Between L/Day 3", true)]
-    private static bool ValidateBL3() { Menu.SetChecked("Tools/WebGL FTP Deploy/Target/Between L/Day 3", GetTarget() == "BL3"); return true; }
+    [MenuItem("Tools/WebGL FTP Deploy/Target/Extensive/Day 1 (shared)", true)]
+    private static bool ValidateE1() { Menu.SetChecked("Tools/WebGL FTP Deploy/Target/Extensive/Day 1 (shared)", GetTarget() == "E1"); return true; }
 
-    [MenuItem("Tools/WebGL FTP Deploy/Target/Between R/Day 1", true)]
-    private static bool ValidateBR1() { Menu.SetChecked("Tools/WebGL FTP Deploy/Target/Between R/Day 1", GetTarget() == "BR1"); return true; }
+    [MenuItem("Tools/WebGL FTP Deploy/Target/Extensive/Day 2 (shared)", true)]
+    private static bool ValidateE2() { Menu.SetChecked("Tools/WebGL FTP Deploy/Target/Extensive/Day 2 (shared)", GetTarget() == "E2"); return true; }
 
-    [MenuItem("Tools/WebGL FTP Deploy/Target/Between R/Day 2", true)]
-    private static bool ValidateBR2() { Menu.SetChecked("Tools/WebGL FTP Deploy/Target/Between R/Day 2", GetTarget() == "BR2"); return true; }
+    [MenuItem("Tools/WebGL FTP Deploy/Target/Extensive/Day 3 Removal", true)]
+    private static bool ValidateEr3() { Menu.SetChecked("Tools/WebGL FTP Deploy/Target/Extensive/Day 3 Removal", GetTarget() == "ER3"); return true; }
 
-    [MenuItem("Tools/WebGL FTP Deploy/Target/Between R/Day 3", true)]
-    private static bool ValidateBR3() { Menu.SetChecked("Tools/WebGL FTP Deploy/Target/Between R/Day 3", GetTarget() == "BR3"); return true; }
-
-    [MenuItem("Tools/WebGL FTP Deploy/Target/Within L/Day 1", true)]
-    private static bool ValidateWL1() { Menu.SetChecked("Tools/WebGL FTP Deploy/Target/Within L/Day 1", GetTarget() == "WL1"); return true; }
-
-    [MenuItem("Tools/WebGL FTP Deploy/Target/Within L/Day 2", true)]
-    private static bool ValidateWL2() { Menu.SetChecked("Tools/WebGL FTP Deploy/Target/Within L/Day 2", GetTarget() == "WL2"); return true; }
-
-    [MenuItem("Tools/WebGL FTP Deploy/Target/Within L/Day 3", true)]
-    private static bool ValidateWL3() { Menu.SetChecked("Tools/WebGL FTP Deploy/Target/Within L/Day 3", GetTarget() == "WL3"); return true; }
-
-    [MenuItem("Tools/WebGL FTP Deploy/Target/Within R/Day 1", true)]
-    private static bool ValidateWR1() { Menu.SetChecked("Tools/WebGL FTP Deploy/Target/Within R/Day 1", GetTarget() == "WR1"); return true; }
-
-    [MenuItem("Tools/WebGL FTP Deploy/Target/Within R/Day 2", true)]
-    private static bool ValidateWR2() { Menu.SetChecked("Tools/WebGL FTP Deploy/Target/Within R/Day 2", GetTarget() == "WR2"); return true; }
-
-    [MenuItem("Tools/WebGL FTP Deploy/Target/Within R/Day 3", true)]
-    private static bool ValidateWR3() { Menu.SetChecked("Tools/WebGL FTP Deploy/Target/Within R/Day 3", GetTarget() == "WR3"); return true; }
+    [MenuItem("Tools/WebGL FTP Deploy/Target/Extensive/Day 3 Devaluation", true)]
+    private static bool ValidateEd3() { Menu.SetChecked("Tools/WebGL FTP Deploy/Target/Extensive/Day 3 Devaluation", GetTarget() == "ED3"); return true; }
 
     [MenuItem("Tools/WebGL FTP Deploy/Target/Short", true)]
     private static bool ValidateShort() { Menu.SetChecked("Tools/WebGL FTP Deploy/Target/Short", GetTarget() == "SHORT"); return true; }
@@ -232,30 +221,8 @@ public class FTPDeployWebGL : IPostprocessBuildWithReport
 
     private static string GetTarget() => EditorPrefs.GetString(TargetKey, DefaultTarget);
 
-    private static string GetTargetLabel(string target)
-    {
-        switch (target)
-        {
-            case "BL1": return "Between L - Day 1";
-            case "BL2": return "Between L - Day 2";
-            case "BL3": return "Between L - Day 3";
-            case "BR1": return "Between R - Day 1";
-            case "BR2": return "Between R - Day 2";
-            case "BR3": return "Between R - Day 3";
-            case "WL1": return "Within L - Day 1";
-            case "WL2": return "Within L - Day 2";
-            case "WL3": return "Within L - Day 3";
-            case "WR1": return "Within R - Day 1";
-            case "WR2": return "Within R - Day 2";
-            case "WR3": return "Within R - Day 3";
-            case "SHORT": return "Short";
-            case "DEMO1": return "Demo 1";
-            case "DEMO2": return "Demo 2";
-            case "DEMO3": return "Demo 3";
-            case "TEST": return "Test";
-            default: return target;
-        }
-    }
+    private static string GetTargetLabel(string target) =>
+        Targets.TryGetValue(target, out var t) ? t.Label : target;
 
     // ---------------- Menu: toggle + info ----------------
 
@@ -408,39 +375,26 @@ public class FTPDeployWebGL : IPostprocessBuildWithReport
     }
 
     // basePath already ends with "/". Returns a path (also ending in "/")
-    // relative to the FTP account root, or null if a required .env value
-    // (e.g. a condition slug) is missing.
+    // relative to the FTP account root, or null if the target is unknown or
+    // a required .env slug is missing.
     private static string ComputeRemotePath(Dictionary<string, string> env, string basePath, string target)
     {
-        if (target == "TEST")
+        if (!Targets.TryGetValue(target, out var t))
         {
-            return basePath + "test/";
+            // E.g. a target saved in EditorPrefs from an older condition scheme.
+            Debug.LogError($"[FTPDeploy] Unknown target '{target}'. Pick one under Tools > WebGL FTP Deploy > Target. Skipping auto-deploy.");
+            return null;
         }
 
-        // Demo branches are open preview builds - no slug, no DB gating,
-        // just a fixed folder name, same spirit as Test.
-        if (target == "DEMO1" || target == "DEMO2" || target == "DEMO3")
+        if (t.SlugKey == null)
         {
-            return basePath + target.ToLowerInvariant() + "/";
+            return basePath + t.Folder;
         }
 
-        if (target == "SHORT")
-        {
-            string shortSlug = RequireEnv(env, "FTP_SLUG_SHORT");
-            if (shortSlug == null) return null;
-
-            // Short is a single session, always stored as day1 on disk.
-            return basePath + shortSlug + "/day1/";
-        }
-
-        // Between/Within targets: "BL1".."BL3" / "BR1".."BR3" / "WL1".."WL3" / "WR1".."WR3"
-        string schedule = target.Substring(0, 1) == "B" ? "BETWEEN" : "WITHIN";
-        string bias = target.Substring(1, 1); // "L" or "R"
-        string day = target.Substring(2);      // "1", "2", "3"
-        string slug = RequireEnv(env, "FTP_SLUG_" + schedule + "_" + bias);
+        string slug = RequireEnv(env, t.SlugKey);
         if (slug == null) return null;
 
-        return basePath + slug + "/day" + day + "/";
+        return basePath + slug + "/" + t.Folder;
     }
 
     // ---------------- .env parsing ----------------

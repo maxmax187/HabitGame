@@ -7,8 +7,26 @@ error_reporting(E_ALL);
 require_once __DIR__ . '/env.php';
 loadEnv();
 require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/import_parser.php';
 
 session_start();
+
+// Display names for the dashboard; keys must match CONDITIONS in db.php.
+const CONDITION_LABELS = [
+    'MODERATE_REMOVAL' => 'Moderate Removal',
+    'MODERATE_DEVALUATION' => 'Moderate Devaluation',
+    'EXTENSIVE_REMOVAL' => 'Extensive Removal',
+    'EXTENSIVE_DEVALUATION' => 'Extensive Devaluation',
+    'SHORT' => 'Short',
+];
+
+function conditionOptions(): string {
+    $html = '<option value="">Auto-balance</option>';
+    foreach (CONDITION_LABELS as $value => $label) {
+        $html .= '<option value="' . $value . '">Force ' . $label . '</option>';
+    }
+    return $html;
+}
 
 $error = '';
 $message = '';
@@ -31,6 +49,9 @@ $authed = isset($_SESSION['admin_auth']) && $_SESSION['admin_auth'] === true;
 
 $participants = [];
 $counts = array_fill_keys(CONDITIONS, 0);
+$bulk = null;
+$bulkEntries = [];
+$bulkStatus = [];
 
 if ($authed) {
     try {
@@ -62,6 +83,117 @@ if ($authed) {
                         } else {
                             $error = 'Database error: ' . $db->error;
                         }
+                    }
+                    break;
+
+                case 'bulk_upload':
+                    unset($_SESSION['bulk_import']);
+                    $file = $_FILES['import_file'] ?? null;
+                    $uploadError = $file['error'] ?? UPLOAD_ERR_NO_FILE;
+                    if ($uploadError === UPLOAD_ERR_NO_FILE) {
+                        $error = 'Please choose a file to upload.';
+                    } elseif ($uploadError === UPLOAD_ERR_INI_SIZE || $uploadError === UPLOAD_ERR_FORM_SIZE
+                        || ($uploadError === UPLOAD_ERR_OK && $file['size'] > IMPORT_MAX_BYTES)) {
+                        $error = 'The file is too large (max 5 MB).';
+                    } elseif ($uploadError !== UPLOAD_ERR_OK || !is_uploaded_file($file['tmp_name'])) {
+                        $error = "Upload failed (error code $uploadError).";
+                    } else {
+                        try {
+                            $rows = readSpreadsheet($file['tmp_name'], $file['name']);
+                            $columns = importColumns($rows);
+                            $column = detectEmailColumn($columns);
+                            if ($column === null) {
+                                $error = 'No email addresses found in ' . $file['name'] . '.';
+                            } else {
+                                $_SESSION['bulk_import'] = [
+                                    'filename' => $file['name'],
+                                    'rows' => $rows,
+                                    'columns' => $columns,
+                                    'column' => $column,
+                                ];
+                            }
+                        } catch (RuntimeException $e) {
+                            $error = $e->getMessage();
+                        }
+                    }
+                    break;
+
+                case 'bulk_column':
+                    $col = (int) ($_POST['column'] ?? -1);
+                    if (isset($_SESSION['bulk_import']['columns'][$col])) {
+                        $_SESSION['bulk_import']['column'] = $col;
+                    }
+                    break;
+
+                case 'bulk_cancel':
+                    unset($_SESSION['bulk_import']);
+                    break;
+
+                case 'bulk_import':
+                    $import = $_SESSION['bulk_import'] ?? null;
+                    $col = (int) ($_POST['column'] ?? -1);
+                    if ($import === null) {
+                        $error = 'Nothing to import - upload the file again.';
+                        break;
+                    }
+                    if (!isset($import['columns'][$col])) {
+                        $error = 'Invalid column selected.';
+                        break;
+                    }
+                    $force = $_POST['force_condition'] ?? '';
+                    $forced = in_array($force, CONDITIONS, true) ? 1 : 0;
+
+                    $registered = array_fill_keys(
+                        array_column($db->query('SELECT email FROM participants')->fetch_all(MYSQLI_ASSOC), 'email'),
+                        true
+                    );
+                    $entries = buildImportEntries($import['rows'], $col, $registered);
+                    $skipped = array_count_values(array_column($entries, 'status'));
+
+                    // Balance as if each participant were added one at a time.
+                    $runningCounts = countByCondition($db);
+                    $added = array_fill_keys(CONDITIONS, 0);
+                    $failed = [];
+                    $stmt = $db->prepare(
+                        'INSERT INTO participants (email, condition_group, forced) VALUES (?, ?, ?)'
+                    );
+                    foreach ($entries as $entry) {
+                        if ($entry['status'] !== 'new') {
+                            continue;
+                        }
+                        $email = $entry['email'];
+                        $condition = $forced ? $force : pickBalancedCondition($runningCounts);
+                        $stmt->bind_param('ssi', $email, $condition, $forced);
+                        if ($stmt->execute()) {
+                            $added[$condition]++;
+                            $runningCounts[$condition]++;
+                        } elseif ($db->errno === 1062) {
+                            $skipped['registered'] = ($skipped['registered'] ?? 0) + 1;
+                        } else {
+                            $failed[] = "$email ({$db->error})";
+                        }
+                    }
+                    unset($_SESSION['bulk_import']);
+
+                    $parts = [];
+                    foreach (array_filter($added) as $condition => $n) {
+                        $parts[] = "$condition: $n";
+                    }
+                    $message = 'Imported ' . array_sum($added) . ' participant(s) from ' . $import['filename']
+                        . ($parts ? ' (' . implode(', ', $parts) . ')' : '') . '. Skipped: '
+                        . ($skipped['registered'] ?? 0) . ' already registered, '
+                        . ($skipped['duplicate'] ?? 0) . ' duplicate(s) in file, '
+                        . ($skipped['invalid'] ?? 0) . ' invalid.';
+                    if ($failed) {
+                        $error = 'Database error for: ' . implode('; ', $failed) . '. ' . $message;
+                    }
+                    break;
+
+                case 'delete_all_participants':
+                    if ($db->query('TRUNCATE TABLE participants')) {
+                        $message = 'Deleted all registered participants.';
+                    } else {
+                        $error = 'Database error: ' . $db->error;
                     }
                     break;
 
@@ -110,6 +242,16 @@ if ($authed) {
         )->fetch_all(MYSQLI_ASSOC);
         $counts = countByCondition($db);
         $db->close();
+
+        $bulk = $_SESSION['bulk_import'] ?? null;
+        if ($bulk !== null) {
+            $bulkEntries = buildImportEntries(
+                $bulk['rows'],
+                $bulk['column'],
+                array_fill_keys(array_column($participants, 'email'), true)
+            );
+            $bulkStatus = array_count_values(array_column($bulkEntries, 'status'));
+        }
     } catch (Throwable $e) {
         $error = $e->getMessage();
     }
@@ -295,6 +437,24 @@ if ($authed) {
         }
 
         .tag.forced { color: #b45309; border-color: #fde68a; background: #fffbeb; }
+        .tag.status-new { color: #15803d; border-color: #bbf7d0; background: #f0fdf4; }
+        .tag.status-registered, .tag.status-duplicate { color: #64748b; }
+        .tag.status-invalid { color: #dc2626; border-color: #fecaca; background: #fef2f2; }
+
+        input[type="file"] {
+            width: 100%;
+            border: 1px solid #cbd5e1;
+            padding: 0.5rem;
+            font-family: inherit;
+            font-size: 0.8rem;
+            background: #ffffff;
+        }
+
+        .bulk-summary { font-size: 0.8rem; margin-bottom: 1rem; display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
+        .bulk-list { max-height: 320px; overflow-y: auto; border: 1px solid #e7edf5; margin: 1rem 0; }
+        .bulk-list th { position: sticky; top: 0; }
+        .bulk-actions { margin-bottom: 0.75rem; }
+        .btn:disabled { background: #94a3b8; cursor: not-allowed; }
 
         .remove-form { display: inline; }
         .remove-form button {
@@ -382,16 +542,86 @@ if ($authed) {
             <div class="field" style="flex: 0 0 200px;">
                 <label for="force_condition">Condition</label>
                 <select id="force_condition" name="force_condition">
-                    <option value="">Auto-balance</option>
-                    <option value="BETWEEN_L">Force Between L</option>
-                    <option value="BETWEEN_R">Force Between R</option>
-                    <option value="WITHIN_L">Force Within L</option>
-                    <option value="WITHIN_R">Force Within R</option>
-                    <option value="SHORT">Force Short</option>
+                    <?= conditionOptions() ?>
                 </select>
             </div>
             <button type="submit" class="btn">Add</button>
         </form>
+    </div>
+
+    <div class="panel">
+        <h2>Import participants from file</h2>
+        <?php if ($bulk === null): ?>
+            <form method="POST" enctype="multipart/form-data" class="add-form">
+                <input type="hidden" name="action" value="bulk_upload">
+                <div class="field">
+                    <label for="import_file">Microsoft Forms export (.xlsx) or .csv / .txt</label>
+                    <input type="file" id="import_file" name="import_file" accept=".xlsx,.csv,.txt" required>
+                </div>
+                <button type="submit" class="btn">Upload &amp; preview</button>
+            </form>
+            <p class="danger-zone-note">The column holding the email addresses is detected automatically; you can change it in the preview. Nothing is added until you confirm.</p>
+        <?php else: ?>
+            <p class="bulk-summary">
+                <strong><?= htmlspecialchars($bulk['filename'], ENT_SUBSTITUTE) ?></strong> &mdash;
+                <span class="tag status-new"><?= $bulkStatus['new'] ?? 0 ?> new</span>
+                <span class="tag status-registered"><?= $bulkStatus['registered'] ?? 0 ?> already registered</span>
+                <span class="tag status-duplicate"><?= $bulkStatus['duplicate'] ?? 0 ?> duplicate</span>
+                <span class="tag status-invalid"><?= $bulkStatus['invalid'] ?? 0 ?> invalid</span>
+            </p>
+
+            <form method="POST" class="add-form">
+                <input type="hidden" name="action" value="bulk_column">
+                <div class="field">
+                    <label for="bulk_column">Email column</label>
+                    <select id="bulk_column" name="column" onchange="this.form.submit()">
+                        <?php foreach ($bulk['columns'] as $i => $col): ?>
+                            <option value="<?= $i ?>" <?= $i === $bulk['column'] ? 'selected' : '' ?>>
+                                <?= htmlspecialchars($col['label'], ENT_SUBSTITUTE) ?> (<?= $col['emails'] ?> email<?= $col['emails'] === 1 ? '' : 's' ?>)
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <noscript><button type="submit" class="btn secondary">Use column</button></noscript>
+            </form>
+
+            <?php if (empty($bulkEntries)): ?>
+                <div class="empty">This column has no entries.</div>
+            <?php else: ?>
+                <div class="bulk-list">
+                    <table>
+                        <thead>
+                            <tr><th>Row</th><th>Email</th><th>Status</th></tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($bulkEntries as $entry): ?>
+                                <tr>
+                                    <td><?= $entry['row'] ?></td>
+                                    <td><?= htmlspecialchars($entry['email'], ENT_SUBSTITUTE) ?></td>
+                                    <td><span class="tag status-<?= $entry['status'] ?>"><?= $entry['status'] === 'registered' ? 'already registered' : $entry['status'] ?></span></td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            <?php endif; ?>
+
+            <form method="POST" class="add-form bulk-actions">
+                <input type="hidden" name="action" value="bulk_import">
+                <input type="hidden" name="column" value="<?= $bulk['column'] ?>">
+                <div class="field" style="flex: 0 0 200px;">
+                    <label for="bulk_force">Condition</label>
+                    <select id="bulk_force" name="force_condition">
+                        <?= conditionOptions() ?>
+                    </select>
+                </div>
+                <button type="submit" class="btn" <?= empty($bulkStatus['new']) ? 'disabled' : '' ?>>Add <?= $bulkStatus['new'] ?? 0 ?> new participant(s)</button>
+            </form>
+            <form method="POST" class="bulk-cancel">
+                <input type="hidden" name="action" value="bulk_cancel">
+                <button type="submit" class="btn secondary btn-small">Cancel</button>
+            </form>
+        <?php endif; ?>
     </div>
 
     <div class="panel">
@@ -401,11 +631,9 @@ if ($authed) {
         </div>
         <div class="counts">
             <span>Total: <strong><?= count($participants) ?></strong></span>
-            <span>Between L: <strong><?= $counts['BETWEEN_L'] ?></strong></span>
-            <span>Between R: <strong><?= $counts['BETWEEN_R'] ?></strong></span>
-            <span>Within L: <strong><?= $counts['WITHIN_L'] ?></strong></span>
-            <span>Within R: <strong><?= $counts['WITHIN_R'] ?></strong></span>
-            <span>Short: <strong><?= $counts['SHORT'] ?></strong></span>
+            <?php foreach (CONDITION_LABELS as $condition => $label): ?>
+                <span><?= $label ?>: <strong><?= $counts[$condition] ?? 0 ?></strong></span>
+            <?php endforeach; ?>
         </div>
 
         <?php if (empty($participants)): ?>
@@ -445,11 +673,17 @@ if ($authed) {
 
     <div class="panel">
         <h2>Danger zone</h2>
-        <form method="POST" onsubmit="return confirm('This will re-randomize the condition for every BETWEEN/WITHIN participant into a fresh, evenly balanced 4-way split (Between L / Between R / Within L / Within R), including anyone already assigned. SHORT participants are left untouched. If the study is already in progress, this WILL interfere with collected data. Are you absolutely sure?')">
+        <form method="POST" onsubmit="return confirm('This will re-randomize the condition for every Moderate/Extensive participant into a fresh, evenly balanced 4-way split (Moderate Removal / Moderate Devaluation / Extensive Removal / Extensive Devaluation), including anyone already assigned. This can move people between the 1-day and 3-day versions. SHORT participants are left untouched. If the study is already in progress, this WILL interfere with collected data. Are you absolutely sure?')">
             <input type="hidden" name="action" value="reassign_all">
             <button type="submit" class="btn danger">Reassign all participants (4-way split)</button>
         </form>
-        <p class="danger-zone-note">Re-splits every participant currently in Between/Within into a new random, evenly balanced assignment across those 4 conditions and clears any manual "forced" flags. SHORT participants are never included. Do not use this once the study has started unless you intend to change existing participants' conditions.</p>
+        <p class="danger-zone-note">Re-splits every participant currently in Moderate/Extensive into a new random, evenly balanced assignment across those 4 conditions and clears any manual "forced" flags. SHORT participants are never included. Do not use this once the study has started unless you intend to change existing participants' conditions.</p>
+
+        <form method="POST" style="margin-top: 1.25rem;" onsubmit="return confirm('This will PERMANENTLY DELETE all <?= count($participants) ?> registered participant(s) in every condition, including SHORT. They will no longer be able to log in to the game. This cannot be undone. Are you absolutely sure?')">
+            <input type="hidden" name="action" value="delete_all_participants">
+            <button type="submit" class="btn danger">Delete all registered participants</button>
+        </form>
+        <p class="danger-zone-note">Permanently deletes every row in participants - all conditions, including SHORT. Game data already submitted (Game Data dashboard) is not affected.</p>
     </div>
 </div>
 
