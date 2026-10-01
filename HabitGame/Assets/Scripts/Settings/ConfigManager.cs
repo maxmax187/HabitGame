@@ -283,4 +283,14 @@ public class ConfigManager : MonoBehaviour
         Config.HasOpenedBefore = true;
         Config.Save(Config);
     }
+
+    public void SetLevelChestSide(ChestSide side)
+    {
+        int currentIndex = GetCurrentLevelIndex();
+        if (currentIndex < 0) return;
+
+        Config.LevelsData[currentIndex].ChestSide = side; // Saves to this specific level
+        Config.ChestSide = side;                          // Updates the global config field as well
+        Config.Save(Config);
+    }
 }

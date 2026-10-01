@@ -54,9 +54,9 @@ public class GameManager : MonoBehaviour
     private bool _isLastBoss;
     private AudioSource _currentAudio;
 
-    private const int TutorialRoundCount = 0;
-    private const int TrainingRoundCount = 1;
-    private const int TestRoundCount = 0;
+    private const int TutorialRoundCount = 2;
+    private const int TrainingRoundCount = 2;
+    private const int TestRoundCount = 2;
     public const int TotalRoundCount = TutorialRoundCount + TrainingRoundCount + TestRoundCount;
 
     public int CurrentRound => _configManager != null ? _configManager.Config.LevelsData.Count : 1;
@@ -427,9 +427,28 @@ public class GameManager : MonoBehaviour
 
     private PhaseData GetPhaseTwo()
     {
-        PhaseData[] pool = IsTutorialLevel ? _phases.PhasesTwoTutorial : _phases.PhasesTwoRegular;
-        int randomIndex = UnityEngine.Random.Range(0, pool.Length);
-        return pool[randomIndex];
+        // 50% random chance: 0 = Left, 1 = Right
+        ChestSide chosenSide = UnityEngine.Random.value < 0.5f ? ChestSide.Left : ChestSide.Right;
+
+        // Record the side in the config for this level
+        if (_configManager != null)
+        {
+            _configManager.SetLevelChestSide(chosenSide);
+        }
+
+        Debug.Log($"[GameManager] Round {CurrentRound} ({CurrentLevelType}) assigned Phase 2 ChestSide: {chosenSide}");
+
+        if (IsTutorialLevel)
+        {
+            return chosenSide == ChestSide.Left 
+                ? _phases.PhaseTwoTutorialLeft 
+                : _phases.PhaseTwoTutorialRight;
+        }
+
+        // Training and Testing levels use the Regular rooms
+        return chosenSide == ChestSide.Left 
+            ? _phases.PhaseTwoRegularLeft 
+            : _phases.PhaseTwoRegularRight;
     }
 
     public Phase NextPhase()

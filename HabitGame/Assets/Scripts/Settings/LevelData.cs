@@ -21,6 +21,7 @@ public class LevelData
     #endregion
 
     #region Phase2
+    public ChestSide ChestSide; // Left for 2_1L / 2_2L, Right for 2_1R / 2_2R
     public float TimeLeftWhenDoorOpens;
     public float TimeLeftWhenInChestRange;
     public bool OpendMinigame;
