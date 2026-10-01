@@ -115,3 +115,5 @@ itchBuild*/
 /WebBuild/*
 HabitGame/testBuild/*
 *.meta
+*itchBuild_miniversion.zip
+
