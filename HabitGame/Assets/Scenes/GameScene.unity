@@ -2790,7 +2790,7 @@ MonoBehaviour:
     is in the top 20 of all players.
   - <b>CONTROLS</b>\n\n Navigate the dungeon using <sprite=1><sprite=2><sprite=3><sprite=0>
     or arrow keys. Press <sprite=6> to attack the monsters.
-  - <b>LEVELS</b>\n\n In total, there are 45 levels for the game today. Each level
+  - <b>LEVELS</b>\n\n In total, there are 65 levels for the game today. Each level
     is a bit different but all of them have three parts - a room with moving spikes,
     a room with a door, and a monster chamber.
   - <b>MONSTERS</b>\n\n <size=150%><sprite name="DummyBoss_0"> <sprite name="Dungeon_Character_2_7"></size>
@@ -2824,10 +2824,11 @@ MonoBehaviour:
   _testPages:
   - <b>SOMETHING CHANGED!</b> \n\n Something has changed in the game environment.
     Please read the next page carefully to understand its impact on you.
-  - '<b>NO WEAPON UPGRADE</b>\n <size=250%><sprite name="silver_sword"></size>  <size=60%>Damage:
-    5</size> \n\n For all the remaining levels, playing the chest minigame no longer
-    gives you a weapon upgrade. You can still play the minigame but it only costs
-    time.'
+  - '<b>PERMANENT NEW WEAPON</b>\n <size=250%><sprite name="Exotic Swords 1_7"></size> 
+    <size=60%>Damage: 12</size> \n\n You now receive a weapon. This weapon deals
+    more damage to the monsters than the upgraded version of your old weapon. For
+    all the remaining levels, this new weapon is always in your possession. <size=150%><b>HAVE
+    FUN!</b></size>\n\n'
   - <size=150%><b>HAVE FUN!</b></size>\n\n
 --- !u!4 &814126479
 Transform:
