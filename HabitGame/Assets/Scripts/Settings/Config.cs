@@ -45,6 +45,8 @@ public class Config
     public bool MinigameHowToShown;
     public bool HasOpenedBefore; // Home Screen Helper
 
+    public bool ShowHyperlinkButton;
+
     private static string SaveFilenName()
     {
         string saveFile = Path.Combine(Application.persistentDataPath, "save.json");

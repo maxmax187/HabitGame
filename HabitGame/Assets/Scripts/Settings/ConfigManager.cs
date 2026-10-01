@@ -15,6 +15,7 @@ public class ConfigManager : MonoBehaviour
     [SerializeField] private ChestSide _sessionChestSide;
     [SerializeField] private int _sessionDay = 1;
     [SerializeField] private int _sessionGroup = 0;
+    [SerializeField] private bool _sessionShowHyperlinkButton = false;
 
     public int SpikeDificulty => Config.CurrentSpikeDificulty;
 
@@ -26,6 +27,7 @@ public class ConfigManager : MonoBehaviour
         Config.ChestSide = _sessionChestSide;
         Config.Day = _sessionDay;
         Config.Group = _sessionGroup;
+        Config.ShowHyperlinkButton = _sessionShowHyperlinkButton;
         Config.Save(Config);
     }
 
