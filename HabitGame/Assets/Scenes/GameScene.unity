@@ -2811,11 +2811,12 @@ MonoBehaviour:
     chest triggers a minigame that costs some time to complete. During the minigame
     press <sprite=6> when the arrow is pointing at the green part of a spinning plate.
     Hit it 4 times to finish the minigame.
-  - '<b>WEAPON UPGRADE</b>\n <size=200%><sprite name="silver_sword"></size> <sprite
+  - <b>WEAPON UPGRADE</b>\n <size=200%><sprite name="silver_sword"></size> <sprite
     name="arrow">   <size=200%><sprite name="Exotic Swords 1_7"></size> \n\n Upon
     completing the minigame, your weapon receives an upgrade, so you deal twice as
     much damage to the monsters with each hit. Note that the upgrade does NOT carry
-    over to the next level. Your weapon resets to its baseline '
+    over to the next level. Your weapon resets to its baseline strength after each
+    level is finished.
   - <size=150%><b>HAVE FUN!</b></size>\n\n
   _testPages: []
 --- !u!4 &814126479
