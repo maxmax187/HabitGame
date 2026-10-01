@@ -35,14 +35,14 @@ MonoBehaviour:
     m_StrikethroughOffset: 0
     m_StrikethroughThickness: 0
     m_TabWidth: 0
-  m_Material: {fileID: 8060824149333653431}
+  m_Material: {fileID: 5774351893501297505}
   spriteSheet: {fileID: 2800000, guid: 052ae2420340d32a7aa0edc8e1e24c52, type: 3}
   m_SpriteCharacterTable:
   - m_ElementType: 2
     m_Unicode: 65534
     m_GlyphIndex: 0
     m_Scale: 1
-    m_Name: arrow_0
+    m_Name: arrow
   m_GlyphTable:
   - m_Index: 0
     m_Metrics:
@@ -62,7 +62,7 @@ MonoBehaviour:
     sprite: {fileID: -765150924802650856, guid: 052ae2420340d32a7aa0edc8e1e24c52, type: 3}
   spriteInfoList: []
   fallbackSpriteAssets: []
---- !u!21 &8060824149333653431
+--- !u!21 &5774351893501297505
 Material:
   serializedVersion: 8
   m_ObjectHideFlags: 0

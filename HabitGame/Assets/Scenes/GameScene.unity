@@ -2803,6 +2803,11 @@ MonoBehaviour:
     your remaining time by 3 seconds. A shot from a monster takes 10 seconds from
     your remaining time. If the time runs out, the level is over.
   - <size=150%><b>HAVE FUN!</b></size>\n\n
+  - <b>TEST SCREEN</b>\n <size=200%><sprite name="silver_sword"></size> <sprite name="arrow">  
+    <size=200%><sprite name="Exotic Swords 1_7"></size> \n\n some whatever text sjust
+    to see how big of a gap I need.
+  - <b>TEST SCREEN</b> \n <size=300%> <sprite name="minigame"></size> \n\n jsut some
+    text as before so I know how much space I need before long text.
   _trainingPages:
   - <b>NEW OBJECT</b>\n       <size=300%><sprite name="Dungeon_Tileset_85"></size>\n\n
     In the room with a door is now a chest. You can walk to the chest and then open
