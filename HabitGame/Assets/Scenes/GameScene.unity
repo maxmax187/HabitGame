@@ -1013,8 +1013,8 @@ MonoBehaviour:
   _testIntroPages: []
   _fixedLevelTime: 60
   _tutorialBossIndex: 0
-  _trainingBossSchedule: 00000000000000000100000001000000020000000200000003000000040000000900000009000000
-  _testBossSchedule: 09000000
+  _trainingBossSchedule: 00000000000000000000000000000000000000000100000001000000010000000100000001000000010000000100000001000000010000000100000002000000020000000200000002000000020000000200000002000000020000000200000002000000030000000400000005000000060000000700000008000000090000000a0000000b0000000c0000000d0000000d0000000d0000000d0000000d0000000d0000000d0000000d0000000d0000000d000000
+  _testBossSchedule: 0d000000
   _testDamageGroup0: 5
   _testDamageGroup1: 12
 --- !u!4 &380437866
@@ -2786,10 +2786,10 @@ MonoBehaviour:
   _tutorialPages:
   - <b>MISSION</b>\n\n You are in a dungeon. Your task is to navigate different rooms,
     avoid dangerous spikes and fight monsters. Your goal is to kill as many monsters
-    as you can. You will receive a bonus of 10 euro if your total monster-kill count
+    as you can. You will receive a bonus of 3 euro if your total monster-kill count
     is in the top 20 of all players.
-  - '<b>CONTROLS</b>\n\n Navigate the dungeon using <sprite=1><sprite=2><sprite=3><sprite=0>
-    or arrow keys. Press <sprite=6> to attack the monsters. '
+  - <b>CONTROLS</b>\n\n Navigate the dungeon using <sprite=1><sprite=2><sprite=3><sprite=0>
+    or arrow keys. Press <sprite=6> to attack the monsters.
   - <b>LEVELS</b>\n\n In total, there are 65 levels for the game today. Each level
     is a bit different but all of them have three parts - a room with moving spikes,
     a room with a door, and a monster chamber.
@@ -2804,15 +2804,17 @@ MonoBehaviour:
     your remaining time. If the time runs out, the level is over.
   - <size=150%><b>HAVE FUN!</b></size>\n\n
   _trainingPages:
+  - <b>SOMETHING CHANGED!</b> \n\n Something has changed in the game environment.
+    Please read the next pages carefully to understand its impact on you.
   - <b>NEW OBJECT</b>\n       <size=300%><sprite name="Dungeon_Tileset_85"></size>\n\n
     In the room with a door is now a chest. You can walk to the chest and then open
     it by pressing <sprite=5>.
-  - <b>MINIGAME</b>\n  <size=300%> <sprite name="minigame"></size> \n\n Opening the
-    chest triggers a minigame that costs some time to complete. During the minigame
+  - <b>MINIGAME</b>\n  <size=300%>  <sprite name="minigame"></size> \n\n Opening
+    the chest triggers a minigame that costs some time to complete. During the minigame
     press <sprite=6> when the arrow is pointing at the green part of a spinning plate.
     Hit it 4 times to finish the minigame.
-  - <b>WEAPON UPGRADE</b>\n <size=200%><sprite name="silver_sword"></size> <sprite
-    name="arrow">   <size=200%><sprite name="Exotic Swords 1_7"></size> \n\n Upon
+  - <b>WEAPON UPGRADE</b>\n   <size=200%><sprite name="silver_sword"></size> <sprite
+    name="arrow">   <size=200%><sprite name="Exotic Swords 1_1"></size> \n\n Upon
     completing the minigame, your weapon receives an upgrade, so you deal twice as
     much damage to the monsters with each hit. Note that the upgrade does NOT carry
     over to the next level. Your weapon resets to its baseline strength after each
@@ -2821,10 +2823,11 @@ MonoBehaviour:
   _testPages:
   - <b>SOMETHING CHANGED!</b> \n\n Something has changed in the game environment.
     Please read the next page carefully to understand its impact on you.
-  - <b>NO WEAPON UPGRADE</b>\n <size=200%><sprite name="silver_sword"></size> <sprite
-    name="crossed_arrow">   <size=200%><sprite name="Exotic Swords 1_7"></size> \n\n
-    For all remaining levels, playing the chest minigame no longer gives you a weapon
-    upgrade. You can still play the minigame but it only costs you time.
+  - <b>NO WEAPON UPGRADE</b>\n   <size=200%><sprite name="silver_sword"></size> 
+    <size=150%><sprite name="crossed_arrow"></size>  <size=200%><sprite name="Exotic
+    Swords 1_1"></size> \n\n For all remaining levels, playing the chest minigame
+    no longer gives you a weapon upgrade. You can still play the minigame but it
+    only costs you time.
   - <size=150%><b>HAVE FUN!</b></size>\n\n
 --- !u!4 &814126479
 Transform:
