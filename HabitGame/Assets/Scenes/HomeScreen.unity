@@ -2434,7 +2434,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &624634997
 RectTransform:
   m_ObjectHideFlags: 0
@@ -13233,7 +13233,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1413057414
 RectTransform:
   m_ObjectHideFlags: 0
@@ -15486,7 +15486,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _playButton: {fileID: 1701350995}
   _downloadButton: {fileID: 184910437}
-  _submitButton: {fileID: 624634998}
+  _submitButton: {fileID: 184910437}
   _donwPlaying: {fileID: 1011366621}
   _endLevelPopup: {fileID: 2053082509}
   _submitFeedbackText: {fileID: 1413057415}
