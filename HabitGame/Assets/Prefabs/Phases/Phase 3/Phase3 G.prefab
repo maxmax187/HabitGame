@@ -7418,7 +7418,7 @@ GameObject:
   - component: {fileID: 3439296262324916909}
   - component: {fileID: 3561860285486744107}
   m_Layer: 0
-  m_Name: Phase3 B
+  m_Name: Phase3 G
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -10870,11 +10870,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6267716414323396454, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -1.44
+      value: 0.181
       objectReference: {fileID: 0}
     - target: {fileID: 6267716414323396454, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 2.159
+      value: 2.231
       objectReference: {fileID: 0}
     - target: {fileID: 6267716414323396454, guid: 3f41a84b014b9e442a6a78b6c1924398, type: 3}
       propertyPath: m_LocalPosition.z
