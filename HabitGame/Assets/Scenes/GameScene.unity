@@ -2793,10 +2793,11 @@ MonoBehaviour:
   _testPages:
   - <b>SOMETHING CHANGED!</b> \n\n Something has changed in the game environment.
     Please read the next page carefully to understand its impact on you.
-  - '<b>PERMANENT NEW WEAPON</b>\n      <size=250%><sprite name="Exotic Swords 1_7"></size> 
-    \n\n<size=50%>Damage: 12</size> \n\n You now receive a weapon. This weapon deals
-    more damage to the monsters than the upgraded version of your old weapon. For
-    all the remaining levels, this new weapon is always in your possession.'
+  - <b>NO WEAPON UPGRADE</b>\n   <size=200%><sprite name="silver_sword"></size> 
+    <size=150%><sprite name="crossed_arrow"></size>  <size=200%><sprite name="Exotic
+    Swords 1_1"></size> \n\n For all remaining levels, playing the chest minigame
+    no longer gives you a weapon upgrade. You can still play the minigame but it
+    only costs you time.
   - <size=150%><b>HAVE FUN!</b></size>\n\n
 --- !u!4 &814126479
 Transform:
