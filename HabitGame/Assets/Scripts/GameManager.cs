@@ -56,7 +56,7 @@ public class GameManager : MonoBehaviour
 
     private const int TutorialRoundCount = 1;
     private const int TrainingRoundCount = 1;
-    private const int TestRoundCount = 1;
+    private const int TestRoundCount = 0;
     public const int TotalRoundCount = TutorialRoundCount + TrainingRoundCount + TestRoundCount;
 
     public int CurrentRound => _configManager != null ? _configManager.Config.LevelsData.Count : 1;
