@@ -1013,8 +1013,8 @@ MonoBehaviour:
   _testIntroPages: []
   _fixedLevelTime: 60
   _tutorialBossIndex: 0
-  _trainingBossSchedule: 00000000000000000100000001000000020000000200000003000000040000000900000009000000
-  _testBossSchedule: 09000000
+  _trainingBossSchedule: 0000000000000000000000000000000000000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000020000000200000002000000020000000200000002000000020000000200000002000000020000000200000002000000020000000200000002000000030000000400000005000000060000000700000008000000090000000a0000000b0000000c0000000d0000000e0000000f0000001000000011000000120000001200000012000000120000001200000012000000120000001200000012000000120000001200000012000000120000001200000012000000
+  _testBossSchedule: 
   _testDamageGroup0: 5
   _testDamageGroup1: 12
 --- !u!4 &380437866
@@ -2790,14 +2790,7 @@ MonoBehaviour:
     minigame to upgrade your weapon in each level.
   - <size=150%><b>HAVE FUN!</b></size>\n\n
   _trainingPages: []
-  _testPages:
-  - <b>SOMETHING CHANGED!</b> \n\n Something has changed in the game environment.
-    Please read the next page carefully to understand its impact on you.
-  - '<b>PERMANENT NEW WEAPON</b>\n <size=250%><sprite name="Exotic Swords 1_7"></size> 
-    <size=60%>Damage: 12</size> \n\n You now receive a weapon. This weapon deals
-    more damage to the monsters than the upgraded version of your old weapon. For
-    all the remaining levels, this new weapon is always in your possession.'
-  - <size=150%><b>HAVE FUN!</b></size>\n\n
+  _testPages: []
 --- !u!4 &814126479
 Transform:
   m_ObjectHideFlags: 0
