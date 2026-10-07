@@ -2794,7 +2794,7 @@ MonoBehaviour:
   - <b>SOMETHING CHANGED!</b> \n\n Something has changed in the game environment.
     Please read the next page carefully to understand its impact on you.
   - <b>NO WEAPON UPGRADE</b>\n   <size=200%><sprite name="silver_sword"></size> 
-    <size=150%><sprite name="crossed_arrow"></size>  <size=200%><sprite name="Exotic
+    <size=150%><sprite name="crossed_arrow_0"></size>  <size=200%><sprite name="Exotic
     Swords 1_1"></size> \n\n For all remaining levels, playing the chest minigame
     no longer gives you a weapon upgrade. You can still play the minigame but it
     only costs you time.
