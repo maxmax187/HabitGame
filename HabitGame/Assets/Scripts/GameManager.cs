@@ -54,9 +54,9 @@ public class GameManager : MonoBehaviour
     private bool _isLastBoss;
     private AudioSource _currentAudio;
 
-    private const int TutorialRoundCount = 1;
-    private const int TrainingRoundCount = 1;
-    private const int TestRoundCount = 1;
+    private const int TutorialRoundCount = 0;
+    private const int TrainingRoundCount = 50;
+    private const int TestRoundCount = 15;
     public const int TotalRoundCount = TutorialRoundCount + TrainingRoundCount + TestRoundCount;
 
     public int CurrentRound => _configManager != null ? _configManager.Config.LevelsData.Count : 1;

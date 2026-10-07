@@ -6,7 +6,7 @@ using TMPro;
 
 public class HomeScreenManager : MonoBehaviour
 {
-    private const string SubmitSuccessMessage = "Data submitted succesfully, you may now close the game";
+    private const string SubmitSuccessMessage = "Data submitted succesfully, you can proceed to fill out the survey";
     private const string SubmitErrorMessage = "ERROR SUBMITTING DATA - DO NOT CLOSE THE GAME: \nplease try again, or download the data and inform the researcher(s)\n";
     private const string SubmittingMessage = "Submitting data...";
 

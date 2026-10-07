@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!21 &-3127423130571490481
+--- !u!21 &-4835693681800015615
 Material:
   serializedVersion: 8
   m_ObjectHideFlags: 0
@@ -24,7 +24,7 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: b8206a1bd74a4bc7ebb2ccb31e076dfc, type: 3}
+        m_Texture: {fileID: 2800000, guid: b751429f3ac9594dd91eba9adfb2381e, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Ints: []
@@ -77,30 +77,30 @@ MonoBehaviour:
     m_StrikethroughOffset: 0
     m_StrikethroughThickness: 0
     m_TabWidth: 0
-  m_Material: {fileID: -3127423130571490481}
-  spriteSheet: {fileID: 2800000, guid: b8206a1bd74a4bc7ebb2ccb31e076dfc, type: 3}
+  m_Material: {fileID: -4835693681800015615}
+  spriteSheet: {fileID: 2800000, guid: b751429f3ac9594dd91eba9adfb2381e, type: 3}
   m_SpriteCharacterTable:
   - m_ElementType: 2
     m_Unicode: 65534
     m_GlyphIndex: 0
     m_Scale: 1
-    m_Name: crossed_arrow
+    m_Name: crossed_arrow_0
   m_GlyphTable:
   - m_Index: 0
     m_Metrics:
       m_Width: 32
-      m_Height: 22
+      m_Height: 24
       m_HorizontalBearingX: -16
-      m_HorizontalBearingY: 11
+      m_HorizontalBearingY: 12
       m_HorizontalAdvance: 32
     m_GlyphRect:
       m_X: 0
-      m_Y: 5
+      m_Y: 4
       m_Width: 32
-      m_Height: 22
+      m_Height: 24
     m_Scale: 1
     m_AtlasIndex: 0
     m_ClassDefinitionType: 0
-    sprite: {fileID: -4536288373038761619, guid: b8206a1bd74a4bc7ebb2ccb31e076dfc, type: 3}
+    sprite: {fileID: -4536288373038761619, guid: b751429f3ac9594dd91eba9adfb2381e, type: 3}
   spriteInfoList: []
   fallbackSpriteAssets: []
