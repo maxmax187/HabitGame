@@ -71,8 +71,7 @@ There are 5 condition values, plus 2 kinds of non-study preview builds.
 
 This is a 2 x 2 between-subjects design: training length (`MODERATE` = 1 day
 vs `EXTENSIVE` = 3 days) x outcome manipulation (`REMOVAL` vs `DEVALUATION`,
-handled entirely by the Unity build, not the website). There is no chest-side
-(L/R) condition any more. All of this is hidden from participants - they
+handled entirely by the Unity build, not the website). All of this is hidden from participants - they
 only ever see a random-looking URL slug.
 
 Condition slugs, day counts, and which slugs are "flat" builds (test/demo, no
@@ -203,8 +202,8 @@ Lives in `public/api/` and is deployed alongside the built site. Key files:
   from direct HTTP access in `api/.htaccess`).
 - `data_admin.php` - password-gated dashboard: summary counts and several
   views (by day, by condition, day x condition, per-participant completion,
-  all submissions with a per-entry Remove button), a "download all data as
-  .zip" link, and a "delete all data" danger-zone action.
+  recent submissions), a "download all data as .zip" link, and a "delete all
+  data" danger-zone action.
 - `export.php` - builds the .zip for the above.
 - `sql/schema.sql` - run once against a fresh database.
 - `DBadmin.php` - a generic, password-gated low-level DB admin tool (raw
