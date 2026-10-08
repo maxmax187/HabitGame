@@ -450,6 +450,21 @@ if ($authed) {
             background: #ffffff;
         }
 
+        .export-conditions { display: flex; flex-wrap: wrap; gap: 0.5rem 1.25rem; margin-bottom: 1rem; }
+        .export-conditions label, .export-options label {
+            display: inline-flex; align-items: center; gap: 0.4rem; margin: 0;
+            font-size: 0.75rem; letter-spacing: 0.05em; text-transform: none; color: #334155; cursor: pointer;
+        }
+        .export-options { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; flex-wrap: wrap; }
+        .export-options select { width: auto; margin: 0; padding: 0.4rem 0.6rem; font-size: 0.8rem; }
+        #export-count { font-size: 0.75rem; color: #64748b; }
+        #export-output {
+            width: 100%; font-family: inherit; font-size: 0.8rem; color: #1e293b;
+            border: 1px solid #cbd5e1; padding: 0.6rem; resize: vertical; margin-bottom: 0.75rem;
+        }
+        .export-actions { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+        #export-feedback { font-size: 0.75rem; color: #15803d; }
+
         .bulk-summary { font-size: 0.8rem; margin-bottom: 1rem; display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
         .bulk-list { max-height: 320px; overflow-y: auto; border: 1px solid #e7edf5; margin: 1rem 0; }
         .bulk-list th { position: sticky; top: 0; }
@@ -671,6 +686,33 @@ if ($authed) {
         <?php endif; ?>
     </div>
 
+    <?php if (!empty($participants)): ?>
+    <div class="panel">
+        <h2>Export email addresses</h2>
+        <div class="export-conditions">
+            <label><input type="checkbox" id="export-all" checked> All conditions</label>
+            <?php foreach (CONDITION_LABELS as $condition => $label): ?>
+                <label><input type="checkbox" class="export-condition" value="<?= $condition ?>" checked> <?= $label ?> (<?= $counts[$condition] ?? 0 ?>)</label>
+            <?php endforeach; ?>
+        </div>
+        <div class="export-options">
+            <label for="export-separator">Format</label>
+            <select id="export-separator">
+                <option value=", ">Separator (comma)</option>
+                <option value="&#10;">One per line</option>
+            </select>
+            <span id="export-count"></span>
+        </div>
+        <textarea id="export-output" readonly rows="4"></textarea>
+        <div class="export-actions">
+            <button type="button" class="btn" id="export-copy">Copy addresses</button>
+            <button type="button" class="btn secondary" id="export-csv">Download .csv</button>
+            <span id="export-feedback"></span>
+        </div>
+        <p class="danger-zone-note">Paste into the BCC field when emailing a group, so participants can't see each other's addresses.</p>
+    </div>
+    <?php endif; ?>
+
     <div class="panel">
         <h2>Danger zone</h2>
         <form method="POST" onsubmit="return confirm('This will re-randomize the condition for every Moderate/Extensive participant into a fresh, evenly balanced 4-way split (Moderate Removal / Moderate Devaluation / Extensive Removal / Extensive Devaluation), including anyone already assigned. This can move people between the 1-day and 3-day versions. SHORT participants are left untouched. If the study is already in progress, this WILL interfere with collected data. Are you absolutely sure?')">
@@ -687,6 +729,67 @@ if ($authed) {
     </div>
 </div>
 
+<?php if (!empty($participants)): ?>
+<script>
+(function () {
+    const participants = <?= json_encode(
+        array_map(fn($p) => ['email' => $p['email'], 'condition' => $p['condition_group']], $participants),
+        JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT
+    ) ?>;
+    const allBox = document.getElementById('export-all');
+    const boxes = [...document.querySelectorAll('.export-condition')];
+    const separator = document.getElementById('export-separator');
+    const output = document.getElementById('export-output');
+    const count = document.getElementById('export-count');
+    const feedback = document.getElementById('export-feedback');
+
+    function selected() {
+        const conditions = boxes.filter(b => b.checked).map(b => b.value);
+        return participants.filter(p => conditions.includes(p.condition));
+    }
+
+    function update() {
+        const checked = boxes.filter(b => b.checked).length;
+        allBox.checked = checked === boxes.length;
+        const list = selected();
+        output.value = list.map(p => p.email).join(separator.value);
+        count.textContent = list.length + ' address' + (list.length === 1 ? '' : 'es');
+        feedback.textContent = '';
+    }
+
+    allBox.addEventListener('change', () => {
+        boxes.forEach(b => { b.checked = allBox.checked; });
+        update();
+    });
+    boxes.forEach(b => b.addEventListener('change', update));
+    separator.addEventListener('change', update);
+
+    document.getElementById('export-copy').addEventListener('click', async () => {
+        if (!output.value) return;
+        try {
+            await navigator.clipboard.writeText(output.value);
+        } catch {
+            output.select();
+            document.execCommand('copy');
+        }
+        feedback.textContent = 'Copied ' + count.textContent + '.';
+    });
+
+    document.getElementById('export-csv').addEventListener('click', () => {
+        const list = selected();
+        if (!list.length) return;
+        const csv = 'email,condition\r\n' + list.map(p => p.email + ',' + p.condition).join('\r\n') + '\r\n';
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+        link.download = 'participant_emails_' + new Date().toISOString().slice(0, 10) + '.csv';
+        link.click();
+        URL.revokeObjectURL(link.href);
+    });
+
+    update();
+})();
+</script>
+<?php endif; ?>
 <?php endif; ?>
 </body>
 </html>

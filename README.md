@@ -197,7 +197,9 @@ Lives in `public/api/` and is deployed alongside the built site. Key files:
   from a Microsoft Forms export (.xlsx) or a .csv/.txt file: the email
   column is detected by content (not by name), and a preview shows which
   addresses are new, already registered, duplicated or invalid before
-  anything is added.
+  anything is added. An "Export email addresses" panel lists the addresses of
+  any combination of conditions, ready to copy into an email's To/BCC field
+  (comma-separated or one per line) or download as a .csv.
 - `import_parser.php` - file-reading helpers for the bulk import (blocked
   from direct HTTP access in `api/.htaccess`).
 - `data_admin.php` - password-gated dashboard: summary counts and several
