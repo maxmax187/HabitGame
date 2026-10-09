@@ -2813,18 +2813,16 @@ MonoBehaviour:
     the chest triggers a minigame that costs some time to complete. During the minigame
     press <sprite=6> when the arrow is pointing at the green part of a spinning plate.
     Hit it 4 times to finish the minigame.
-  - <b>WEAPON UPGRADE</b>\n   <size=200%><sprite name="silver_sword"></size> <sprite
-    name="arrow_0">   <size=200%><sprite name="Exotic Swords 1_1"></size> \n\n Upon
-    completing the minigame, your weapon receives an upgrade, so you deal twice as
-    much damage to the monsters with each hit. Note that the upgrade does NOT carry
-    over to the next level. Your weapon resets to its baseline strength after each
-    level is finished.
+  - '<b>PERMANENT NEW WEAPON</b>\n      <size=250%><sprite name="Exotic Swords 1_7"></size> 
+    \n\n<size=70%>Damage: 12</size> \n\n You now receive a new weapon. This weapon
+    deals more damage to the monsters than the upgraded version of your old weapon.
+    For all the remaining levels, this new weapon is always in your possession.'
   - <size=150%><b>HAVE FUN!</b></size>\n\n
   _testPages:
   - <b>SOMETHING CHANGED!</b> \n\n Something has changed in the game environment.
     Please read the next page carefully to understand its impact on you.
   - '<b>PERMANENT NEW WEAPON</b>\n      <size=250%><sprite name="Exotic Swords 1_7"></size> 
-    \n\n<size=50%>Damage: 12</size> \n\n You now receive a new weapon. This weapon
+    \n\n<size=70%>Damage: 12</size> \n\n You now receive a new weapon. This weapon
     deals more damage to the monsters than the upgraded version of your old weapon.
     For all the remaining levels, this new weapon is always in your possession.'
   - <size=150%><b>HAVE FUN!</b></size>\n\n
