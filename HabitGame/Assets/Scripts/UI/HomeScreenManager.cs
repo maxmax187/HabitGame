@@ -33,7 +33,6 @@ public class HomeScreenManager : MonoBehaviour
 
         _configManager = ConfigManager.Instance;
         _downloadButton.onClick.AddListener(DownloadButton);
-        _submitButton.onClick.AddListener(SubmitButton);
 
         if (_configManager == null)
         {

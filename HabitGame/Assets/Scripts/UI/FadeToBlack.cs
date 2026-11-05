@@ -2,14 +2,11 @@ using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
 
-/// <summary>
-/// The script will fade the screen to black 
-/// </summary>
-
 [RequireComponent(typeof(Image))]
 public class FadeToBlack : MonoBehaviour
 {
     [SerializeField] private GameManager _gameManager;
+    [SerializeField] private EndLevelPopup _endLevelPopup;
     [SerializeField] private float _fadeTime;
     private Image _image;
 
@@ -29,7 +26,23 @@ public class FadeToBlack : MonoBehaviour
         _image.DOFade(1f, _fadeTime)
             .OnComplete(() =>
             {
-                SceneSwitchManager.Instance.SwitchScene(Scenes.HomeScene);
+                if (_endLevelPopup != null && ConfigManager.Instance != null)
+                {
+                    var config = ConfigManager.Instance.Config;
+                    int currentIndex = config.LevelsData.Count - 1;
+                    bool killedBoss = currentIndex >= 0 && config.LevelsData[currentIndex].KilledTheBoss;
+                    int currentLevel = config.LevelsData.Count;
+                    int kills = ConfigManager.Instance.GetBossKillCount();
+
+                    _endLevelPopup.Show(killedBoss, currentLevel, kills, () =>
+                    {
+                        SceneSwitchManager.Instance.SwitchScene(Scenes.HomeScene);
+                    });
+                }
+                else
+                {
+                    SceneSwitchManager.Instance.SwitchScene(Scenes.HomeScene);
+                }
             });
     }
 }

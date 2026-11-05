@@ -7,7 +7,6 @@ public class PlayerHealth : Health
 {
     public static PlayerHealth Instance;
 
-    // Public accessor so outside classes like GameManager can read remaining health/time
     public float CurrentPlayerHealth => CurrentHealth;
 
     [Header("Audio")]
@@ -56,8 +55,19 @@ public class PlayerHealth : Health
 
     private void Update()
     {
-        if (!_isPlaying || CurrentHealth <= 0)
+        if (!_isPlaying)
         {
+            return;
+        }
+
+        if (CurrentHealth <= 0)
+        {
+            _isPlaying = false;
+            CurrentHealth = 0f;
+            _countdown.UpdateTimer(0f);
+
+            // Trigger timeout loss
+            FindFirstObjectByType<GameManager>()?.EndGame(killedBoss: false, timeLeft: 0f);
             return;
         }
 

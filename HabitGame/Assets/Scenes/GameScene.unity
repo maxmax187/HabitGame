@@ -2789,7 +2789,7 @@ MonoBehaviour:
     monsters as you can.  '
   - <b>CONTROLS</b>\n\n Navigate the dungeon using <sprite=1><sprite=2><sprite=3><sprite=0>
     or arrow keys. Press <sprite=6> to attack the monsters.
-  - '<b>LEVELS</b>\n\n In total, there are 40 levels for the game today. Each level
+  - '<b>LEVELS</b>\n\n In total, there are 15 levels for the game today. Each level
     is a bit different but all of them have three parts - a room with moving spikes,
     a room with a door, and a monster chamber. '
   - <b>MONSTERS</b>\n\n <size=150%><sprite name="DummyBoss_0"> <sprite name="Dungeon_Character_2_7"></size>
